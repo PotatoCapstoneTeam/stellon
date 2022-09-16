@@ -1,6 +1,6 @@
-### 탑건
+# 탑건
 
-# 디렉토리 설명
+### 디렉토리 설명
 
 assets - 이미지, 폰트 등을 저장
 
@@ -13,7 +13,7 @@ routes - 페이지 컴포넌트들을 저장
 dummy - 일명 가짜 데이터들을 저장
 
 
-# 브랜치 설명
+### 브랜치 설명
 
 main :배포 브랜치
 
@@ -22,7 +22,7 @@ develop :main브랜치에 넘어가기 전단계, 모든 브랜치는 develop에
 Ex) feat/login :로그인개발 브랜치 (main -> develop -> feat/login)
 
 
-# commit 설명
+### commit 설명
 
 feat: 신 기능 개발 브랜치
 
