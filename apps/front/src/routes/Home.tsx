@@ -3,9 +3,8 @@ import { Typography } from '../components/Typography';
 const Home = () => {
   return (
     <div>
-      dd
-      <Typography size="16" color="white">
-        ds
+      <Typography size="16" color="blue">
+        인트로 페이지입니다.
       </Typography>
     </div>
   );
