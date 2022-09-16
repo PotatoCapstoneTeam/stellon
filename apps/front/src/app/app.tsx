@@ -1,15 +1,14 @@
-import styled from 'styled-components';
-import NxWelcome from './nx-welcome';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from '../routes/Home';
 
-const StyledApp = styled.div`
-  // Your style here
-`;
 
 export function App() {
   return (
-    <StyledApp>
-      <NxWelcome title="front" />
-    </StyledApp>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
