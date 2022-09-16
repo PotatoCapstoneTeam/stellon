@@ -9,6 +9,7 @@ pluginManagement {
 }
 
 rootProject.name = 'topgun'
+include('libs:game-server')
 include('apps:back')
 
 
