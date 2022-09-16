@@ -1,9 +1,7 @@
-import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { customColor, customColorType } from '../constants/customColor';
 
-export type TypographyProps = {
-  children: ReactNode;
+export type TypographyProps = React.PropsWithChildren<{
   size:
     | '80'
     | '60'
@@ -24,7 +22,7 @@ export type TypographyProps = {
   fontWeight?: string;
   fontHeight?: string;
   fontHidden?: boolean;
-};
+}>;
 
 export const Typography = (props: TypographyProps) => {
   return <TypographyText {...props}>{props.children}</TypographyText>;
