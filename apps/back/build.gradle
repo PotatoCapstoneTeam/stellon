@@ -2,7 +2,6 @@ plugins {
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
 	id 'java'
-	
 }
 
 group = 'org.gamza'
@@ -15,7 +14,8 @@ repositories {
 
 dependencies {
   	implementation 'org.springframework.boot:spring-boot-starter-web'
-	
+    implementation project(":libs:game-server")
+
   	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
