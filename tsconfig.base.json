@@ -18,6 +18,5 @@
       "@topgun/game-client": ["libs/game-client/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"],
-  "noImplicitReturns": false
+  "exclude": ["node_modules", "tmp"]
 }
