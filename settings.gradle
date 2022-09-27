@@ -8,9 +8,9 @@ pluginManagement {
   }
 }
 
-rootProject.name = 'topgun'
+rootProject.name = 'stellon'
 include('libs:game-server')
-include('apps:back')
+include('apps:server')
 
 
 
