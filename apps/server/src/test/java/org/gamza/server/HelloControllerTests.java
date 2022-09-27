@@ -1,4 +1,4 @@
-package org.gamza.back;
+package org.gamza.server;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

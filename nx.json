@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "topgun",
+  "npmScope": "stellon",
   "affected": {
     "defaultBase": "main"
   },
@@ -54,6 +54,6 @@
       }
     }
   },
-  "defaultProject": "front",
+  "defaultProject": "client",
   "plugins": ["@jnxplus/nx-boot-gradle"]
 }
