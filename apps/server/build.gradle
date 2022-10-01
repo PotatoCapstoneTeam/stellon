@@ -13,10 +13,26 @@ repositories {
 }
 
 dependencies {
-  	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation project(":libs:game-server")
-
-  	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.projectlombok:lombok')
+    annotationProcessor('org.projectlombok:lombok')
+    testAnnotationProcessor('org.projectlombok:lombok')
+    testImplementation('org.projectlombok:lombok')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('com.h2database:h2')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    implementation('com.fasterxml.jackson.core:jackson-databind')
+    implementation('com.google.code.gson:gson:2.9.0')
+    implementation('org.slf4j:jcl-over-slf4j')
+    implementation('ch.qos.logback:logback-classic')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.security:spring-security-test')
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
+    implementation('org.springframework.boot:spring-boot-starter-webflux')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation('org.springframework.session:spring-session-jdbc')
+    implementation('org.mariadb.jdbc:mariadb-java-client')
 }
 
 tasks.named('test') {
