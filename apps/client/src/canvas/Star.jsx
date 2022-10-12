@@ -46,13 +46,13 @@ const Star = () => {
         <bufferAttribute
           ref={bufferRef}
           attach="attributes-position"
-          array={positions}
-          count={positions.length / 3}
-          itemSize={3}
+          array={positions} // 버퍼에 저장된 데이터를 보유하는 배열
+          count={positions.length / 3} // 백터의 개수
+          itemSize={3} // 배열에 저장되는 백터의 길이
         />
       </bufferGeometry>
-      <pointsMaterial
-        map={STAR}
+      <pointsMaterial      // 점의 재료
+        map={STAR}         // useLoader로 로드한 별 사진
         color="white"
         size={1}
         sizeAttenuation
