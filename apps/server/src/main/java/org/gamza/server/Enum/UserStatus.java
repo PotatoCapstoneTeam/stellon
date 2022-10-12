@@ -1,5 +1,5 @@
 package org.gamza.server.Enum;
 
 public enum UserStatus {
-  USER, ROOM_MANAGER
+  USER, ROOM_MANAGER, NONE
 }

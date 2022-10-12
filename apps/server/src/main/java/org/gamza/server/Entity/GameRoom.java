@@ -9,6 +9,7 @@ import org.gamza.server.Enum.TeamStatus;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,4 +39,11 @@ public class GameRoom extends BaseTimeEntity {
 
   @Column(nullable = false)
   private TeamStatus victoryTeam;
+
+  @Column
+  private LocalDateTime endTime;
+
+  public void update() {
+
+  }
 }
