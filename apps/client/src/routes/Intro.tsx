@@ -25,15 +25,15 @@ const Intro = () => {
           </LoginBox>
           <BtnBox>
             <SignUpBtn>
-              <Typography size="24" color="white">
+              <BtnTypography size="24" color="white">
                 SIGN UP
-              </Typography>
+              </BtnTypography>
               <Img src="../assets/redFighter.png" alt="none" />
             </SignUpBtn>
             <LoginBtn>
-              <Typography size="24" color="white">
+              <BtnTypography size="24" color="white">
                 LOGIN
-              </Typography>
+              </BtnTypography>
               <Img src="../assets/blueFighter.png" alt="none" />
             </LoginBtn>
           </BtnBox>
@@ -50,6 +50,7 @@ const Img = styled.img`
   height: 32px;
   margin-left: 12px;
 `;
+
 const LoginBtn = styled.div`
   display: flex;
   align-items: center;
@@ -57,6 +58,7 @@ const LoginBtn = styled.div`
   margin-right: 12px;
   height: 36px;
 `;
+
 const BtnBox = styled.div``;
 
 const SignUpBtn = styled.div`
@@ -72,19 +74,15 @@ const LoginBox = styled.div`
   align-items: center;
 `;
 
-const IdInput = styled.input`
+const Input = styled.input`
   width: 240px;
-  height: 30px;
+  height: 32px;
   margin-left: 10px;
   border-radius: 10px;
 `;
+const IdInput = styled(Input)``;
 
-const PwInput = styled.input`
-  width: 240px;
-  margin-left: 10px;
-  height: 30px;
-  border-radius: 10px;
-`;
+const PwInput = styled(Input)``;
 
 const IdBox = styled.div`
   display: flex;
@@ -121,5 +119,9 @@ const IntroImg = styled.img`
 const NewTypography = styled(Typography)`
   width: 48px;
   text-align: center;
-  line-height: 100%;
+  line-height: 32px;
+`;
+
+const BtnTypography = styled(Typography)`
+  line-height: 32px;
 `;
