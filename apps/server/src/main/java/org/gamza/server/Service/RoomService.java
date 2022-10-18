@@ -2,12 +2,15 @@ package org.gamza.server.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomRequestDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Repository.RoomRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -29,11 +32,16 @@ public class RoomService {
     return list;
   }
 
+  public GameRoom findRoom(FindRoomDto findRoomDto) {
+    return roomRepository.findById(findRoomDto.getId()).orElseThrow(() ->
+      new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
+  }
+
   // 방 만들기
-  public ResponseEntity<String> addRoom(RoomRequestDto requestDto) {
+  public GameRoom addRoom(RoomRequestDto requestDto) {
 
     if (requestDto.getPassword().isEmpty()) {
-      requestDto.toEntity();
+      return requestDto.toEntity();
     } else {
       GameRoom room = GameRoom.builder()
         .roomName(requestDto.getRoomName())
@@ -42,9 +50,7 @@ public class RoomService {
         .password(passwordEncoder.encode(requestDto.getPassword()))
         .build();
 
-      roomRepository.save(room);
+      return roomRepository.save(room);
     }
-
-    return ResponseEntity.ok("방 생성이 완료되었습니다.");
   }
 }

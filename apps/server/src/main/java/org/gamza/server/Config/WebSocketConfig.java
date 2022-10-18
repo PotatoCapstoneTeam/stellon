@@ -11,10 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-    stompEndpointRegistry.addEndpoint("/waitroom")
-      .setAllowedOriginPatterns("*")
-      .withSockJS();
-    stompEndpointRegistry.addEndpoint("/gameroom")
+    stompEndpointRegistry.addEndpoint("/ws-stomp")
       .setAllowedOriginPatterns("*")
       .withSockJS();
   }
