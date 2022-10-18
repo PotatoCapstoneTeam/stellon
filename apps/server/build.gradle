@@ -1,8 +1,23 @@
+buildscript {
+  dependencies {
+    classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+  }
+}
+
 plugins {
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
 	id 'java'
 }
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+ext["h2.version"] = "1.4.199"
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
 
 group = 'org.gamza'
 version = '1.0.0-SNAPSHOT'
@@ -28,9 +43,34 @@ dependencies {
     implementation('org.slf4j:jcl-over-slf4j')
     implementation('ch.qos.logback:logback-classic')
     implementation('org.springframework.boot:spring-boot-starter-security')
-    implementation('org.mariadb.jdbc:mariadb-java-client')
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+  library = "com.querydsl:querydsl-apt"
+  jpa = true
+  querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src/main/java', querydslDir]
+    }
+  }
+}
+
+compileQuerydsl{
+  options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+  querydsl.extendsFrom compileClasspath
 }

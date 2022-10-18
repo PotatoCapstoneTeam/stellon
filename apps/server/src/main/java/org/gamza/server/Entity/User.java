@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.gamza.server.Enum.ReadyOrNot;
-import org.gamza.server.Enum.TeamStatus;
-import org.gamza.server.Enum.UserStatus;
 
 import javax.persistence.*;
 
@@ -33,18 +30,6 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String password;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private UserStatus userStatus;
-
-  @Enumerated(EnumType.STRING)
   @Column
-  private ReadyOrNot readyOrNot;
-
-  @Enumerated(EnumType.STRING)
-  @Column
-  private TeamStatus teamStatus;
-  public void update() {
-
-  }
+  private String refreshToken;
 }

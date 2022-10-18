@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.gamza.server.Enum.RoomStatus;
-import org.gamza.server.Enum.TeamStatus;
 
 import javax.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -31,19 +30,12 @@ public class GameRoom extends BaseTimeEntity {
   private String roomName;
 
   @OneToMany(fetch=FetchType.EAGER)
-  private List<User> players = new ArrayList<>();
+  private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RoomStatus roomStatus;
 
-  @Column(nullable = false)
-  private TeamStatus victoryTeam;
-
   @Column
-  private LocalDateTime endTime;
-
-  public void update() {
-
-  }
+  private String password;
 }

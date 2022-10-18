@@ -7,10 +7,8 @@ import lombok.NoArgsConstructor;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.RoomStatus;
-import org.gamza.server.Enum.TeamStatus;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 
 @Builder
 @Data
@@ -18,18 +16,16 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomRequestDto {
   private String roomName;
-  private List<User> players;
+  private Map<Integer, User> players;
   private RoomStatus roomStatus;
-  private TeamStatus victoryTeam;
-  private LocalDateTime endTime;
+  private String password;
 
   public GameRoom toEntity() {
     GameRoom gameRoom = GameRoom.builder()
       .roomName(roomName)
       .players(players)
       .roomStatus(roomStatus)
-      .victoryTeam(victoryTeam)
-      .endTime(endTime)
+      .password(password)
       .build();
 
     return gameRoom;

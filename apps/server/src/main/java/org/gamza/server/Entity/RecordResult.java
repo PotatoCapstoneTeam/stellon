@@ -29,4 +29,8 @@ public class RecordResult extends BaseTimeEntity {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "users")
   private User user;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "rooms")
+  private GameRoom gameRoom;
 }
