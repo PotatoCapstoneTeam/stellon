@@ -1,6 +1,8 @@
 package org.gamza.server.Entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.gamza.server.Enum.UserStatus;
 
 @Getter

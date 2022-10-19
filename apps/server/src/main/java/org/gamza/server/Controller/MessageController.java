@@ -6,7 +6,6 @@ import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
-
 import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;

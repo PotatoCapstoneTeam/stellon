@@ -7,7 +7,6 @@ import org.gamza.server.Dto.GameRoomDto.RoomRequestDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Repository.RoomRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
