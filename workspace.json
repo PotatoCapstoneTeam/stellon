@@ -2,12 +2,11 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "client-e2e": "apps/client-e2e",
     "client": "apps/client",
-    "game-client": "libs/game-client",
-    "game-client-demo-e2e": "apps/game-client-demo-e2e",
-    "game-client-demo": "apps/game-client-demo",
-    "game-server": "libs/game-server",
+    "client-e2e": "apps/client-e2e",
+    "game-core": "libs/game-core",
+    "move-sync-client": "apps/move-sync-client",
+    "move-sync-server": "apps/move-sync-server",
     "server": "apps/server"
   }
 }
