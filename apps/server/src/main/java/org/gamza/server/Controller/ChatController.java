@@ -14,7 +14,7 @@ public class ChatController {
   private final SimpMessageSendingOperations sendingOperations;
   private final ChatService chatService;
 
-  @MessageMapping("/message")
+  @MessageMapping("/socket/chat")
   public void send(ChatModel message) {
     ChatResponseDto newMessage = chatService.regenerateMsg(message);
     sendingOperations.convertAndSend("/sub/room/" + newMessage.getRoomId(), newMessage);
