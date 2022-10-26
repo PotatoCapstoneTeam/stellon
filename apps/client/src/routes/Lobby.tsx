@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import { customColor } from '../constants/customColor';
 import Room from '../components/Room';
 
-const lobby = () => {
+const Lobby = () => {
+  const [chat, setChat] = useState('');
+
   return (
     <div>
       <Space />
@@ -102,10 +104,105 @@ const lobby = () => {
                 실시간 채팅
               </LiveChat>
             </ChatHeader>
-            <ChatRoom></ChatRoom>
+            <ChatRoom>
+              <Chat size="12" color="black">
+                끝말잇기빌런 : 배고파
+              </Chat>
+              <Chat size="12" color="black">
+                끝말잇기빌런 : 배고파
+              </Chat>
+              <Chat size="12" color="black">
+                안호빈 : 나도
+              </Chat>
+              <Chat size="12" color="black">
+                김효성 : 잘래
+              </Chat>
+              <Chat size="12" color="black">
+                박현호 : 배고파
+              </Chat>
+              <Chat size="12" color="black">
+                박청조 : 재밌다
+              </Chat>
+              <Chat size="12" color="black">
+                손흥민 : 배고파
+              </Chat>
+              <Chat size="12" color="black">
+                끝말잇기빌런 : 밥줘
+              </Chat>
+              <Chat size="12" color="black">
+                임송재 : 졸려
+              </Chat>
+              <ChattingBox>
+                <Chatting
+                  type="text"
+                  placeholder="채팅을 입력하세요"
+                  onChange={(e) => {
+                    setChat(e.target.value);
+                    console.log(chat);
+                  }}
+                  value={chat}
+                ></Chatting>
+                <ChattingBtn>Enter</ChattingBtn>
+              </ChattingBox>
+            </ChatRoom>
           </ChatBox>
           <UserListBox>
-            <UserList></UserList>
+            <UserListHeader>
+              <UserListImg src="../assets/InfoAirplane.png" />
+              <Typography color="black" size="12">
+                접속자 목록
+              </Typography>
+            </UserListHeader>
+            <UserList>
+              <Users>
+                <UserName color="black" size="12" fontWeight="900">
+                  임송재
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤재밌네
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+              <Users>
+                <UserName color="black" size="12">
+                  캡스톤
+                </UserName>
+                <UserInfoBtn>정보</UserInfoBtn>
+              </Users>
+            </UserList>
           </UserListBox>
         </ContentBox>
       </Container>
@@ -113,7 +210,96 @@ const lobby = () => {
   );
 };
 
-export default lobby;
+export default Lobby;
+
+const UserInfoBtn = styled.button`
+  width: 40px;
+  height: 21px;
+  font-size: 4px;
+  border-radius: 5px;
+  background-color: rgba(135, 135, 135, 1);
+  border: none;
+  color: white;
+  font-weight: 200;
+  margin-right: 8px;
+  &:hover {
+    color: black;
+  }
+`;
+
+const UserName = styled(Typography)`
+  margin-left: 4px;
+`;
+
+const Users = styled.div`
+  display: flex;
+  margin: 0 12px 0 12px;
+  align-items: center;
+  padding: 4px 0;
+  justify-content: space-between;
+  border-bottom: 0.8px solid black;
+`;
+
+const UserListImg = styled.img`
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+`;
+
+const UserListHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 4px;
+  margin: 8px 0;
+`;
+const ChattingBtn = styled.button`
+  width: 10%;
+  height: 100%;
+  border-radius: 0 15px 15px 0;
+  border-top-style: none;
+  border-right-style: none;
+  border-bottom-style: none;
+  border-left-color: white;
+  background-color: rgba(127, 127, 127, 1);
+  color: white;
+  &:hover {
+    color: black;
+  }
+`;
+const ChattingBox = styled.div`
+  width: 97%;
+  height: 28px;
+  border-radius: 15px;
+  background-color: rgba(127, 127, 127, 1);
+  margin: 8px auto;
+`;
+const Chat = styled(Typography)`
+  width: 97%;
+  padding: 8px 6px;
+  border-bottom: 0.8px solid black;
+  margin: 0 auto;
+`;
+
+const Chatting = styled.input`
+  color: white;
+  padding: 0 12px;
+  width: 90%;
+  height: 100%;
+  border-radius: 15px;
+  background-color: rgba(127, 127, 127, 1);
+  border: none;
+  &:focus {
+    outline: none;
+  }
+  &::placeholder {
+    color: white;
+    border-top-style: none;
+    font-weight: 100;
+    font-size: 8px;
+  }
+`;
+
 const RangeBtn = styled.div`
   display: flex;
   &:hover {
@@ -149,9 +335,46 @@ const ChatRoom = styled.div`
   height: 184px;
   margin: 0 auto;
   border-radius: 15px;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    width: 16px; /* 스크롤바의 너비 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
+    border-radius: 25px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
+    border-radius: 25px;
+  }
 `;
 const UserList = styled.div`
   background-color: ${customColor.white};
+  border-radius: 15px;
+  width: 236px;
+  height: 184px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+
+  ::-webkit-scrollbar {
+    width: 16px; /* 스크롤바의 너비 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
+    border-radius: 25px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
+    border-radius: 25px;
+  }
 `;
 const RefreshImg = styled.img`
   margin-right: 4px;
@@ -173,7 +396,7 @@ const EntireImg = styled.img`
 const GameListHeader = styled.div`
   justify-content: space-between;
   display: flex;
-  width: 98%;
+  width: 97%;
   align-items: center;
   margin: 12px 0;
 `;
@@ -186,7 +409,7 @@ const SearchGameList = styled.div`
 `;
 const GameList = styled.div`
   height: 80%;
-  width: 98%;
+  width: 97%;
   background-color: ${customColor.white};
   padding: 4px 18px;
   border-radius: 15px;
@@ -195,6 +418,21 @@ const GameList = styled.div`
   flex-wrap: wrap;
   align-items: center;
   overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    width: 16px; /* 스크롤바의 너비 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
+    border-radius: 25px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
+    border-radius: 25px;
+  }
 `;
 
 const BackgroundBox = styled.div`
@@ -277,17 +515,18 @@ const GameListBox = styled.div`
 const ChatBox = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: lightpink;
-  width: 80%;
+  width: 78%;
   border-radius: 0 0 0 10px;
   height: 40%;
   z-index: 99;
 `;
 const UserListBox = styled.div`
-  background-color: lightskyblue;
   width: 20%;
   border-radius: 0 0 10px 0;
   height: 40%;
+  display: flex;
+  flex-direction: column;
+  z-index: 99;
 `;
 
 const SearchImg = styled.img`
