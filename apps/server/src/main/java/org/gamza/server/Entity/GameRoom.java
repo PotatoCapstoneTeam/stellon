@@ -1,0 +1,38 @@
+package org.gamza.server.Entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.gamza.server.Enum.RoomStatus;
+
+import javax.persistence.*;
+import java.util.Map;
+
+import static javax.persistence.GenerationType.IDENTITY;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+@Table(name = "GameRooms")
+public class GameRoom extends BaseTimeEntity {
+
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  private Long id;
+
+  @Column(nullable = false)
+  private String roomName;
+
+  @OneToMany(fetch=FetchType.EAGER)
+  private Map<Integer, User> players;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private RoomStatus roomStatus;
+
+  @Column
+  private String password;
+}

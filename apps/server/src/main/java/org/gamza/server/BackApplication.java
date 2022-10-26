@@ -2,8 +2,10 @@ package org.gamza.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication(scanBasePackages = "org.gamza")
+@EnableJpaAuditing
+@SpringBootApplication(scanBasePackages = "org.gamza.server")
 public class BackApplication {
 
   public static void main(String[] args) {

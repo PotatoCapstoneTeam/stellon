@@ -1,8 +1,23 @@
+buildscript {
+  dependencies {
+    classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+  }
+}
+
 plugins {
 	id 'org.springframework.boot'
 	id 'io.spring.dependency-management'
 	id 'java'
 }
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+ext["h2.version"] = "1.4.199"
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
 
 group = 'org.gamza'
 version = '1.0.0-SNAPSHOT'
@@ -13,12 +28,53 @@ repositories {
 }
 
 dependencies {
-  	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation project(":libs:game-server")
-
-  	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-websocket')
+    implementation('org.projectlombok:lombok')
+    annotationProcessor('org.projectlombok:lombok')
+    testAnnotationProcessor('org.projectlombok:lombok')
+    testImplementation('org.projectlombok:lombok')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('com.h2database:h2')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    implementation('com.fasterxml.jackson.core:jackson-databind')
+    implementation('com.google.code.gson:gson:2.9.0')
+    implementation('org.slf4j:jcl-over-slf4j')
+    implementation('ch.qos.logback:logback-classic')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+  library = "com.querydsl:querydsl-apt"
+  jpa = true
+  querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ['src/main/java', querydslDir]
+    }
+  }
+}
+
+compileQuerydsl{
+  options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+  querydsl.extendsFrom compileClasspath
 }
