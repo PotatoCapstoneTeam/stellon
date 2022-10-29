@@ -62,10 +62,6 @@ body {
   overflow-x: hidden;
  }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
 a {
   text-decoration:none;
   color:inherit;
