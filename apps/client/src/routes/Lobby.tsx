@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import { customColor } from '../constants/customColor';
@@ -212,6 +212,33 @@ const Lobby = () => {
 
 export default Lobby;
 
+const HoverMenu = css`
+  :hover {
+    cursor: pointer;
+    position: relative;
+    top: -2px;
+    background-color: rgba(0, 109, 163, 1);
+    height: 36px;
+  }
+`;
+
+const Scrollbar = css`
+  ::-webkit-scrollbar {
+    width: 16px; /* 스크롤바의 너비 */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
+    border-radius: 25px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
+    border-radius: 25px;
+  }
+`;
+
 const UserInfoBtn = styled.button`
   width: 40px;
   height: 21px;
@@ -337,20 +364,7 @@ const ChatRoom = styled.div`
   border-radius: 15px;
   overflow-y: scroll;
 
-  ::-webkit-scrollbar {
-    width: 16px; /* 스크롤바의 너비 */
-  }
-
-  ::-webkit-scrollbar-thumb {
-    height: 30%; /* 스크롤바의 길이 */
-    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
-    border-radius: 25px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
-    border-radius: 25px;
-  }
+  ${Scrollbar}
 `;
 const UserList = styled.div`
   background-color: ${customColor.white};
@@ -361,20 +375,7 @@ const UserList = styled.div`
   display: flex;
   flex-direction: column;
 
-  ::-webkit-scrollbar {
-    width: 16px; /* 스크롤바의 너비 */
-  }
-
-  ::-webkit-scrollbar-thumb {
-    height: 30%; /* 스크롤바의 길이 */
-    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
-    border-radius: 25px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
-    border-radius: 25px;
-  }
+  ${Scrollbar}
 `;
 const RefreshImg = styled.img`
   margin-right: 4px;
@@ -419,20 +420,7 @@ const GameList = styled.div`
   align-items: center;
   overflow-y: scroll;
 
-  ::-webkit-scrollbar {
-    width: 16px; /* 스크롤바의 너비 */
-  }
-
-  ::-webkit-scrollbar-thumb {
-    height: 30%; /* 스크롤바의 길이 */
-    background: rgba(0, 0, 0, 1); /* 스크롤바의 색상 */
-    border-radius: 25px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
-    border-radius: 25px;
-  }
+  ${Scrollbar}
 `;
 
 const BackgroundBox = styled.div`
@@ -542,55 +530,29 @@ const ContentBox = styled.div`
   display: flex;
   flex-wrap: wrap;
 `;
-const GameStartBtn = styled.div`
-  position: static;
+
+const Btn = css`
   border-radius: 20px 20px 0 0;
   background-color: rgba(117, 117, 117, 1);
   display: flex;
   justify-content: center;
   align-items: center;
   width: 200px;
-  margin-right: 6px;
   height: 32px;
-  &:hover {
-    position: relative;
-    top: -2px;
-    background-color: rgba(0, 109, 163, 1);
-    height: 36px;
-    cursor: pointer;
-  }
+`;
+
+const GameStartBtn = styled.div`
+  margin-right: 6px;
+  ${Btn}
+  ${HoverMenu}
 `;
 const MakeRoomBtn = styled.div`
-  border-radius: 20px 20px 0 0;
-  background-color: rgba(117, 117, 117, 1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 32px;
-  &:hover {
-    cursor: pointer;
-    position: relative;
-    top: -2px;
-    background-color: rgba(0, 109, 163, 1);
-    height: 36px;
-  }
+  ${Btn}
+  ${HoverMenu}
 `;
 const SearchRoomBtn = styled.div`
-  border-radius: 20px 20px 0 0;
-  background-color: rgba(117, 117, 117, 1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 32px;
-  &:hover {
-    position: relative;
-    top: -2px;
-    background-color: rgba(0, 109, 163, 1);
-    height: 36px;
-    cursor: pointer;
-  }
+  ${Btn}
+  ${HoverMenu}
 `;
 const Menu = styled.div`
   display: flex;
