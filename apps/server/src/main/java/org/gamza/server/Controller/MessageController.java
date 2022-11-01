@@ -27,7 +27,7 @@ public class MessageController {
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
 
-  @MessageMapping("socket/message")
+  @MessageMapping("/socket/message")
   public void sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
     UserInfo userInfo = message.getUserInfo();
     FindRoomDto findRoomDto = FindRoomDto.builder()
