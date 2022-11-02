@@ -4,15 +4,17 @@ import styled, { css, keyframes } from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import axios from 'axios';
+import { useCookies } from 'react-cookie';
 
 const Intro = () => {
   const [loginHover, setLoginHover] = useState(false);
   const [signUpHover, setSignUpHover] = useState(false);
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(['user']); // 쿠키 훅
 
   const [values, setValues] = useState({
     id: '',
-    password: '', // 4자리 이상 조건 설정
+    password: '', // 4자리 이상 조건 설정해야함
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +38,7 @@ const Intro = () => {
           res.headers,
           res.config
         );
-        localStorage.setItem('Token', '여기에 토큰 저장');
+        // setCookie('user', res.data.token); // 쿠키에 토큰 저장
       })
       .catch((err) => console.log(err));
   };
