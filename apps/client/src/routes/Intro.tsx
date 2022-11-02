@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { css, keyframes } from 'styled-components';
 import Space from '../canvas/Space';
@@ -10,37 +10,30 @@ const Intro = () => {
   const [loginHover, setLoginHover] = useState(false);
   const [signUpHover, setSignUpHover] = useState(false);
   const navigate = useNavigate();
-  const [cookies, setCookie] = useCookies(['user']); // 쿠키 훅
-
-  const [values, setValues] = useState({
-    id: '',
-    password: '', // 4자리 이상 조건 설정해야함
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    });
-    console.log(values);
-  };
+  const formRef = useRef<HTMLFormElement>(null);
+  const [cookies, setCookie] = useCookies([
+    'user_access_token',
+    'user_refresh_token',
+  ]); // 쿠키 훅
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     axios
-      .post('https://stellon.shop/auth/login', values)
-      .then((res) => {
-        console.log(
-          res.data,
-          res.status,
-          res.statusText,
-          res.headers,
-          res.config
-        );
-        // setCookie('user', res.data.token); // 쿠키에 토큰 저장
+      .post('https://stellon.shop/auth/login', {
+        email: formRef.current?.['email'].value,
+        password: formRef.current?.['password'].value,
       })
-      .catch((err) => console.log(err));
+      .then((res) => {
+        console.log(res.data);
+        setCookie('user_access_token', res.data.accessToken); // 쿠키에 access 토큰 저장
+        setCookie('user_refresh_token', res.data.refreshToken); // 쿠키에 refresh 토큰 저장
+        navigate('/lobby');
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('회원정보가 없습니다.');
+      });
   };
 
   return (
@@ -48,29 +41,19 @@ const Intro = () => {
       <Space />
       <Container>
         <IntroImg src="../assets/logo.svg" alt="none" />
-        <LoginForm onSubmit={handleSubmit}>
+        <LoginForm ref={formRef} onSubmit={handleSubmit}>
           <LoginBox>
             <IdBox>
               <NewTypography color="white" size="24">
                 ID
               </NewTypography>
-              <IdInput
-                type="text"
-                name="id"
-                onChange={handleChange}
-                value={values.id}
-              />
+              <IdInput type="text" name="email" placeholder="email" />
             </IdBox>
             <PwBox>
               <NewTypography color="white" size="24">
                 PW
               </NewTypography>
-              <PwInput
-                type="password"
-                name="password"
-                onChange={handleChange}
-                value={values.password}
-              />
+              <PwInput type="password" name="password" placeholder="password" />
             </PwBox>
           </LoginBox>
           <BtnBox>
