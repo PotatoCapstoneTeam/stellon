@@ -7,6 +7,7 @@ export type customColorType = {
   purple: string;
   danger: string;
   success: string;
+  yellow: string;
 };
 
 export const customColor: customColorType = {
@@ -18,4 +19,5 @@ export const customColor: customColorType = {
   purple: '#A2AAF2',
   danger: '#FF5858',
   success: '#33DE4E',
+  yellow: '#FFE600',
 };
