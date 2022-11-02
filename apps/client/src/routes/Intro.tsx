@@ -6,25 +6,28 @@ import { Typography } from '../components/Typography';
 import axios from 'axios';
 
 const Intro = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
   const [loginHover, setLoginHover] = useState(false);
   const [signUpHover, setSignUpHover] = useState(false);
   const navigate = useNavigate();
 
-  function login() {
-    if (!id) {
-      return alert('아이디를 입력하세요.');
-    } else if (!password) {
-      return alert('패스워드를 입력하세요.');
-    }
-    const body = {
-      id,
-      password,
-    };
-    console.log(body);
+  const [values, setValues] = useState({
+    id: '',
+    password: '', // 4자리 이상 조건 설정
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
+    console.log(values);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
     axios
-      .post('url', body)
+      .post('https://stellon.shop/auth/login', values)
       .then((res) => {
         console.log(
           res.data,
@@ -36,14 +39,14 @@ const Intro = () => {
         localStorage.setItem('Token', '여기에 토큰 저장');
       })
       .catch((err) => console.log(err));
-  }
+  };
 
   return (
     <div>
       <Space />
       <Container>
         <IntroImg src="../assets/logo.svg" alt="none" />
-        <LoginForm>
+        <LoginForm onSubmit={handleSubmit}>
           <LoginBox>
             <IdBox>
               <NewTypography color="white" size="24">
@@ -51,11 +54,9 @@ const Intro = () => {
               </NewTypography>
               <IdInput
                 type="text"
-                onChange={(e) => {
-                  setId(e.target.value);
-                  console.log(id);
-                }}
-                value={id}
+                name="id"
+                onChange={handleChange}
+                value={values.id}
               />
             </IdBox>
             <PwBox>
@@ -64,16 +65,15 @@ const Intro = () => {
               </NewTypography>
               <PwInput
                 type="password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  console.log(password);
-                }}
-                value={password}
+                name="password"
+                onChange={handleChange}
+                value={values.password}
               />
             </PwBox>
           </LoginBox>
           <BtnBox>
             <SignUpBtn
+              type="button"
               onMouseOver={() => {
                 setSignUpHover(true);
               }}
@@ -92,13 +92,13 @@ const Intro = () => {
               />
             </SignUpBtn>
             <LoginBtn
+              type="submit"
               onMouseOver={() => {
                 setLoginHover(true);
               }}
               onMouseOut={() => {
                 setLoginHover(false);
               }}
-              onClick={() => login()}
             >
               <BtnTypography size="24" color="white">
                 LOGIN
@@ -149,7 +149,10 @@ const LoginImg = styled(Img)<{ hover: boolean }>`
   ${(props) => props.hover && Animate};
 `;
 
-const LoginBtn = styled.div`
+const LoginBtn = styled.button`
+  border: 0;
+  background-color: transparent;
+  outline: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -160,9 +163,15 @@ const LoginBtn = styled.div`
   }
 `;
 
-const BtnBox = styled.div``;
+const BtnBox = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
-const SignUpBtn = styled.div`
+const SignUpBtn = styled.button`
+  border: 0;
+  background-color: transparent;
+  outline: 0;
   &:hover {
     cursor: pointer;
   }
@@ -209,7 +218,7 @@ const Container = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const LoginForm = styled.div`
+const LoginForm = styled.form`
   display: flex;
   justify-content: space-between;
 `;
