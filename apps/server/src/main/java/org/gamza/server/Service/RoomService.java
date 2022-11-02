@@ -24,18 +24,6 @@ public class RoomService {
   private final RoomRepository roomRepository;
   private final PasswordEncoder passwordEncoder;
 
-  // 전체 방 목록 조회
-  public List<GameRoom> findRooms() {
-    List<GameRoom> list = new ArrayList<>(roomRepository.findAll());
-    Collections.reverse(list);
-    return list;
-  }
-
-  public GameRoom findRoom(FindRoomDto findRoomDto) {
-    return roomRepository.findById(findRoomDto.getId()).orElseThrow(() ->
-      new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
-  }
-
   // 방 만들기
   public GameRoom addRoom(RoomRequestDto requestDto) {
 
@@ -51,5 +39,17 @@ public class RoomService {
 
       return roomRepository.save(room);
     }
+  }
+
+  // 전체 방 목록 조회
+  public List<GameRoom> findRooms() {
+    List<GameRoom> list = new ArrayList<>(roomRepository.findAll());
+    Collections.reverse(list);
+    return list;
+  }
+
+  public GameRoom findRoom(FindRoomDto findRoomDto) {
+    return roomRepository.findById(findRoomDto.getId()).orElseThrow(() ->
+      new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 }
