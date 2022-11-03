@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import { customColor } from '../constants/customColor';
+import { useCookies } from 'react-cookie';
 import Room from '../components/Room';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Lobby = () => {
+  const navigate = useNavigate();
   const [chat, setChat] = useState('');
+  const [cookies, removeCookie] = useCookies([
+    'user_access_token',
+    'user_refresh_token',
+  ]); // 쿠키 훅
+
+  const loginCheck = () => {
+    const accessToken = cookies.user_access_token;
+    const refreshToken = cookies.user_refresh_token;
+
+    axios
+      .post('url', { token: accessToken }) // 토큰으로 서버에 인증요청
+      .then((res) => console.log(res.data))
+      .catch(() => logOut());
+  };
+
+  const logOut = () => {
+    removeCookie('user_access_token', []);
+    removeCookie('user_refresh_token', []);
+    navigate('/');
+  };
+
+  // useEffect(() => {
+  //   loginCheck();
+  // }, []);
 
   return (
     <div>
