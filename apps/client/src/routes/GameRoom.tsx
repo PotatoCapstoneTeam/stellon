@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import Space from '../canvas/Space';
+import ChatRoom from '../components/ChatRoom';
 import { Typography } from '../components/Typography';
 import UserCard from '../components/UserCard';
+import { customColor } from '../constants/customColor';
 
 const GameRoom = () => {
   return (
@@ -32,49 +34,96 @@ const GameRoom = () => {
             </Tools>
           </InfoRoom>
         </Header>
-        <UserBox>
-          <BlueTeam>
-            {[false, true, false, false].map((e) => (
-              <UserCard state={e} />
-            ))}
-          </BlueTeam>
-          <Vs color="white" size="40">
-            VS
-          </Vs>
-          <RedTeam>
-            {[true, true, false, true].map((el) => (
-              <UserCard state={el} />
-            ))}
-          </RedTeam>
-        </UserBox>
+        <Article>
+          <UserBox>
+            {[false, true, false, false, true, true, false, false].map(
+              (e, i) => (
+                <UserCard state={e} key={i} />
+              )
+            )}
+          </UserBox>
+          <Map>
+            <MapImg src="../assets/map.png" alt="none"></MapImg>
+            <MapName color="black" size="16" fontWeight="900">
+              파이썬
+            </MapName>
+          </Map>
+          <ChatRoom state="chatRoom" />
+          <StateBox>
+            <Ready color="black" size="24" fontWeight="900">
+              준비
+            </Ready>
+            <OutBox>
+              <Out src="../assets/logout.png" alt="none"></Out>
+            </OutBox>
+          </StateBox>
+        </Article>
       </Container>
     </div>
   );
 };
 
 export default GameRoom;
-const Vs = styled(Typography)`
-  height: 10%;
-  background-color: #606060;
-  width: 94%;
-  margin: 0 auto;
+
+const MapImg = styled.img`
+  width: 300px;
+  height: 300px;
+  border-radius: 15px;
 `;
-const BlueTeam = styled.div`
+const MapName = styled(Typography)`
+  margin-top: 12px;
+`;
+
+const OutBox = styled.div`
+  padding: 20px;
+  border-radius: 20px;
+  background-color: ${customColor.white};
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const StateBox = styled.div`
+  z-index: 99;
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  height: 45%;
+  align-items: end;
+  width: 312px;
+  justify-content: space-between;
 `;
-const RedTeam = styled.div`
+const Ready = styled(Typography)`
+  background-color: ${customColor.white};
+  padding: 5px 15px;
+  padding: 20px 88px;
+  border-radius: 20px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const Out = styled.img`
+  width: 24px;
+  height: 24px;
+`;
+
+const Article = styled.article`
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  height: 45%;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
-const UserBox = styled.article`
-  width: 80%;
-  height: 92%;
-  background-color: aliceblue;
+const Map = styled.div`
+  z-index: 99;
+  width: 312px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const UserBox = styled.div`
+  width: 836px;
+  height: 380px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
 `;
 const NumberOfPeople = styled(Typography)``;
 const PeopleImg = styled.img`
@@ -86,11 +135,17 @@ const SettingImg = styled.img`
   width: 24px;
   height: 24px;
   margin-right: 8px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 const HelpImg = styled.img`
   margin-right: 8px;
   width: 24px;
   height: 24px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 const Tools = styled.div`
   display: flex;
