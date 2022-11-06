@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     String accessToken = resolveAccessToken((HttpServletRequest) request);
 
     // validateToken 으로 유효성 검사
-    if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+    if (accessToken != null && jwtTokenProvider.validateToken(request, accessToken)) {
       // 유효하면 Authentication 객체를 가져와서 Security Context 에 저장
       Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
