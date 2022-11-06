@@ -4,6 +4,7 @@ import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import { customColor } from '../constants/customColor';
 import Room from '../components/Room';
+import ChatRoom from '../components/ChatRoom';
 
 const Lobby = () => {
   const [chat, setChat] = useState('');
@@ -104,47 +105,7 @@ const Lobby = () => {
                 실시간 채팅
               </LiveChat>
             </ChatHeader>
-            <ChatRoom>
-              <Chat size="12" color="black">
-                끝말잇기빌런 : 배고파
-              </Chat>
-              <Chat size="12" color="black">
-                끝말잇기빌런 : 배고파
-              </Chat>
-              <Chat size="12" color="black">
-                안호빈 : 나도
-              </Chat>
-              <Chat size="12" color="black">
-                김효성 : 잘래
-              </Chat>
-              <Chat size="12" color="black">
-                박현호 : 배고파
-              </Chat>
-              <Chat size="12" color="black">
-                박청조 : 재밌다
-              </Chat>
-              <Chat size="12" color="black">
-                손흥민 : 배고파
-              </Chat>
-              <Chat size="12" color="black">
-                끝말잇기빌런 : 밥줘
-              </Chat>
-              <Chat size="12" color="black">
-                임송재 : 졸려
-              </Chat>
-              <ChattingBox>
-                <Chatting
-                  type="text"
-                  placeholder="채팅을 입력하세요"
-                  onChange={(e) => {
-                    setChat(e.target.value);
-                    console.log(chat);
-                  }}
-                  value={chat}
-                ></Chatting>
-                <ChattingBtn>Enter</ChattingBtn>
-              </ChattingBox>
-            </ChatRoom>
+            <ChatRoom state="lobby" />
           </ChatBox>
           <UserListBox>
             <UserListHeader>
@@ -355,16 +316,6 @@ const ChatHeader = styled.div`
   justify-content: end;
   align-items: center;
   margin: 8px 0;
-`;
-const ChatRoom = styled.div`
-  background-color: ${customColor.white};
-  width: 900px;
-  height: 184px;
-  margin: 0 auto;
-  border-radius: 15px;
-  overflow-y: scroll;
-
-  ${Scrollbar}
 `;
 const UserList = styled.div`
   background-color: ${customColor.white};
