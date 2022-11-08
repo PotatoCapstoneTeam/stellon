@@ -1,6 +1,8 @@
 import { GameObjects } from 'phaser';
+import { Stage } from '../stages';
 
 export class Scene extends Phaser.Scene {
+  stage = new Stage();
   private updateList: GameObjects.GameObject[] = [];
 
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {

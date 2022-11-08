@@ -1,5 +1,8 @@
+import { Data } from '@geckos.io/server';
 import { Player, Scene } from '@stellon/game-core';
 import { ClientState } from '../managers/client-manager';
+import { ServerBullet } from './server-bullet';
+import { MainScene } from '../scenes/main-scene';
 
 export class ServerPlayer extends Player {
   constructor(
@@ -8,7 +11,10 @@ export class ServerPlayer extends Player {
     x: number,
     y: number,
     nickname: string,
-    public client: ClientState
+    public client: ClientState,
+    public room: {
+      emit: (eventName: string, data: Data) => void;
+    }
   ) {
     super(id, scene, x, y, id, nickname);
   }
@@ -28,5 +34,22 @@ export class ServerPlayer extends Player {
       this.client.verticalAxis * this.speed * delta,
       this.body.velocity
     );
+
+    if (this.client.fire) {
+      const scene = this.scene as MainScene;
+
+      const bullet = new ServerBullet(
+        this.scene as Scene,
+        this.x,
+        this.y,
+        this,
+        100,
+        1000,
+        this.angle,
+        this.room
+      );
+
+      scene.bulletGroup.add(bullet);
+    }
   }
 }

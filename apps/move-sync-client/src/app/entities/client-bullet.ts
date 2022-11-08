@@ -1,4 +1,4 @@
-import { Bullet, Scene } from '@stellon/game-core';
+import { Bullet, Entity, Scene } from '@stellon/game-core';
 
 export class ClientBullet extends Bullet {
   constructor(
@@ -6,9 +6,11 @@ export class ClientBullet extends Bullet {
     scene: Scene,
     x: number,
     y: number,
+    source: Entity,
+    damage: number,
     speed: number,
     angle: number
   ) {
-    super(id, scene, x, y, speed, angle, 'bullet');
+    super(id, scene, x, y, source, damage, speed, angle, 'bullet');
   }
 }

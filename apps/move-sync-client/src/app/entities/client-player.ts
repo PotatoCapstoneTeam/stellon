@@ -8,7 +8,8 @@ export interface IClientEntity {
 }
 
 export class ClientPlayer extends Player {
-  label: GameObjects.Text;
+  playerLabel: GameObjects.Text;
+  hpLabel: GameObjects.Text;
 
   constructor(scene: Scene, public isLocal: boolean, data: EntityData) {
     super(
@@ -22,7 +23,7 @@ export class ClientPlayer extends Player {
 
     this.scale = 2;
 
-    this.label = new GameObjects.Text(
+    this.playerLabel = new GameObjects.Text(
       scene,
       this.x,
       this.y,
@@ -32,8 +33,15 @@ export class ClientPlayer extends Player {
         align: 'center',
       }
     );
-    this.label.setDisplayOrigin(0, -20);
-    scene.add.existing(this.label);
+    this.playerLabel.setDisplayOrigin(0, -20);
+    scene.add.existing(this.playerLabel);
+
+    this.hpLabel = new GameObjects.Text(scene, this.x, this.y, this.hp + '', {
+      fontSize: '12',
+      align: 'center',
+    });
+    this.hpLabel.setDisplayOrigin(0, 20);
+    scene.add.existing(this.hpLabel);
   }
 
   override update(time: number, delta: number): void {
@@ -48,6 +56,9 @@ export class ClientPlayer extends Player {
     //   new ClientBullet(this.scene as Scene, this.x, this.y, 1000, this.angle);
     // }
 
-    this.label.setPosition(this.x, this.y);
+    this.playerLabel.setPosition(this.x, this.y);
+
+    this.hpLabel.text = this.hp + '';
+    this.hpLabel.setPosition(this.x, this.y);
   }
 }

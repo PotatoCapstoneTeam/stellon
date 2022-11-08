@@ -12,12 +12,12 @@ import {
 import { GameObjects } from 'phaser';
 import { ClientPlayer } from '../entities/client-player';
 import { InputManager } from '../managers/input-manager';
+import { ClientBullet } from '../entities/client-bullet';
 
 export class MainScene extends Scene {
   channel: ClientChannel;
   si: SnapshotInterpolation;
   inputManager?: InputManager;
-  players: ClientPlayer[] = [];
   text?: GameObjects.Text;
   playerId?: string;
 
@@ -58,7 +58,7 @@ export class MainScene extends Scene {
 
         switch (event.type) {
           case EntityType.PLAYER:
-            this.players.push(
+            this.stage.addPlayer(
               new ClientPlayer(
                 this,
                 this.playerId === event.data.id,
@@ -67,7 +67,16 @@ export class MainScene extends Scene {
             );
             break;
           case EntityType.BULLET:
-            // TODO!
+            new ClientBullet(
+              event.data.id,
+              this,
+              +(event.data['x'] ?? 0),
+              +(event.data['y'] ?? 0),
+              this.stage.findPlayer((event.data['source'] as string) ?? '')!,
+              +(event.data['damage'] ?? 0),
+              +(event.data['speed'] ?? 0),
+              +(event.data['angle'] ?? 0)
+            );
             break;
         }
       });
@@ -100,7 +109,7 @@ export class MainScene extends Scene {
     );
 
     snapshot?.state.forEach((playerData) => {
-      const player = this.players.find((player) => player.id === playerData.id);
+      const player = this.stage.findPlayer(playerData.id);
 
       player?.deserialize(playerData);
     });

@@ -51,7 +51,10 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "move-sync-client:build",
-        "hmr": true
+        "hmr": true,
+        "host": "0.0.0.0",
+        "port": 80,
+        "allowedHosts": "all"
       },
       "configurations": {
         "development": {

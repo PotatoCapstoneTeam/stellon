@@ -2,7 +2,8 @@ import { Snapshot } from '@geckos.io/snapshot-interpolation/lib/types';
 import { EntityData, EntityType } from './entities';
 
 export * from './entities';
-export * from './scenes/scene';
+export * from './scenes';
+export * from './stages';
 
 export const SERVER_FPS = 30;
 
@@ -15,6 +16,7 @@ export type JoinEvent = {
 export type InputEvent = {
   horizontalAxis: number;
   verticalAxis: number;
+  fire: boolean;
 };
 
 // Server Event

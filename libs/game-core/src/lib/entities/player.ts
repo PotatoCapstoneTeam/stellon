@@ -4,6 +4,8 @@ import { Entity, EntityData } from './entity';
 export class Player extends Entity {
   speed = 10;
   angularSpeed = 10;
+  hp = 1000;
+  fireDelay = 1000;
 
   constructor(
     id: string,
@@ -25,6 +27,7 @@ export class Player extends Entity {
       nickname: this.nickname,
       speed: this.speed,
       angularSpeed: this.angularSpeed,
+      hp: this.hp,
     };
   }
 
@@ -35,5 +38,6 @@ export class Player extends Entity {
     this.nickname = data['nickname'] + '';
     this.speed = +(data['speed'] ?? this.speed);
     this.angularSpeed = +(data['angularSpeed'] ?? this.angularSpeed);
+    this.hp = +(data['hp'] ?? this.hp);
   }
 }

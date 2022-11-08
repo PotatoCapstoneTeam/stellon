@@ -9,8 +9,11 @@ import {
   EntityType,
   UpdateEvent,
   InputEvent,
+  Stage,
 } from '@stellon/game-core';
 import cuid = require('cuid');
+import { GameObjects } from 'phaser';
+import { ServerBullet } from '../entities/server-bullet';
 import { ServerPlayer } from '../entities/server-player';
 import { ClientManager } from '../managers/client-manager';
 
@@ -19,8 +22,9 @@ const ROOM_ID = 'MAIN';
 export class MainScene extends Scene {
   clientManager = new ClientManager();
   si = new SnapshotInterpolation();
-  players: ServerPlayer[] = [];
   io?: GeckosServer;
+  playerGroup: Phaser.Physics.Arcade.Group;
+  bulletGroup: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super({ key: 'mainScene' });
@@ -30,6 +34,9 @@ export class MainScene extends Scene {
     const geckos = await import('@geckos.io/server');
     const io = geckos.default();
     const room = io.room(ROOM_ID);
+
+    this.playerGroup = this.physics.add.group();
+    this.bulletGroup = this.physics.add.group();
 
     io.listen();
     io.onConnection((channel) => {
@@ -50,7 +57,7 @@ export class MainScene extends Scene {
           playerId: playerId,
         } as WelcomeEvent);
 
-        this.players.forEach((player) => {
+        this.stage.getPlayers().forEach((player) => {
           channel.emit('create', {
             type: EntityType.PLAYER,
             data: player.serialize(),
@@ -63,10 +70,12 @@ export class MainScene extends Scene {
           200,
           200,
           event.nickname,
-          this.clientManager.getClient(channel.id)
+          this.clientManager.getClient(channel.id),
+          room
         );
 
-        this.players.push(player);
+        this.stage.addPlayer(player);
+        this.playerGroup.add(player);
 
         room.emit('create', {
           type: EntityType.PLAYER,
@@ -81,10 +90,28 @@ export class MainScene extends Scene {
 
         client.horizontalAxis = event.horizontalAxis;
         client.verticalAxis = event.verticalAxis;
+        client.fire = event.fire;
       });
     });
 
     this.io = io;
+
+    // this.physics.add.collider(
+    //   this.playerGroup,
+    //   this.bulletGroup,
+    //   (player, bullet) => {
+    //     const p = player as ServerPlayer;
+    //     const b = bullet as ServerBullet;
+
+    //     if (p.id === b.source.id) {
+    //       return;
+    //     }
+
+    //     p.hp -= b.damage;
+
+    //     console.log(p.hp);
+    //   }
+    // );
   }
 
   override update(time: number, delta: number): void {
@@ -98,7 +125,7 @@ export class MainScene extends Scene {
       players: [] as State,
     };
 
-    this.players.forEach((player) => {
+    this.stage.getPlayers().forEach((player) => {
       worldState.players.push(player.serialize());
     });
 

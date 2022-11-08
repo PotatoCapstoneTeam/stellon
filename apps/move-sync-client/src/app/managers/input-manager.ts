@@ -1,5 +1,5 @@
 import { Input } from 'phaser';
-import { Scene } from '@stellon/game-core';
+import { InputEvent, Scene } from '@stellon/game-core';
 import { ClientChannel } from '@geckos.io/client';
 
 const KeyCodes = Input.Keyboard.KeyCodes;
@@ -16,6 +16,7 @@ export class InputManager {
   keys: PlayerKeys;
   horizontalAxis = 0;
   verticalAxis = 0;
+  fire = false;
 
   constructor(public scene: Scene) {
     this.keys = scene.input.keyboard.addKeys({
@@ -30,12 +31,14 @@ export class InputManager {
   update() {
     this.horizontalAxis = -this.keys.left.isDown + +this.keys.right.isDown;
     this.verticalAxis = +this.keys.up.isDown + -this.keys.down.isDown;
+    this.fire = this.keys.fire.isDown;
   }
 
   emit(channel: ClientChannel) {
     channel.emit('input', {
       horizontalAxis: this.horizontalAxis,
       verticalAxis: this.verticalAxis,
-    });
+      fire: this.fire,
+    } as InputEvent);
   }
 }

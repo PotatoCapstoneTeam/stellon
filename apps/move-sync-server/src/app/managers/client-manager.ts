@@ -1,6 +1,7 @@
 export class ClientState {
   horizontalAxis = 0;
   verticalAxis = 0;
+  fire = false;
 
   constructor(public id: string) {}
 }
