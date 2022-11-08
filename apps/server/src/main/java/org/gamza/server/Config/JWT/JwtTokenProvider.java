@@ -3,8 +3,10 @@ package org.gamza.server.Config.JWT;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Dto.TokenDto.TokenInfo;
+import org.gamza.server.Error.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletRequest;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Arrays;
@@ -95,16 +98,25 @@ public class JwtTokenProvider {
     return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
   }
 
-  // 토큰 정보 검증 메서드
-  public boolean validateToken(String token) {
+  // 토큰 정보 검증 메서드, 검증 실패 시 에러코드 반환
+  public boolean validateToken(ServletRequest request, String token) {
     try {
       Jwts.parserBuilder().setSigningKey(key).build()
         .parseClaimsJws(token);
       return true;
     } catch (ExpiredJwtException e) {
-      log.info("Expired Token", e);
+      request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN);
     } catch (IllegalArgumentException e) {
-      log.info("JWT claims is empty", e);
+      request.setAttribute("exception", ErrorCode.NON_LOGIN);
+    } catch (SignatureException | UnsupportedJwtException | SecurityException | MalformedJwtException e) {
+      request.setAttribute("exception", ErrorCode.INVALID_TOKEN);
+    } catch (Exception e) {
+      log.error("================================================");
+      log.error("JwtFilter - doFilterInternal() 오류발생");
+      log.error("token : {}", token);
+      log.error("Exception Message : {}", e.getMessage());
+      log.error("================================================");
+      request.setAttribute("exception", ErrorCode.INVALID_TOKEN.getCode());
     }
     return false;
   }
