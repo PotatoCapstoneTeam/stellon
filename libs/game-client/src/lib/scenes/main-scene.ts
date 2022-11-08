@@ -4,6 +4,7 @@ import { Player } from '../entities/player';
 export class MainScene extends Phaser.Scene {
   #updateList: GameObjects.GameObject[] = [];
   #player?: Player;
+  bullets?: Phaser.Physics.Arcade.Group;
 
   constructor() {
     super({ key: 'mainScene' });
@@ -15,7 +16,21 @@ export class MainScene extends Phaser.Scene {
   }
 
   create() {
-    this.#player = new Player({ scene: this, x: 200, y: 200 });
+    this.bullets = this.physics.add.group();
+    this.#player = new Player({ scene: this, x: 200, y: 200 }, this.bullets!);
+
+    const dummy = this.physics.add.group();
+    dummy.add(this.physics.add.sprite(400, 400, 'player'));
+    dummy.add(this.physics.add.sprite(400, 500, 'player'));
+
+    setTimeout(() => {
+      dummy.add(this.physics.add.sprite(400, 600, 'player'));
+    }, 1000);
+
+    this.physics.add.overlap(dummy, this.bullets, (dummy, bullet) => {
+      bullet.destroy();
+      console.log('test');
+    });
   }
 
   override update(time: number, delta: number): void {

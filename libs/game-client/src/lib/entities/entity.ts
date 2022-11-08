@@ -11,8 +11,8 @@ export class Entity extends Physics.Arcade.Sprite {
   constructor(texture: string | Textures.Texture, config: EntityConfig) {
     super(config.scene, config.x, config.y, texture);
 
-    config.scene.add.existing(this);
-    config.scene.physics.add.existing(this);
+    // config.scene.add.existing(this);
+    // config.scene.physics.add.existing(this);
     config.scene.addUpdate(this);
   }
 

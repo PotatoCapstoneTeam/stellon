@@ -9,10 +9,10 @@ export class Bullet extends Entity {
   constructor(config: BulletConfig) {
     super('bullet', config);
 
-    this.scene.physics.velocityFromAngle(
-      config.angle,
-      config.speed,
-      this.body.velocity
-    );
+    // this.scene.physics.velocityFromAngle(
+    //   config.angle,
+    //   config.speed,
+    //   this.body.velocity
+    // );
   }
 }

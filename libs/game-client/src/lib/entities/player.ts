@@ -18,9 +18,15 @@ export class Player extends Entity {
   #speed = 400;
   #angularSpeed = 200;
 
-  constructor(config: PlayerConfig) {
+  constructor(
+    config: PlayerConfig,
+    public bullets: Phaser.Physics.Arcade.Group
+  ) {
     super('player', config);
     this.scale = 2;
+
+    config.scene.add.existing(this);
+    config.scene.physics.add.existing(this);
 
     const KeyCodes = Input.Keyboard.KeyCodes;
 
@@ -58,13 +64,21 @@ export class Player extends Entity {
     }
 
     if (this.scene.input.keyboard.checkDown(this.#keys.fire, 250)) {
-      new Bullet({
+      const bullet = new Bullet({
         angle: this.angle,
         scene: this.scene as MainScene,
         speed: 1000,
         x: this.x,
         y: this.y,
       });
+
+      this.bullets.add(bullet, true);
+
+      this.scene.physics.velocityFromAngle(
+        this.angle,
+        1000,
+        bullet.body.velocity
+      );
     }
   }
 }
