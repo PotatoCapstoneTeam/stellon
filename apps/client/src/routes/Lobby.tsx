@@ -8,34 +8,91 @@ import Room from '../components/Room';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ChatRoom from '../components/ChatRoom';
+import CreateRoomModal from '../components/modal/CreateRoomModal';
 
 const Lobby = () => {
   const navigate = useNavigate();
-  const [chat, setChat] = useState('');
-  const [cookies, removeCookie] = useCookies([
+  const [modalOpen, setModalOpen] = useState(false);
+  const [cookies, removeCookie, setCookie] = useCookies([
     'user_access_token',
     'user_refresh_token',
   ]); // 쿠키 훅
 
+  // 페이지 접속 시 토큰 확인 함수
   const loginCheck = () => {
-    const accessToken = cookies.user_access_token;
-    const refreshToken = cookies.user_refresh_token;
+    const accessToken = cookies['user_access_token'];
+    const refreshToken = cookies['user_refresh_token'];
 
     axios
-      .post('url', { token: accessToken }) // 토큰으로 서버에 인증요청
-      .then((res) => console.log(res.data))
-      .catch(() => logOut());
+      .post(
+        'https://stellon.shop/auth/validate',
+        {},
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        }
+      ) // 토큰으로 서버에 인증요청
+      .then((res) => console.log(res.data)) // 'true' === 토큰 인증완료
+      .catch((error) => {
+        if (error.response.data.code === 444) {
+          console.log(error.response.data.code);
+          receiveRefreshToken(); // access 토큰 만료 토큰 재발급
+        } else if (error.response.data.code === 445) {
+          console.log(error.response.data.code);
+          logOut(); // access refresh 토큰 모두 만료 로그아웃 처리
+        } else {
+          logOut(); // 토큰이 없을시
+        }
+      });
+    /// ERROR Code 444 === access Token 만료 -> 토큰 재발급 요청
+    /// ERROR Code 445 === access refresh 모두 만료 -> 재로그인 요청 (하루 이내면 refresh토큰 바뀌게 설정)
   };
 
+  // 로그아웃
   const logOut = () => {
     removeCookie('user_access_token', []);
     removeCookie('user_refresh_token', []);
     navigate('/');
   };
 
-  // useEffect(() => {
-  //   loginCheck();
-  // }, []);
+  // 토큰 재발급
+  const receiveRefreshToken = () => {
+    const refreshToken = cookies['user_refresh_token'];
+    const accessToken = cookies['user_access_token'];
+    axios
+      .post(
+        'https://stellon.shop/auth/reissue',
+        {},
+        {
+          headers: { Authorization: accessToken, RefreshToken: refreshToken },
+        }
+      )
+      .then((res) => {
+        console.log(res.data.response.accessToken);
+        const newAccessToken = res.data.response.accessToken;
+        const newRefreshToken = res.data.response.refreshToken;
+        setCookie('user_access_token', newAccessToken); // 쿠키에 access 토큰 저장
+        setCookie('user_refresh_token', newRefreshToken); // 쿠키에 refresh 토큰 저장
+      })
+      .catch((res) => res.data);
+  };
+
+  // 게임방 리스트 함수
+  const watchRoom = () => {
+    const refreshToken = cookies['user_refresh_token'];
+    const accessToken = cookies['user_access_token'];
+    axios
+      .get('https://stellon.shop/room', {
+        headers: { Authorization: accessToken },
+      })
+      .then((res) => console.log(res.data))
+      .catch((res) => res.data);
+  };
+
+  useEffect(() => {
+    loginCheck();
+  }, []);
 
   return (
     <div>
@@ -47,13 +104,17 @@ const Lobby = () => {
             <HelperBtn src="../assets/help.png" alt="none"></HelperBtn>
           </Tools>
           <Menu>
-            <SearchRoomBtn>
+            <SearchRoomBtn onClick={receiveRefreshToken}>
               <SearchImg src="../assets/list.png" alt="none" />
               <Typography color="white" size="16">
                 방 목록 보기
               </Typography>
             </SearchRoomBtn>
-            <MakeRoomBtn>
+            <MakeRoomBtn
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            >
               <SearchImg src="../assets/home.png" alt="none" />
               <Typography color="white" size="16">
                 방 만들기
@@ -195,6 +256,7 @@ const Lobby = () => {
           </UserListBox>
         </ContentBox>
       </Container>
+      {modalOpen && <CreateRoomModal setModalOpen={setModalOpen} />}
     </div>
   );
 };
@@ -209,6 +271,15 @@ const HoverMenu = css`
     background-color: rgba(0, 109, 163, 1);
     height: 36px;
   }
+`;
+const Btn = css`
+  border-radius: 20px 20px 0 0;
+  background-color: rgba(117, 117, 117, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 32px;
 `;
 
 const Scrollbar = css`
@@ -269,54 +340,9 @@ const UserListHeader = styled.div`
   padding-right: 4px;
   margin: 8px 0;
 `;
-const ChattingBtn = styled.button`
-  width: 10%;
-  height: 100%;
-  border-radius: 0 15px 15px 0;
-  border-top-style: none;
-  border-right-style: none;
-  border-bottom-style: none;
-  border-left-color: white;
-  background-color: rgba(127, 127, 127, 1);
-  color: white;
-  &:hover {
-    color: black;
-  }
-`;
-const ChattingBox = styled.div`
-  width: 97%;
-  height: 28px;
-  border-radius: 15px;
-  background-color: rgba(127, 127, 127, 1);
-  margin: 8px auto;
-`;
-const Chat = styled(Typography)`
-  width: 97%;
-  padding: 8px 6px;
-  border-bottom: 0.8px solid black;
-  margin: 0 auto;
-`;
-
-const Chatting = styled.input`
-  color: white;
-  padding: 0 12px;
-  width: 90%;
-  height: 100%;
-  border-radius: 15px;
-  background-color: rgba(127, 127, 127, 1);
-  border: none;
-  &:focus {
-    outline: none;
-  }
-  &::placeholder {
-    color: white;
-    border-top-style: none;
-    font-weight: 100;
-    font-size: 8px;
-  }
-`;
 
 const RangeBtn = styled.div`
+  align-items: center;
   display: flex;
   &:hover {
     cursor: pointer;
@@ -324,6 +350,7 @@ const RangeBtn = styled.div`
 `;
 
 const RefreshBtn = styled.div`
+  align-items: center;
   display: flex;
   margin-left: 16px;
   &:hover {
@@ -381,10 +408,12 @@ const GameListHeader = styled.div`
   margin: 12px 0;
 `;
 const EntireList = styled.div`
+  align-items: center;
   margin-left: 15px;
   display: flex;
 `;
 const SearchGameList = styled.div`
+  align-items: center;
   display: flex;
 `;
 const GameList = styled.div`
@@ -496,7 +525,7 @@ const UserListBox = styled.div`
   z-index: 99;
 `;
 
-const SearchImg = styled.img`
+export const SearchImg = styled.img`
   margin-right: 5px;
   width: 16px;
   height: 16px;
@@ -508,16 +537,6 @@ const ContentBox = styled.div`
   border-radius: 10px;
   display: flex;
   flex-wrap: wrap;
-`;
-
-const Btn = css`
-  border-radius: 20px 20px 0 0;
-  background-color: rgba(117, 117, 117, 1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 32px;
 `;
 
 const GameStartBtn = styled.div`
