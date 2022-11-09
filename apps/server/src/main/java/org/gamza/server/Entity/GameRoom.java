@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.gamza.server.Enum.RoomStatus;
+import org.gamza.server.Enum.RoomType;
 
 import javax.persistence.*;
 
@@ -35,6 +36,10 @@ public class GameRoom extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RoomStatus roomStatus;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private RoomType roomType;
 
   @Column
   private String password;
