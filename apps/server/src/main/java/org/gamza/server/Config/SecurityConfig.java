@@ -33,7 +33,7 @@ public class SecurityConfig {
       .and()
       .authorizeRequests()
       .antMatchers("/ws-stomp/**").permitAll()
-      .antMatchers("/auth/**").permitAll()
+      .antMatchers("/auth/login", "/auth/join", "/auth/reissue").permitAll()
       .antMatchers("/ws-chat/**").permitAll()
       .anyRequest().authenticated()
       .and()
