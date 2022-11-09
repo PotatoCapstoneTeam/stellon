@@ -42,7 +42,7 @@ const Intro = () => {
       <Container>
         <IntroImg src="../assets/logo.svg" alt="none" />
         <LoginForm ref={formRef} onSubmit={handleSubmit}>
-          <LoginBox>
+         <LoginBox>
             <IdBox>
               <NewTypography color="white" size="24">
                 ID
