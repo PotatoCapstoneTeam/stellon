@@ -94,10 +94,11 @@ public class AuthService {
   }
 
   @Transactional
-  public TokenApiResponse refresh(HttpServletRequest request, String accessToken, String refreshToken) {
+  public TokenApiResponse refresh(HttpServletRequest request) {
     // response 반환할 빈 객체 생성
     ResponseMap response = new ResponseMap();
-
+    String accessToken = request.getHeader("Authorization");
+    String refreshToken = request.getHeader("RefreshToken");
     // refresh 토큰 유효성 검사
     if (refreshToken != null && jwtTokenProvider.validateToken(request, refreshToken)) {
       // access 토큰에서 email 추출해서 해당 유저 찾기
@@ -132,7 +133,8 @@ public class AuthService {
   }
 
   @Transactional
-  public Boolean validateToken(HttpServletRequest request, String accessToken) {
+  public Boolean validateToken(HttpServletRequest request) {
+    String accessToken = request.getHeader("Authorization");
     if (accessToken != null && jwtTokenProvider.validateToken(request, accessToken)) {
       return true;
     }
