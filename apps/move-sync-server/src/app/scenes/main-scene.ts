@@ -96,22 +96,24 @@ export class MainScene extends Scene {
 
     this.io = io;
 
-    // this.physics.add.collider(
-    //   this.playerGroup,
-    //   this.bulletGroup,
-    //   (player, bullet) => {
-    //     const p = player as ServerPlayer;
-    //     const b = bullet as ServerBullet;
+    this.physics.add.overlap(
+      this.playerGroup,
+      this.bulletGroup,
+      (player, bullet) => {
+        const p = player as ServerPlayer;
+        const b = bullet as ServerBullet;
 
-    //     if (p.id === b.source.id) {
-    //       return;
-    //     }
+        if (p.id === b.source.id) {
+          return;
+        }
 
-    //     p.hp -= b.damage;
+        p.hp -= b.damage;
 
-    //     console.log(p.hp);
-    //   }
-    // );
+        console.log(p.hp);
+
+        bullet.destroy();
+      }
+    );
   }
 
   override update(time: number, delta: number): void {

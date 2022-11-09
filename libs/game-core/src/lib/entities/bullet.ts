@@ -2,6 +2,8 @@ import { Scene } from '../scenes/scene';
 import { Entity, EntityData } from './entity';
 
 export class Bullet extends Entity {
+  lifeTime = 400;
+
   constructor(
     id: string,
     scene: Scene,
@@ -17,6 +19,14 @@ export class Bullet extends Entity {
 
     this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity);
     this.angle = angle;
+  }
+
+  override update(time: number, delta: number): void {
+    this.lifeTime -= delta;
+
+    if (this.lifeTime <= 0) {
+      this.destroy();
+    }
   }
 
   serialize(): EntityData {

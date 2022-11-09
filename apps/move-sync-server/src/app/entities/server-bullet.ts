@@ -2,6 +2,7 @@ import { Data } from '@geckos.io/server';
 import {
   Bullet,
   CreateEvent,
+  DestroyEvent,
   Entity,
   EntityType,
   Scene,
@@ -17,7 +18,7 @@ export class ServerBullet extends Bullet {
     damage: number,
     speed: number,
     angle: number,
-    room: {
+    public room: {
       emit: (eventName: string, data: Data) => void;
     }
   ) {
@@ -27,5 +28,14 @@ export class ServerBullet extends Bullet {
       type: EntityType.BULLET,
       data: this.serialize(),
     } as CreateEvent);
+  }
+
+  override destroy(fromScene?: boolean): void {
+    super.destroy(fromScene);
+
+    this.room.emit('destroy', {
+      id: this.id,
+      type: EntityType.BULLET,
+    } as DestroyEvent);
   }
 }

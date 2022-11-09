@@ -1,7 +1,9 @@
 import { ClientChannel, Data, geckos } from '@geckos.io/client';
 import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation';
 import {
+  Bullet,
   CreateEvent,
+  DestroyEvent,
   EntityType,
   JoinEvent,
   Scene,
@@ -20,6 +22,7 @@ export class MainScene extends Scene {
   inputManager?: InputManager;
   text?: GameObjects.Text;
   playerId?: string;
+  bullets: Bullet[] = [];
 
   constructor(public nickname: string) {
     super({ key: 'mainScene' });
@@ -67,15 +70,17 @@ export class MainScene extends Scene {
             );
             break;
           case EntityType.BULLET:
-            new ClientBullet(
-              event.data.id,
-              this,
-              +(event.data['x'] ?? 0),
-              +(event.data['y'] ?? 0),
-              this.stage.findPlayer((event.data['source'] as string) ?? '')!,
-              +(event.data['damage'] ?? 0),
-              +(event.data['speed'] ?? 0),
-              +(event.data['angle'] ?? 0)
+            this.bullets.push(
+              new ClientBullet(
+                event.data.id,
+                this,
+                +(event.data['x'] ?? 0),
+                +(event.data['y'] ?? 0),
+                this.stage.findPlayer((event.data['source'] as string) ?? '')!,
+                +(event.data['damage'] ?? 0),
+                +(event.data['speed'] ?? 0),
+                +(event.data['angle'] ?? 0)
+              )
             );
             break;
         }
@@ -85,6 +90,28 @@ export class MainScene extends Scene {
         const event = data as UpdateEvent;
 
         this.si.snapshot.add(event.snapshot);
+      });
+
+      this.channel.on('destroy', (data: Data) => {
+        const event = data as DestroyEvent;
+
+        switch (event.type) {
+          case EntityType.BULLET: {
+            const idx = this.bullets.findIndex(
+              (bullet) => bullet.id === event.id
+            );
+
+            if (idx === -1) {
+              break;
+            }
+
+            const bullet = this.bullets.splice(idx, 1);
+
+            bullet[0].destroy();
+
+            break;
+          }
+        }
       });
 
       this.channel.emit('join', { nickname: this.nickname } as JoinEvent);

@@ -34,3 +34,8 @@ export type CreateEvent = {
 export type UpdateEvent = {
   snapshot: Snapshot;
 };
+
+export type DestroyEvent = {
+  id: string;
+  type: EntityType;
+};

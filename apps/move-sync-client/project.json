@@ -53,7 +53,7 @@
         "buildTarget": "move-sync-client:build",
         "hmr": true,
         "host": "0.0.0.0",
-        "port": 80,
+        "port": 4200,
         "allowedHosts": "all"
       },
       "configurations": {
