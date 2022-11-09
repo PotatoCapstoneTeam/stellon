@@ -30,7 +30,7 @@ public class AuthController {
   }
 
   @PostMapping("/reissue")
-  public TokenApiResponse reissue(HttpServletRequest request, @RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
+  public TokenApiResponse reissue(HttpServletRequest request, @RequestHeader("Authorization") String accessToken, @RequestHeader("RefreshToken") String refreshToken) {
     return authService.refresh(request, accessToken, refreshToken);
   }
 
