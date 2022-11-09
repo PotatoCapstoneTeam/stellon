@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "localhost:4200")
 public class RoomController {
 
   private final RoomService roomService;

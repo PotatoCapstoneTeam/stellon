@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "localhost:4200")
 public class ChatController {
   private final SimpMessageSendingOperations sendingOperations;
   private final ChatService chatService;
