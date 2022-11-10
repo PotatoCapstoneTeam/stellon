@@ -43,13 +43,20 @@ export class ServerPlayer extends Player {
         this.x,
         this.y,
         this,
-        100,
+        10,
         1000,
         this.angle,
         this.room
       );
 
       scene.bulletGroup.add(bullet);
+
+      this.scene.physics.velocityFromAngle(
+        this.angle,
+        1000,
+        bullet.body.velocity
+      );
+      bullet.angle = this.angle;
     }
   }
 }
