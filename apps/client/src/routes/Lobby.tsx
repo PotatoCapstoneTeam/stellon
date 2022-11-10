@@ -13,7 +13,7 @@ import CreateRoomModal from '../components/modal/CreateRoomModal';
 const Lobby = () => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
-  const [cookies, removeCookie, setCookie] = useCookies([
+  const [cookies, setCookie, removeCookie] = useCookies([
     'user_access_token',
     'user_refresh_token',
   ]); // 쿠키 훅
@@ -51,8 +51,8 @@ const Lobby = () => {
 
   // 로그아웃
   const logOut = () => {
-    removeCookie('user_access_token', []);
-    removeCookie('user_refresh_token', []);
+    removeCookie('user_access_token');
+    removeCookie('user_refresh_token');
     navigate('/');
   };
 
@@ -72,8 +72,8 @@ const Lobby = () => {
         console.log(res.data.response.accessToken);
         const newAccessToken = res.data.response.accessToken;
         const newRefreshToken = res.data.response.refreshToken;
-        setCookie('user_access_token', newAccessToken); // 쿠키에 access 토큰 저장
-        setCookie('user_refresh_token', newRefreshToken); // 쿠키에 refresh 토큰 저장
+        setCookie('user_access_token', newAccessToken, { path: '/' }); // 쿠키에 access 토큰 저장
+        setCookie('user_refresh_token', newRefreshToken, { path: '/' }); // 쿠키에 refresh 토큰 저장
       })
       .catch((res) => res.data);
   };
