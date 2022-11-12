@@ -16,7 +16,7 @@ const Intro = () => {
     'user_refresh_token',
   ]); // 쿠키 훅
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const loginHandleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     axios
@@ -41,7 +41,7 @@ const Intro = () => {
       <Space />
       <Container>
         <IntroImg src="../assets/logo.svg" alt="none" />
-        <LoginForm ref={formRef} onSubmit={handleSubmit}>
+        <LoginForm ref={formRef} onSubmit={loginHandleSubmit}>
           <LoginBox>
             <IdBox>
               <NewTypography color="white" size="24">

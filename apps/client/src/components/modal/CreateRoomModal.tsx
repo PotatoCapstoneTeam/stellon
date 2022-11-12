@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import axios from 'axios';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { customColor } from '../../constants/customColor';
 import { SearchImg } from '../../routes/Lobby';
@@ -9,6 +10,24 @@ interface ICreateRoomModal {
 }
 
 const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [checkBox, setCheckBox] = useState(false);
+
+  const onCreateRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    axios
+      .post('url', {
+        theme: formRef.current?.['theme'].value,
+        people: formRef.current?.['number'].value,
+        password: checkBox ? formRef.current?.['password'].value : '',
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <ModalBackGround>
       <ModalBox>
@@ -30,28 +49,19 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
             </Typography>
           </CloseModal>
         </ModalHeader>
-        <ModalForm
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log('submit!');
-          }}
-        >
+        <ModalForm onSubmit={onCreateRoom} ref={formRef}>
           <Theme>
             <Typography color="blue" size="16" fontWeight="800">
               방 제목
             </Typography>
-            <InputTheme
-              type="text"
-              name="theme"
-              placeholder="Theme"
-            ></InputTheme>
+            <InputTheme type="text" name="theme" placeholder="Theme" />
           </Theme>
           <PeopleBox>
             <Typography color="blue" size="16" fontWeight="800">
               인원
             </Typography>
             <SetPeople>
-              <People>
+              <People name="number">
                 <option value={2}>2</option>
                 <option value={4}>4</option>
                 <option value={6}>6</option>
@@ -60,7 +70,13 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
             </SetPeople>
           </PeopleBox>
           <PassWord>
-            <CheckBox type="checkbox"></CheckBox>
+            <CheckBox
+              type="checkbox"
+              name="checkbox"
+              onChange={(e) => {
+                e.target.checked ? setCheckBox(true) : setCheckBox(false);
+              }}
+            />
             <Typography color="blue" size="16" fontWeight="800">
               비밀번호
             </Typography>
@@ -68,13 +84,15 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
               type="password"
               name="password"
               placeholder="Password"
-            ></InputPassword>
+              disabled={!checkBox}
+              check={checkBox}
+            />
           </PassWord>
           <CreateRoom
             type="image"
             src="../assets/createRoomBtn.png"
             alt="none"
-          ></CreateRoom>
+          />
         </ModalForm>
       </ModalBox>
     </ModalBackGround>
@@ -115,13 +133,14 @@ const SetPeople = styled.div`
 const CheckBox = styled.input`
   margin-right: 4px;
 `;
-const InputPassword = styled.input`
+const InputPassword = styled.input<{ check: boolean }>`
   width: 90px;
   border-radius: 15px;
   height: 40px;
   border: 2px solid ${customColor.blue};
   padding-left: 8px;
   margin-left: 12px;
+  background-color: ${({ check }) => !check && customColor.gray};
 `;
 const InputTheme = styled.input`
   padding-left: 8px;

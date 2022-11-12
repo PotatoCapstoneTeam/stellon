@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Space from '../canvas/Space';
 import ChatRoom from '../components/ChatRoom';
 import { Typography } from '../components/Typography';
-import UserCard from '../components/UserCard';
+import UserCard from '../components/game_room/UserCard';
 import { customColor } from '../constants/customColor';
 
 const GameRoom = () => {

@@ -3,92 +3,15 @@ import styled, { css } from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
 import { customColor } from '../constants/customColor';
-import { useCookies } from 'react-cookie';
-import Room from '../components/Room';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import Room from '../components/lobby/Room';
 import ChatRoom from '../components/ChatRoom';
 import CreateRoomModal from '../components/modal/CreateRoomModal';
+import useApi from '../util/useApi';
+import Users from '../components/lobby/Users';
 
 const Lobby = () => {
-  const navigate = useNavigate();
+  const { loginCheck, receiveRefreshToken } = useApi();
   const [modalOpen, setModalOpen] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies([
-    'user_access_token',
-    'user_refresh_token',
-  ]); // 쿠키 훅
-
-  // 페이지 접속 시 토큰 확인 함수
-  const loginCheck = () => {
-    const accessToken = cookies['user_access_token'];
-    const refreshToken = cookies['user_refresh_token'];
-
-    axios
-      .post(
-        'https://stellon.shop/auth/validate',
-        {},
-        {
-          headers: {
-            Authorization: accessToken,
-          },
-        }
-      ) // 토큰으로 서버에 인증요청
-      .then((res) => console.log(res.data)) // 'true' === 토큰 인증완료
-      .catch((error) => {
-        if (error.response.data.code === 444) {
-          console.log(error.response.data.code);
-          receiveRefreshToken(); // access 토큰 만료 토큰 재발급
-        } else if (error.response.data.code === 445) {
-          console.log(error.response.data.code);
-          logOut(); // access refresh 토큰 모두 만료 로그아웃 처리
-        } else {
-          logOut(); // 토큰이 없을시
-        }
-      });
-    /// ERROR Code 444 === access Token 만료 -> 토큰 재발급 요청
-    /// ERROR Code 445 === access refresh 모두 만료 -> 재로그인 요청 (하루 이내면 refresh토큰 바뀌게 설정)
-  };
-
-  // 로그아웃
-  const logOut = () => {
-    removeCookie('user_access_token');
-    removeCookie('user_refresh_token');
-    navigate('/');
-  };
-
-  // 토큰 재발급
-  const receiveRefreshToken = () => {
-    const refreshToken = cookies['user_refresh_token'];
-    const accessToken = cookies['user_access_token'];
-    axios
-      .post(
-        'https://stellon.shop/auth/reissue',
-        {},
-        {
-          headers: { Authorization: accessToken, RefreshToken: refreshToken },
-        }
-      )
-      .then((res) => {
-        console.log(res.data.response.accessToken);
-        const newAccessToken = res.data.response.accessToken;
-        const newRefreshToken = res.data.response.refreshToken;
-        setCookie('user_access_token', newAccessToken, { path: '/' }); // 쿠키에 access 토큰 저장
-        setCookie('user_refresh_token', newRefreshToken, { path: '/' }); // 쿠키에 refresh 토큰 저장
-      })
-      .catch((res) => res.data);
-  };
-
-  // 게임방 리스트 함수
-  const watchRoom = () => {
-    const refreshToken = cookies['user_refresh_token'];
-    const accessToken = cookies['user_access_token'];
-    axios
-      .get('https://stellon.shop/room', {
-        headers: { Authorization: accessToken },
-      })
-      .then((res) => console.log(res.data))
-      .catch((res) => res.data);
-  };
 
   useEffect(() => {
     loginCheck();
@@ -204,54 +127,9 @@ const Lobby = () => {
               </Typography>
             </UserListHeader>
             <UserList>
-              <Users>
-                <UserName color="black" size="12" fontWeight="900">
-                  임송재
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤재밌네
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
-              <Users>
-                <UserName color="black" size="12">
-                  캡스톤
-                </UserName>
-                <UserInfoBtn>정보</UserInfoBtn>
-              </Users>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((e, index) => (
+                <Users key={index} />
+              ))}
             </UserList>
           </UserListBox>
         </ContentBox>
@@ -297,34 +175,6 @@ const Scrollbar = css`
     background: rgba(198, 198, 198, 1); /*스크롤바 뒷 배경 색상*/
     border-radius: 25px;
   }
-`;
-
-const UserInfoBtn = styled.button`
-  width: 40px;
-  height: 21px;
-  font-size: 4px;
-  border-radius: 5px;
-  background-color: rgba(135, 135, 135, 1);
-  border: none;
-  color: white;
-  font-weight: 200;
-  margin-right: 8px;
-  &:hover {
-    color: black;
-  }
-`;
-
-const UserName = styled(Typography)`
-  margin-left: 4px;
-`;
-
-const Users = styled.div`
-  display: flex;
-  margin: 0 12px 0 12px;
-  align-items: center;
-  padding: 4px 0;
-  justify-content: space-between;
-  border-bottom: 0.8px solid black;
 `;
 
 const UserListImg = styled.img`
