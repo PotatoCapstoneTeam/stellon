@@ -32,7 +32,7 @@ public class RoomService {
   private final UserService userService;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
-
+  
   // 게임 대기방 목록 전체 조회
   public List<GameRoom> findGameRooms() {
     List<GameRoom> list = new ArrayList<>(roomRepository.findGameRoomsByRoomType(RoomType.WAITING_ROOM));

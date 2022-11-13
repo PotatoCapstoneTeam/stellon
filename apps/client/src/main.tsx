@@ -62,13 +62,13 @@ body {
   overflow-x: hidden;
  }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
 a {
   text-decoration:none;
   color:inherit;
+}
+#root,canvas{
+  width: 100vw;
+  height: 100vh;
 }
 `;
 
