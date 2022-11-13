@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 @ToString
 public enum ErrorCode {
   INVALID_USER(400, HttpStatus.BAD_REQUEST, "아이디 또는 비밀번호가 일치하지 않습니다."),
+  BAD_REQUEST(400, HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
   DUPLICATE_EMAIL(409, HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
   DUPLICATE_NICKNAME(409, HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
   FORBIDDEN_EXCEPTION(403, HttpStatus.FORBIDDEN, "해당 요청에 대한 권한이 없습니다."),

@@ -29,12 +29,12 @@ public class AuthController {
   }
 
   @PostMapping("/reissue")
-  public TokenApiResponse reissue(HttpServletRequest request, @RequestHeader("Authorization") String accessToken, @RequestHeader("RefreshToken") String refreshToken) {
-    return authService.refresh(request, accessToken, refreshToken);
+  public TokenApiResponse reissue(HttpServletRequest request) {
+    return authService.refresh(request);
   }
 
   @PostMapping("/validate")
-  public Boolean validate(HttpServletRequest request, @RequestHeader("Authorization") String accessToken) {
-    return authService.validateToken(request, accessToken);
+  public Boolean validate(HttpServletRequest request) {
+    return authService.validateToken(request);
   }
 }
