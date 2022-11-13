@@ -27,7 +27,7 @@ public class GameRoom extends BaseTimeEntity {
   @Column(nullable = false)
   private String roomName;
 
-  @OneToMany(fetch=FetchType.EAGER)
+  @OneToMany(fetch = FetchType.EAGER)
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
@@ -37,6 +37,9 @@ public class GameRoom extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private RoomType roomType;
+
+  @Column
+  private int roomSize;
 
   @Column
   private String password;

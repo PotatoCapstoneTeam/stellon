@@ -7,6 +7,9 @@ import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
+import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Error.ErrorCode;
+import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
@@ -38,6 +41,9 @@ public class MessageController {
 
     User user = userRepository.findByNickname(userInfo.getUser().getNickname());
     GameRoom room = roomService.findRoom(findRoomDto);
+    if (room.getRoomType() == RoomType.LOBBY_ROOM) {
+      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+    }
     UserInfo system = UserInfo.builder()
       .system("system")
       .build();
