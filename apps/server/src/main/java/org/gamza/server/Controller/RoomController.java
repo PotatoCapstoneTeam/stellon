@@ -21,7 +21,7 @@ public class RoomController {
   private final RoomService roomService;
 
   @GetMapping("")
-  public List<GameRoom> rooms() {
+  public List<RoomResponseDto> rooms() {
     return roomService.findGameRooms();
   }
 

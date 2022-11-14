@@ -11,7 +11,7 @@ import java.util.Map;
 public class RoomResponseDto {
   private Long id;
   private String roomName;
-  private Map<Integer, User> players;
+  private int players;
   private RoomStatus roomStatus;
   private int roomSize;
   private String map;
@@ -19,7 +19,7 @@ public class RoomResponseDto {
   public RoomResponseDto(GameRoom gameRoom) {
     this.id = gameRoom.getId();
     this.roomName = gameRoom.getRoomName();
-    this.players = gameRoom.getPlayers();
+    this.players = gameRoom.getPlayers().size();
     this.roomStatus = gameRoom.getRoomStatus();
     this.roomSize = gameRoom.getRoomSize();
     this.map = "파이썬";

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
+import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
@@ -21,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional
@@ -32,12 +34,14 @@ public class RoomService {
   private final UserService userService;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
-  
+
   // 게임 대기방 목록 전체 조회
-  public List<GameRoom> findGameRooms() {
+  public List<RoomResponseDto> findGameRooms() {
     List<GameRoom> list = new ArrayList<>(roomRepository.findGameRoomsByRoomType(RoomType.WAITING_ROOM));
-    Collections.reverse(list);
-    return list;
+    List<RoomResponseDto> roomList;
+    roomList = list.stream().map(RoomResponseDto::new).collect(Collectors.toList());
+    Collections.reverse(roomList);
+    return roomList;
   }
 
   public GameRoom findRoom(FindRoomDto findRoomDto) {
