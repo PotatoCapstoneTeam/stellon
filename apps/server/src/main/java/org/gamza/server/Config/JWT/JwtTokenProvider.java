@@ -137,8 +137,12 @@ public class JwtTokenProvider {
   }
 
   public Claims parseClaims(String token) {
-    return Jwts.parserBuilder().setSigningKey(key).build()
-      .parseClaimsJws(token).getBody();
+    try {
+      return Jwts.parserBuilder().setSigningKey(key).build()
+        .parseClaimsJws(token).getBody();
+    } catch (ExpiredJwtException e) {
+      return e.getClaims();
+    }
   }
 
   // refresh 토큰 만료가 1일 미만일 때 true 반환
