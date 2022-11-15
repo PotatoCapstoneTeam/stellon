@@ -4,25 +4,35 @@ import styled from 'styled-components';
 import { customColor } from '../../constants/customColor';
 import { SearchImg } from '../../routes/Lobby';
 import { Typography } from '../Typography';
+import { useCookies } from 'react-cookie';
 
 interface ICreateRoomModal {
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
+  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
   const formRef = useRef<HTMLFormElement>(null);
   const [checkBox, setCheckBox] = useState(false);
 
   const onCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();
+    const refreshToken = cookies['user_refresh_token'];
+    const accessToken = cookies['user_access_token'];
 
     axios
-      .post('url', {
-        theme: formRef.current?.['theme'].value,
-        people: formRef.current?.['number'].value,
-        password: checkBox ? formRef.current?.['password'].value : '',
-      })
-      .then((res) => res.data)
+      .post(
+        'https://stellon.shop/room',
+        {
+          roomName: formRef.current?.['theme'].value,
+          roomSize: formRef.current?.['number'].value, //int
+          password: checkBox ? formRef.current?.['password'].value : '',
+        },
+        {
+          headers: { Authorization: accessToken },
+        }
+      )
+      .then((res) => console.log(res.data))
       .catch((err) => {
         console.log(err);
       });

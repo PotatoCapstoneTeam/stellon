@@ -10,7 +10,7 @@ export const useApi = () => {
   ]); // 쿠키 훅
   const navigate = useNavigate();
 
-  // 페이지 접속 시 토큰 확인 함수
+  // 페이지 접속 시 토큰 확인 POST
   const loginCheck = () => {
     const accessToken = cookies['user_access_token'];
 
@@ -46,7 +46,7 @@ export const useApi = () => {
     navigate('/');
   };
 
-  // 토큰 재발급
+  // 토큰 재발급 POST
   const receiveRefreshToken = () => {
     const refreshToken = cookies['user_refresh_token'];
     const accessToken = cookies['user_access_token'];
@@ -65,12 +65,14 @@ export const useApi = () => {
         setCookie('user_access_token', newAccessToken, { path: '/' }); // 쿠키에 access 토큰 저장
         setCookie('user_refresh_token', newRefreshToken, { path: '/' }); // 쿠키에 refresh 토큰 저장
       })
-      .catch((res) => res.data);
+      .catch((err) => {
+        console.log(err);
+        logOut();
+      });
   };
 
-  // 게임방 리스트 함수
+  // 게임방 리스트 GET 요청
   const watchRoom = () => {
-    const refreshToken = cookies['user_refresh_token'];
     const accessToken = cookies['user_access_token'];
     axios
       .get('https://stellon.shop/room', {
@@ -80,6 +82,29 @@ export const useApi = () => {
       .catch((res) => res.data);
   };
 
+  const firstEntering = () => {
+    const accessToken = cookies['user_access_token'];
+    axios
+      .post(
+        'https://stellon.shop/room/lobby/users',
+        {},
+        {
+          headers: { Authorization: accessToken },
+        }
+      )
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  };
+
+  const enteringUser = () => {
+    const accessToken = cookies['user_access_token'];
+    axios
+      .get('https://stellon.shop/room/lobby/users', {
+        headers: { Authorization: accessToken },
+      })
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  };
   return {
     cookies,
     setCookie,
@@ -88,6 +113,7 @@ export const useApi = () => {
     logOut,
     receiveRefreshToken,
     watchRoom,
+    enteringUser,
   };
 };
 

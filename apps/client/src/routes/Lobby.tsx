@@ -10,11 +10,15 @@ import useApi from '../util/useApi';
 import Users from '../components/lobby/Users';
 
 const Lobby = () => {
-  const { loginCheck, receiveRefreshToken } = useApi();
+  const { loginCheck, receiveRefreshToken, enteringUser } = useApi();
   const [modalOpen, setModalOpen] = useState(false);
+  const { watchRoom } = useApi();
+  const [rooms, setRooms] = useState();
 
   useEffect(() => {
     loginCheck();
+    watchRoom();
+    enteringUser();
   }, []);
 
   return (
