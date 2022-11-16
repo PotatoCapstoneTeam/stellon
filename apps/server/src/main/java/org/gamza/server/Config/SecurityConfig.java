@@ -32,7 +32,7 @@ public class SecurityConfig {
       .httpBasic().disable()
       .csrf().disable()
       .headers().frameOptions().disable().addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS",
-        "ALLOW-FROM stellon.shop"))
+        "ALLOW-FROM https://stellon.shop/"))
       .and()
 
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
