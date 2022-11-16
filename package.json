@@ -11,6 +11,8 @@
   "dependencies": {
     "@react-three/drei": "^9.34.3",
     "@react-three/fiber": "^8.8.9",
+    "@stomp/stompjs": "^6.1.2",
+    "@types/stompjs": "^2.3.3",
     "axios": "^1.1.3",
     "core-js": "^3.6.5",
     "react": "18.2.0",
@@ -19,6 +21,7 @@
     "react-is": "18.2.0",
     "react-router-dom": "^6.4.0",
     "regenerator-runtime": "0.13.7",
+    "sockjs-client": "^1.0.2",
     "styled-components": "5.3.5",
     "three": "^0.145.0",
     "tslib": "^2.3.0"
@@ -39,6 +42,7 @@
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@types/react-is": "^17.0.3",
+    "@types/sockjs-client": "^1.5.1",
     "@types/styled-components": "^5.1.26",
     "@types/three": "^0.144.0",
     "@typescript-eslint/eslint-plugin": "^5.36.1",

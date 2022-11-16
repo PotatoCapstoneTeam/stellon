@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Typography } from '../Typography';
+import { Typography } from '../../../components/Typography';
 
 interface IUserCard {
   state: boolean;

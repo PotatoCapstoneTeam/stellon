@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { customColor } from '../../constants/customColor';
-import { SearchImg } from '../../routes/Lobby';
-import { Typography } from '../Typography';
+import { customColor } from '../../../constants/customColor';
+import { SearchImg } from '../LobbyPage';
+import { Typography } from '../../../components/Typography';
 import { useCookies } from 'react-cookie';
 
 interface ICreateRoomModal {
