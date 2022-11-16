@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class ChatService {
   public ChatResponseDto regenerateRoomMsg(ChatModel message) {
     return ChatResponseDto.builder()
-      .roomId(message.getGameRoom().getId())
+      .roomId(message.getRoomId())
       .nickname(message.getUser().getNickname())
       .message(message.getMessage())
       .build();
