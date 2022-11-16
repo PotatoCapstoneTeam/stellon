@@ -11,6 +11,8 @@ import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.RoomStatus;
 import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Error.ErrorCode;
+import org.gamza.server.Error.Exception.AuthenticationException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.User.UserService;
@@ -99,5 +101,24 @@ public class RoomService {
     int idx = lobby.getPlayers().size();
     lobby.getPlayers().put(idx + 1, findUser);
     roomRepository.save(lobby);
+  }
+
+  public void removeUserToLobby(HttpServletRequest request) {
+    GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
+    String token = request.getHeader("Authorization");
+    User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
+    int index = getIndex(lobby.getPlayers(), findUser);
+    lobby.getPlayers().remove(index);
+    roomRepository.save(lobby);
+  }
+
+  public static <K, V> K getIndex(Map<K, V> map, V value) {
+
+    for (K key : map.keySet()) {
+      if (value.equals(map.get(key))) {
+        return key;
+      }
+    }
+    throw new AuthenticationException(ErrorCode.INVALID_USER);
   }
 }

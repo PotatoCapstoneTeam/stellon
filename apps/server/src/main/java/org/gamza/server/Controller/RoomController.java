@@ -50,4 +50,10 @@ public class RoomController {
     roomService.addUserToLobby(request);
     return ResponseEntity.ok("접속 완료");
   }
+
+  @DeleteMapping("/lobby/users")
+  public ResponseEntity<String> removeUserToLobby(HttpServletRequest request) {
+    roomService.removeUserToLobby(request);
+    return ResponseEntity.ok("로비 리스트에서 유저 제거 완료");
+  }
 }
