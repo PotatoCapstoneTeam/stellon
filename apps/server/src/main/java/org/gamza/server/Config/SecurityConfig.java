@@ -31,8 +31,7 @@ public class SecurityConfig {
     http
       .httpBasic().disable()
       .csrf().disable()
-      .headers().frameOptions().disable().addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS",
-        "ALLOW-FROM http://localhost:4200"))
+      .headers().frameOptions().disable()
       .and()
 
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
