@@ -19,14 +19,14 @@ public class ChatController {
   private final ChatService chatService;
 
   // /pub/socket/chat 으로 전송
-  @MessageMapping("/socket/chat")
+  @MessageMapping("/chat")
   public void send(ChatModel message) {
     if (!Objects.equals(message.getGameRoom().getRoomType(), RoomType.LOBBY_ROOM)) {
       ChatResponseDto newMessage = chatService.regenerateRoomMsg(message);
-      operations.convertAndSend("/sub/socket/room/" + newMessage.getRoomId(), newMessage);
+      operations.convertAndSend("/sub/room/" + newMessage.getRoomId(), newMessage);
     } else {
       LobbyChatDto newMessage = chatService.regenerateLobbyMsg(message);
-      operations.convertAndSend("/sub/socket/lobby", newMessage);
+      operations.convertAndSend("/sub/lobby", newMessage);
     }
   }
 }

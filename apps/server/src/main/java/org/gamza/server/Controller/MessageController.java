@@ -30,7 +30,7 @@ public class MessageController {
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
 
-  @MessageMapping("/socket/message")
+  @MessageMapping("/message")
   public void sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
     UserInfo userInfo = message.getUserInfo();
     FindRoomDto findRoomDto = FindRoomDto.builder()
@@ -97,7 +97,7 @@ public class MessageController {
         message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
         break;
     }
-    operations.convertAndSend("/sub/socket/room/" + room.getId(), message);
+    operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
   private void selectNewHost(UserInfo userInfo, UserInfo system, GameRoom room) {
@@ -115,7 +115,7 @@ public class MessageController {
           nextHostMessage.setGameRoom(room);
           nextHostMessage.setUserInfo(system);
           nextHostMessage.setMessage(userInfo1.getUser().getNickname() + " 님이 방장이 되셨습니다.");
-          operations.convertAndSend("/sub/socket/room/" + room.getId(), nextHostMessage);
+          operations.convertAndSend("/sub/room/" + room.getId(), nextHostMessage);
           break;
         }
       }
