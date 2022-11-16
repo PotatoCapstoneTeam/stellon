@@ -30,18 +30,24 @@ public class SecurityConfig {
     http
       .httpBasic().disable()
       .csrf().disable()
+      .headers().frameOptions().sameOrigin()
+      .and()
+
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
+
       .authorizeRequests()
       .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll()
       .antMatchers("/ws-stomp/**").permitAll()
       .antMatchers("/auth/login", "/auth/join", "/auth/reissue").permitAll()
       .anyRequest().authenticated()
       .and()
+
       .exceptionHandling()
       .authenticationEntryPoint(authenticationEntryPointHandler)
       .accessDeniedHandler(webAccessDeniedHandler)
       .and()
+
       .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
