@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
-  @PostMapping("/")
+  @PostMapping("/test")
   public ResponseEntity<String> test() {
     return ResponseEntity.ok("test token");
   }

@@ -1,17 +1,18 @@
 package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
-import org.gamza.server.Dto.TokenDto.TokenInfo;
+import org.gamza.server.Dto.TokenDto.TokenApiResponse;
 import org.gamza.server.Dto.UserDto.UserJoinDto;
 import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-@CrossOrigin(origins = "localhost:4200")
 public class AuthController {
 
   private final AuthService authService;
@@ -23,14 +24,17 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<TokenInfo> login(@RequestBody UserLoginDto userLoginDto) {
-    TokenInfo tokenInfo = authService.login(userLoginDto);
-    return ResponseEntity.ok(tokenInfo);
+  public TokenApiResponse login(@RequestBody UserLoginDto userLoginDto) {
+    return authService.login(userLoginDto);
   }
 
   @PostMapping("/reissue")
-  public ResponseEntity<TokenInfo> reissue(@RequestBody TokenInfo tokenInfo) {
-    TokenInfo newTokenInfo = authService.refresh(tokenInfo);
-    return ResponseEntity.ok(newTokenInfo);
+  public TokenApiResponse reissue(HttpServletRequest request) {
+    return authService.refresh(request);
+  }
+
+  @PostMapping("/validate")
+  public Boolean validate(HttpServletRequest request) {
+    return authService.validateToken(request);
   }
 }

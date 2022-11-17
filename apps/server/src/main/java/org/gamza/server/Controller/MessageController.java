@@ -7,6 +7,9 @@ import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
+import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Error.ErrorCode;
+import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
@@ -27,7 +30,7 @@ public class MessageController {
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
 
-  @MessageMapping("/socket/message")
+  @MessageMapping("/message")
   public void sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
     UserInfo userInfo = message.getUserInfo();
     FindRoomDto findRoomDto = FindRoomDto.builder()
@@ -38,6 +41,9 @@ public class MessageController {
 
     User user = userRepository.findByNickname(userInfo.getUser().getNickname());
     GameRoom room = roomService.findRoom(findRoomDto);
+    if (room.getRoomType() == RoomType.LOBBY_ROOM) {
+      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+    }
     UserInfo system = UserInfo.builder()
       .system("system")
       .build();
@@ -91,7 +97,7 @@ public class MessageController {
         message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
         break;
     }
-    operations.convertAndSend("/sub/socket/room/" + room.getId(), message);
+    operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
   private void selectNewHost(UserInfo userInfo, UserInfo system, GameRoom room) {
@@ -109,7 +115,7 @@ public class MessageController {
           nextHostMessage.setGameRoom(room);
           nextHostMessage.setUserInfo(system);
           nextHostMessage.setMessage(userInfo1.getUser().getNickname() + " 님이 방장이 되셨습니다.");
-          operations.convertAndSend("/sub/socket/room/" + room.getId(), nextHostMessage);
+          operations.convertAndSend("/sub/room/" + room.getId(), nextHostMessage);
           break;
         }
       }

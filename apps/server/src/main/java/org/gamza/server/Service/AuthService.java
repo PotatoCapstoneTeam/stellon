@@ -1,27 +1,29 @@
 package org.gamza.server.Service;
 
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
+import org.gamza.server.Dto.TokenDto.ResponseMap;
+import org.gamza.server.Dto.TokenDto.TokenApiResponse;
 import org.gamza.server.Dto.TokenDto.TokenInfo;
 import org.gamza.server.Dto.UserDto.UserJoinDto;
 import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Entity.CustomUserDetails;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Error.ErrorCode;
+import org.gamza.server.Error.Exception.DuplicateException;
+import org.gamza.server.Error.Exception.LoginFailedException;
 import org.gamza.server.Repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,16 +48,16 @@ public class AuthService {
   }
 
   private void isDuplicateUser(UserJoinDto userJoinDto) {
-    if (userRepository.findByEmail(userJoinDto.getEmail()).isPresent()) {
-      throw new RuntimeException("이미 존재하는 Email 입니다");
+    if (userRepository.findByEmail(userJoinDto.getEmail()) != null) {
+      throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL);
     }
     if (userRepository.existsByNickname(userJoinDto.getNickname())) {
-      throw new RuntimeException("이미 존재하는 nickname 입니다");
+      throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
     }
   }
 
   @Transactional
-  public TokenInfo login(UserLoginDto userLoginDto) {
+  public TokenApiResponse login(UserLoginDto userLoginDto) {
     // 0. 유저 검증
     validateUser(userLoginDto);
 
@@ -71,57 +73,71 @@ public class AuthService {
     TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
     // 4. user 의 refresh 토큰 정보 업데이트
-    User findUser = userRepository.findByEmail(userLoginDto.getEmail())
-      .orElseThrow(() -> new RuntimeException("존재하지 않는 Email 입니다"));
+    User findUser = userRepository.findByEmail(userLoginDto.getEmail());
     findUser.updateToken(tokenInfo.getRefreshToken());
 
-    return tokenInfo;
+    ResponseMap response = new ResponseMap();
+    response.setResponseData("accessToken", tokenInfo.getAccessToken());
+    response.setResponseData("refreshToken", tokenInfo.getRefreshToken());
+
+    return response;
   }
 
   private void validateUser(UserLoginDto userLoginDto) {
-    User findUser = userRepository.findByEmail(userLoginDto.getEmail())
-      .orElseThrow(() -> new RuntimeException("존재하지 않는 Email 입니다"));
+    User findUser = userRepository.findByEmail(userLoginDto.getEmail());
+    if (findUser == null) {
+      throw new LoginFailedException(ErrorCode.INVALID_USER);
+    }
     if (!passwordEncoder.matches(userLoginDto.getPassword(), findUser.getPassword())) {
-      throw new RuntimeException("비밀번호가 일치하지 않습니다");
+      throw new LoginFailedException(ErrorCode.INVALID_USER);
     }
   }
 
   @Transactional
-  public TokenInfo refresh(TokenInfo tokenInfo) {
+  public TokenApiResponse refresh(HttpServletRequest request) {
+    // response 반환할 빈 객체 생성
+    ResponseMap response = new ResponseMap();
+    String accessToken = request.getHeader("Authorization");
+    String refreshToken = request.getHeader("RefreshToken");
     // refresh 토큰 유효성 검사
-    if (tokenInfo.getRefreshToken() != null && jwtTokenProvider.validateToken(tokenInfo.getRefreshToken())) {
-      // access 토큰 쪼개서 username 가져오고 refresh 토큰과 비교
-      String email = jwtTokenProvider.parseClaims(tokenInfo.getAccessToken()).getSubject();
-      if (!Objects.equals(email, jwtTokenProvider.parseClaims(tokenInfo.getRefreshToken()).getSubject())) {
-        throw new JwtException("유효하지 않은 토큰 입니다");
-      }
-      Optional<User> findUser = userRepository.findByEmail(email);
-      String findRefreshToken = findUser.get().getRefreshToken();
-      if (findRefreshToken == null) {
-        throw new UsernameNotFoundException("사용자를 찾을 수 없습니다");
-      }
-      if (!findRefreshToken.equals(tokenInfo.getRefreshToken())) {
-        throw new JwtException("유효하지 않은 토큰 입니다");
-      }
+    if (refreshToken != null && jwtTokenProvider.validateToken(request, refreshToken)) {
+      // access 토큰에서 email 추출해서 해당 유저 찾기
+      String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+      User findUser = userRepository.findByEmail(email);
 
-      // Access 토큰 재발급
-      CustomUserDetails userDetail = new CustomUserDetails(findUser.get());
+      // 해당 유저에 대한 Access 토큰 재발급
+      CustomUserDetails userDetail = new CustomUserDetails(findUser);
       String authorities = userDetail.getAuthorities()
         .stream().map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(","));
       String newAccessToken = jwtTokenProvider.recreateAccessToken(email, authorities);
 
+      response.setResponseData("accessToken", newAccessToken);
+      response.setResponseData("refreshToken", refreshToken);
+
       // Refresh 토큰 만료시간 1일 미만일 시 refresh 토큰 update 후 발급
-      if (jwtTokenProvider.reissueRefreshToken(tokenInfo.getRefreshToken())) {
+      if (jwtTokenProvider.reissueRefreshToken(refreshToken)) {
         String newRefreshToken = jwtTokenProvider.createRefreshToken(email);
-        findUser.get().updateToken(newRefreshToken);
+        findUser.updateToken(newRefreshToken);
+        response.setResponseData("refreshToken", newRefreshToken);
       }
 
-      return TokenInfo.builder()
-        .accessToken(newAccessToken)
-        .refreshToken(tokenInfo.getRefreshToken())
-        .build();
+      return response;
     }
-    throw new JwtException("유효하지 않은 refresh 토큰 입니당");
+    // refresh 토큰 유효성 검사 실패 -> 로그인 다시 진행하라고 알려줘야됨
+    response.setResponseData("code", ErrorCode.RE_LOGIN.getCode());
+    response.setResponseData("HttpStatus", ErrorCode.RE_LOGIN.getStatus());
+    response.setResponseData("message", ErrorCode.RE_LOGIN.getMessage());
+
+    return response;
+  }
+
+  @Transactional
+  public Boolean validateToken(HttpServletRequest request) {
+    String accessToken = request.getHeader("Authorization");
+    if (accessToken != null && jwtTokenProvider.validateToken(request, accessToken)) {
+      return true;
+    }
+    return false;
   }
 }
