@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import useWebSocket from '../hooks/useWebSocket';
 import { customColor } from '../constants/customColor';
 import { Typography } from './Typography';
 
@@ -8,7 +9,25 @@ interface IChatRoom {
 }
 
 const ChatRoom = ({ state }: IChatRoom) => {
-  const [chat, setChat] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+  const [chat, setChat] = useState([]);
+  const [socketing, setSocketing] = useState('');
+  const { connect, send } = useWebSocket();
+  // 채팅 Submit
+  const submitChat = (e: React.FormEvent) => {
+    e.preventDefault();
+    const msg = formRef.current?.['chat'].value;
+
+    // stompClient.disconnect(); 웹소켓 연결 해제
+    if (formRef.current != null) {
+      send();
+      formRef.current['chat'].value = '';
+    }
+  };
+
+  useEffect(() => {
+    connect();
+  }, []);
 
   return (
     <Room state={state}>
@@ -16,40 +35,11 @@ const ChatRoom = ({ state }: IChatRoom) => {
         끝말잇기빌런 : 배고파
       </Chat>
       <Chat size="12" color="black">
-        끝말잇기빌런 : 배고파
+        끝말잇기빌런2 : 배고파여
       </Chat>
-      <Chat size="12" color="black">
-        안호빈 : 나도
-      </Chat>
-      <Chat size="12" color="black">
-        김효성 : 잘래
-      </Chat>
-      <Chat size="12" color="black">
-        박현호 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        박청조 : 재밌다
-      </Chat>
-      <Chat size="12" color="black">
-        손흥민 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 밥줘
-      </Chat>
-      <Chat size="12" color="black">
-        임송재 : 졸려
-      </Chat>
-      <ChattingBox>
-        <Chatting
-          type="text"
-          placeholder="채팅을 입력하세요"
-          onChange={(e) => {
-            setChat(e.target.value);
-            console.log(chat);
-          }}
-          value={chat}
-        />
-        <ChattingBtn>Enter</ChattingBtn>
+      <ChattingBox ref={formRef} onSubmit={submitChat}>
+        <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
+        <ChattingBtn type="submit">Enter</ChattingBtn>
       </ChattingBox>
     </Room>
   );
@@ -71,7 +61,7 @@ const ChattingBtn = styled.button`
     color: black;
   }
 `;
-const ChattingBox = styled.div`
+const ChattingBox = styled.form`
   width: 97%;
   height: 28px;
   border-radius: 15px;
