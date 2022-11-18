@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +10,7 @@ export const useApi = () => {
   const navigate = useNavigate();
 
   // 페이지 접속 시 토큰 확인 POST
-  const loginCheck = () => {
+  const loginCheck = async () => {
     const accessToken = cookies['user_access_token'];
 
     axios
@@ -25,9 +24,9 @@ export const useApi = () => {
         }
       ) // 토큰으로 서버에 인증요청
       .then((res) => console.log(res.data)) // 'true' === 토큰 인증완료
-      .catch((error) => {
+      .catch(async (error) => {
         if (error.response.data.code === 444) {
-          console.log(error.response.data.code);
+          console.log(error.response.data.code + '토큰 재발급 요청');
           receiveRefreshToken(); // access 토큰 만료 토큰 재발급
         } else if (error.response.data.code === 445) {
           console.log(error.response.data.code);
@@ -47,7 +46,7 @@ export const useApi = () => {
   };
 
   // 토큰 재발급 POST
-  const receiveRefreshToken = () => {
+  const receiveRefreshToken = async () => {
     const refreshToken = cookies['user_refresh_token'];
     const accessToken = cookies['user_access_token'];
     axios
@@ -72,17 +71,17 @@ export const useApi = () => {
   };
 
   // 게임방 리스트 GET 요청
-  const watchRoom = () => {
+  const watchRoom = async () => {
     const accessToken = cookies['user_access_token'];
     axios
       .get('https://stellon.shop/room', {
         headers: { Authorization: accessToken },
       })
       .then((res) => console.log(res.data))
-      .catch((res) => res.data);
+      .catch((err) => err.data + '게임방 리스트 GET');
   };
 
-  const firstEntering = () => {
+  const firstEntering = async () => {
     const accessToken = cookies['user_access_token'];
     axios
       .post(
@@ -93,10 +92,10 @@ export const useApi = () => {
         }
       )
       .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err + '게임방 리스트 POST'));
   };
 
-  const enteringUser = () => {
+  const enteringUser = async () => {
     const accessToken = cookies['user_access_token'];
     axios
       .get('https://stellon.shop/room/lobby/users', {
@@ -113,6 +112,7 @@ export const useApi = () => {
     logOut,
     receiveRefreshToken,
     watchRoom,
+    firstEntering,
     enteringUser,
   };
 };

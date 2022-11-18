@@ -12,7 +12,6 @@ const ChatRoom = ({ state }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [chat, setChat] = useState([]);
   const [socketing, setSocketing] = useState('');
-  const { connect, send } = useWebSocket();
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,14 +19,10 @@ const ChatRoom = ({ state }: IChatRoom) => {
 
     // stompClient.disconnect(); 웹소켓 연결 해제
     if (formRef.current != null) {
-      send();
       formRef.current['chat'].value = '';
     }
   };
 
-  useEffect(() => {
-    connect();
-  }, []);
 
   return (
     <Room state={state}>
