@@ -24,7 +24,7 @@ public class ChatController {
   private final ChatService chatService;
   private final RoomRepository roomRepository;
 
-  // /pub/socket/chat 으로 전송
+  // /pub/chat 으로 전송
   @MessageMapping("/chat")
   public void send(ChatModel message) {
     GameRoom findRoom = roomRepository.findById(message.getRoomId())

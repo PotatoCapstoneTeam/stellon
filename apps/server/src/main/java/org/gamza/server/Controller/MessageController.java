@@ -8,6 +8,7 @@ import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
@@ -17,8 +18,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-
-import static org.gamza.server.Enum.UserStatus.ROLE_MANAGER;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,8 +54,10 @@ public class MessageController {
 
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
         for (int i = 1; i <= 8; i++) {
-          if (room.getPlayers().size() == 1) { // 방이 처음 만들어졌을 시 방장 설정
-            userInfo.setUserStatus(ROLE_MANAGER);
+          if (room.getPlayers().isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
+            userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
+          } else {
+            userInfo.setUserStatus(UserStatus.ROLE_USER);
           }
 
           if (room.getPlayers().get(i) == null) {
@@ -101,14 +102,14 @@ public class MessageController {
   }
 
   private void selectNewHost(UserInfo userInfo, UserInfo system, GameRoom room) {
-    if (userInfo.getUserStatus().equals(ROLE_MANAGER)) {
+    if (userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
       for (int i = 1; i <= 8; i++) {
         User nextHost = room.getPlayers().get(i);
         log.info("방장 선발");
         if (nextHost != null) {
           UserInfo userInfo1 = UserInfo.builder()
             .user(nextHost)
-            .userStatus(ROLE_MANAGER)
+            .userStatus(UserStatus.ROLE_MANAGER)
             .build();
           Message nextHostMessage = new Message();
           nextHostMessage.setType(Message.MessageType.ROOM);
