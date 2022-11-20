@@ -123,6 +123,15 @@ public class RoomService {
     roomRepository.save(lobby);
   }
 
+  @Transactional
+  public void validateGameRoom(RoomValidDto roomValidDto) {
+    GameRoom findGameRoom = roomRepository.findById(roomValidDto.getRoomId())
+      .orElseThrow(() -> new RoomEnterException(ErrorCode.BAD_REQUEST));
+    if(!passwordEncoder.matches(roomValidDto.getPassword(), findGameRoom.getPassword())) {
+      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+    }
+  }
+
   public static <K, V> K getIndex(Map<K, V> map, V value) {
 
     for (K key : map.keySet()) {
@@ -131,14 +140,5 @@ public class RoomService {
       }
     }
     throw new AuthenticationException(ErrorCode.INVALID_USER);
-  }
-
-  @Transactional
-  public void validateGameRoom(RoomValidDto roomValidDto) {
-    GameRoom findGameRoom = roomRepository.findById(roomValidDto.getRoomId())
-      .orElseThrow(() -> new RoomEnterException(ErrorCode.BAD_REQUEST));
-    if(!passwordEncoder.matches(roomValidDto.getPassword(), findGameRoom.getPassword())) {
-      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
-    }
   }
 }
