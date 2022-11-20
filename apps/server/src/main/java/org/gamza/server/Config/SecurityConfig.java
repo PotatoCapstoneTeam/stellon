@@ -39,6 +39,7 @@ public class SecurityConfig {
 
       .authorizeRequests()
       .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll()
+      .antMatchers("/ws-stomp/**").permitAll()
       .antMatchers("/auth/login", "/auth/join", "/auth/reissue").permitAll()
       .anyRequest().authenticated()
       .and()
