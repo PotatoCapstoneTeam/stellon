@@ -7,7 +7,6 @@ import org.gamza.server.Error.SecurityErrorHandler.AuthenticationEntryPointHandl
 import org.gamza.server.Error.SecurityErrorHandler.WebAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,6 +38,10 @@ public class SecurityConfig {
       .csrf().disable()
       .cors().configurationSource(corsConfigurationSource())
       .and()
+      .headers().frameOptions().disable()
+      .and()
+      .authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+      .and()
 
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
@@ -67,11 +70,11 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOriginPatterns(Collections.singletonList("http://localhost:4200"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("authorization", "refreshToken", "content-type", "x-auth-token"));
-    configuration.setExposedHeaders(List.of("authorization", "refreshToken", "content-type", "x-auth-token"));
-    configuration.setAllowCredentials(true); // 사용자 자격 증명(쿠키, 인증키) 사용을 허용할 것
+    configuration.addAllowedOrigin("http://localhost:4200");
+    configuration.addAllowedMethod("*");
+    configuration.addAllowedHeader("*");
+    configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
