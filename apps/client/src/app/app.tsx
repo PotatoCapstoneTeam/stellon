@@ -12,7 +12,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Intro />} />
           <Route path="/lobby" element={<Lobby />} />
-          <Route path="/game_room/:id" element={<GameRoom />} />
+          <Route path="/game_room" element={<GameRoom />} />
         </Routes>
       </BrowserRouter>
     </CookiesProvider>

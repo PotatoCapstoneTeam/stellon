@@ -1,8 +1,7 @@
 import React from 'react';
-import GameRoomPage from '../containers/GameRoomPage/GameRoomPage';
 
 const GameRoom = () => {
-  return <GameRoomPage />;
+  return <GameRoom />;
 };
 
 export default GameRoom;

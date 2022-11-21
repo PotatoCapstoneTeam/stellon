@@ -1,29 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
-import { IRoom } from './GameList';
 
-const Room = ({ id, map, players, roomName, roomSize, roomStatus }: IRoom) => {
-  const navigate = useNavigate();
-
-  const moveGameRoom = () => {
-    navigate(`/game_room/${id}`);
-  };
-
+const Room = () => {
   return (
-    <Container onClick={moveGameRoom}>
+    <Container>
       <RoomName color="black" size="16">
-        {roomName}
+        초보만 들어오세요
       </RoomName>
       <People>
         <PeopleImg src="../assets/people.svg" alt="none" />
         <Typography color="blue" size="16">
-          {players}/{roomSize}
+          1/2
         </Typography>
       </People>
       <GameMap color="gray" size="12" fontWeight="500">
-        {map}
+        파이썬
       </GameMap>
     </Container>
   );

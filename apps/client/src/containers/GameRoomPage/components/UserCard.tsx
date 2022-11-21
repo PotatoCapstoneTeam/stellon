@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
@@ -6,7 +7,7 @@ interface IUserCard {
   // 레디상태, 닉네임, 비행기 색깔와 기종, 유저의 정보 필요
 }
 
-export const UserCard = ({ state }: IUserCard) => {
+const UserCard = ({ state }: IUserCard) => {
   console.log(state);
   return (
     <Container>
