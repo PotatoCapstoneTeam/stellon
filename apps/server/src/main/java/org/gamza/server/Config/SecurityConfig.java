@@ -31,7 +31,7 @@ public class SecurityConfig {
     http
       .httpBasic().disable()
       .csrf().disable()
-      .headers().frameOptions().disable()
+      .headers().frameOptions().sameOrigin()
       .and()
 
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

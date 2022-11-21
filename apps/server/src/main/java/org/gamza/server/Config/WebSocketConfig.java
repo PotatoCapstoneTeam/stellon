@@ -12,8 +12,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
     stompEndpointRegistry.addEndpoint("/ws-stomp")
-      .setAllowedOrigins("http://localhost:4200")
-      .withSockJS();
+      .setAllowedOriginPatterns("http://*:4200")
+      .withSockJS()
+      .setClientLibraryUrl("https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.2/sockjs.js");
   }
 
   @Override
