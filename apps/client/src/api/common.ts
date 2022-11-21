@@ -6,6 +6,7 @@ export const Api = {
 
   getWithToken: async (url: string, token: string) =>
     await axios.get(setting.baseURL + url, {
+      // withCredentials: true,
       headers: { Authorization: token },
     }),
 
@@ -14,22 +15,11 @@ export const Api = {
       setting.baseURL + url,
       {},
       {
+        // withCredentials: true,
         headers: {
           Authorization: token,
           RefreshToken: refreshToken,
         },
       }
     ),
-
-  postWithTokens: async (url: string, accessToken: any, refreshToken: any) =>
-  await axios.post(
-    setting.baseURL + url,
-    {},
-    {
-      headers: {
-        Authorization: accessToken,
-        RefreshToken: refreshToken,
-      },
-    }
-  )
 };

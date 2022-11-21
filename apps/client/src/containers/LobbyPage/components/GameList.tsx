@@ -4,7 +4,21 @@ import { customColor } from '../../../constants/customColor';
 import Entire from './Entire';
 import Search from './Search';
 
-const GameList = () => {
+interface IGameList {
+  list: IRoom[];
+}
+
+export interface IRoom {
+  id: number;
+  map: string;
+  players: number;
+  roomName: string;
+  roomSize: number;
+  roomStatus: string;
+}
+
+const GameList = ({ list }: IGameList) => {
+
   return (
     <GameListBox>
       <GameListHeader>
@@ -12,8 +26,8 @@ const GameList = () => {
         <Search />
       </GameListHeader>
       <List>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_v, i) => (
-          <Room key={i} />
+        {list.map((e, i) => (
+          <Room key={e.id} {...e} />
         ))}
       </List>
     </GameListBox>

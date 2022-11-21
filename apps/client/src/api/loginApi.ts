@@ -6,6 +6,6 @@ export const loginApi = {
   },
 
   receiveRefreshToken: async (accessToken: any, refreshToken: any) => {
-    await Api.postWithTokens('/auth/reissue', accessToken, refreshToken);
+    await Api.postWithToken('/auth/reissue', accessToken, refreshToken);
   },
 };

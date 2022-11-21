@@ -92,7 +92,7 @@ export const useApi = () => {
         }
       )
       .then((res) => console.log(res.data))
-      .catch((err) => console.log(err + '게임방 리스트 POST'));
+      .catch((err) => console.log(err));
   };
 
   const enteringUser = async () => {
@@ -104,6 +104,8 @@ export const useApi = () => {
       .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
   };
+
+
   return {
     cookies,
     setCookie,

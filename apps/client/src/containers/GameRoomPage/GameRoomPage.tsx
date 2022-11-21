@@ -1,9 +1,13 @@
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import ChatRoom from '../../components/ChatRoom';
 import { Map, Title, Info, Client, State } from './components/index';
 
 const GameRoomPage = () => {
+  const { id } = useParams();
+  console.log(id);
+
   return (
     <div>
       <Space />
