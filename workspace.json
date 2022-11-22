@@ -5,6 +5,7 @@
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
     "game-client": "libs/game-client",
+    "game-server": "apps/game-server",
     "server": "apps/server"
   }
 }
