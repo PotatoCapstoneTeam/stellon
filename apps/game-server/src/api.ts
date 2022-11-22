@@ -49,7 +49,7 @@ router.post(
 
     const stage = new Stage(req.body.callback);
 
-    setInterval(async () => {
+    setTimeout(async () => {
       try {
         await axios.post(req.body.callback, {
           id: stage.id,
