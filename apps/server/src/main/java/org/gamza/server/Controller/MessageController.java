@@ -14,11 +14,18 @@ import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
+import org.json.simple.JSONArray;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -85,6 +92,31 @@ public class MessageController {
         }
         message.setUserInfo(system);
         message.setMessage("곧 게임이 시작됩니다.");
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        String url = "https://game.stellon.io/api";
+        MultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
+
+        response.add("id", room.getId().toString());
+
+        for (int i = 0; i < room.getPlayers().size(); i++) {
+          JSONArray req_array = new JSONArray();
+
+          req_array.add(room.getPlayers().get(i).getId());
+          req_array.add(room.getPlayers().get(i).getNickname());
+          req_array.add(room.getPlayers().get(i).getTeamStatus());
+
+          response.add("users", req_array);
+        }
+
+        response.add("callback", "https://game.stellon.io/api");
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
+
+        restTemplate.postForEntity(url, request, String.class);
         break;
 
       case EXIT:
