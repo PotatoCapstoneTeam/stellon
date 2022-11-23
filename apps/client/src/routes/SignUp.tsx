@@ -1,92 +1,38 @@
 import styled, { css, keyframes } from 'styled-components';
 import Space from '../canvas/Space';
 import { Typography } from '../components/Typography';
-import { customColor } from '../constants/customColor';
-import { useCookies } from 'react-cookie';
+
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { errorMonitor } from 'events';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import IntroPage from '../containers/IntroPage/IntroPage';
+
+interface IFormInput {
+  email: string;
+  nickname: string;
+  password: string;
+  passwordCheck: string;
+}
 
 const SignUp = () => {
   const [loginHover, setLoginHover] = useState(false);
 
-  const [btnActive, setBtnACtive] = useState(true);
-
-  const [email, setEmail] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [isEmail, setIsEmail] = useState(false);
-
-  const onChangeEmail = (e: any) => {
-    const currentEmail = e.target.value;
-    setEmail(currentEmail);
-    const emailRegExp =
-      /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
-
-    if (!emailRegExp.test(currentEmail)) {
-      setEmailMessage('이메일의 형식이 올바르지 않습니다');
-      setIsEmail(false);
-    } else {
-      setEmailMessage('');
-      setIsEmail(true);
-    }
-  };
-
-  const [name, setName] = useState('');
-  const [nameMessage, setNameMessage] = useState('');
-  const [isName, setIsName] = useState(false);
-  const onChangeName = (e: any) => {
-    const currentName = e.target.value;
-    setName(currentName);
-
-    if (currentName.length < 2 || currentName.length > 8) {
-      setNameMessage('닉네임은 2글자 이상 8글자 이하로 입력해주세요');
-      setIsName(false);
-    } else {
-      setNameMessage('');
-      setIsName(true);
-    }
-  };
-
-  const [password, setPassword] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
-  const [isPassword, setIsPassword] = useState(false);
-  const onChangePassword = (e: any) => {
-    const currentPassword = e.target.value;
-    setPassword(currentPassword);
-    const passwordRegExp =
-      /^(?=.*[a-zA-Z])(?=.*[.!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
-    if (!passwordRegExp.test(currentPassword)) {
-      setPasswordMessage(
-        '숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요'
-      );
-      setIsPassword(false);
-    } else {
-      setPasswordMessage('');
-      setIsPassword(true);
-    }
-  };
-
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [passwordConfirmMessage, setPasswordConfirmMessage] = useState('');
-  const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
-  const onChangePasswordConfirm = (e: any) => {
-    const currentPasswordConfirm = e.target.value;
-    setPasswordConfirm(currentPasswordConfirm);
-    if (password !== currentPasswordConfirm) {
-      setPasswordConfirmMessage('동일한 비밀번호를 입력해야 합니다');
-      setIsPasswordConfirm(false);
-    } else {
-      setPasswordConfirmMessage('');
-      setIsPasswordConfirm(true);
-    }
-  };
-
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<IFormInput>();
+
+
+  const onSubmit: SubmitHandler<IFormInput> = (data, events) => {
+    console.log(data);
+    events?.preventDefault();
 
     axios
       .post('https://stellon.shop/auth/join', {
@@ -109,67 +55,81 @@ const SignUp = () => {
       <Space />
       <Wrapper>
         <SignUpImg src="../assets/signup.png" alt="none" />
-        <SignUpForm ref={formRef} onSubmit={handleSubmit}>
+        <SignUpForm ref={formRef} onSubmit={handleSubmit(onSubmit)}>
           <SignUpBox>
             <EmailBox>
               <NewTypography color="white" size="24">
                 Email
               </NewTypography>
               <EmailInput
-                value={email}
-                onChange={onChangeEmail}
-                type="text"
-                name="email"
+                {...register('email', {
+                  required: '이메일을 입력해주세요',
+                  pattern: {
+                    value:
+                      /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/,
+                    message: '이메일 형식이 올바르지 않습니다',
+                  },
+                })}
                 placeholder="이메일을 입력해주세요"
-                required
               />
             </EmailBox>
-            <Message style={isEmail ? { color: "blue" } : { color: "red" }} >{emailMessage}</Message>
+            {errors.email && <Message>{errors.email.message}</Message>}
 
             <NameBox>
               <NewTypography color="white" size="24">
                 Name
               </NewTypography>
               <NameInput
-                value={name}
-                onChange={onChangeName}
-                type="text"
-                name="nickname"
+                {...register('nickname', {
+                  required: '닉네임을 입력해주세요',
+                  maxLength: {
+                    value: 8,
+                    message: '닉네임은 8글자 이하로 설정해주세요',
+                  },
+                  minLength: {
+                    value: 2,
+                    message: '닉네임은 2글자 이상으로 설정해주세요',
+                  },
+                })}
                 placeholder="닉네임을 입력해주세요"
-                required
               />
             </NameBox>
-            <Message  style={isName ? { color: "blue" } : { color: "red" }}>{nameMessage}</Message>
+            {errors.nickname && <Message>{errors.nickname.message}</Message>}
 
             <PwBox>
               <NewTypography color="white" size="24">
                 PassWord
               </NewTypography>
               <PwInput
-                value={password}
-                onChange={onChangePassword}
-                type="password"
-                name="password"
+                {...register('password', {
+                  required: '비밀번호를 입력해주세요',
+                  pattern: {
+                    value:
+                      /^(?=.*[a-zA-Z])(?=.*[.!@#$%^*+=-])(?=.*[0-9]).{6,25}$/,
+                    message:
+                      '숫자+영문자+특수문자 조합으로 6자리 이상 입력해주세요',
+                  },
+                })}
                 placeholder="비밀번호를 입력해주세요"
-                required
+                type="password"
               />
             </PwBox>
-            <Message  style={isPassword ? { color: "blue" } : { color: "red" }}>{passwordMessage}</Message>
+            {errors.password && <Message>{errors.password.message}</Message>}
 
             <PwChkBox>
               <NewTypography color="white" size="24">
                 PW Check
               </NewTypography>
               <PwChkInput
-                value={passwordConfirm}
-                onChange={onChangePasswordConfirm}
+                {...register('passwordCheck', {
+                  required: '비밀번호를 입력해주세요',
+                })}
                 type="password"
-                name="passwordCheck"
                 placeholder="비밀번호를 확인해주세요"
-                required
               />
             </PwChkBox>
-            <Message  style={isPasswordConfirm ? { color: "blue" } : { color: "red" }}>{passwordConfirmMessage}</Message>
+
+            <Message></Message>
           </SignUpBox>
           <BtnBox>
             <LoginBtn
@@ -325,10 +285,7 @@ const SignUpForm = styled.form``;
 const Message = styled.p`
   position: relative;
   left: 100px;
-  color: white;
-  
   color: red;
-  font-weight: red;
 `;
 const BtnBox = styled.div`
   position: absolute;
