@@ -52,10 +52,8 @@ public class MessageController {
 
     switch (message.getType()) { // 메시지 타입 검사
       case JOIN: // 방 입장
-        message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
-
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i <= room.getRoomSize(); i++) {
           if (room.getPlayers().isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
           } else {
@@ -65,11 +63,13 @@ public class MessageController {
           if (room.getPlayers().get(i) == null) {
             room.getPlayers().put(i, user);
             userInfo.setPlayerNumber(i);
+            message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
 
             roomRepository.save(room);
             break;
           }
         }
+        message.setMessage("가득 찬 방입니다.");
         break;
       case START:
         if (room.getPlayers().size() % 2 == 1) {
@@ -80,28 +80,28 @@ public class MessageController {
         message.setMessage("곧 게임이 시작됩니다.");
         break;
       case EXIT:
-        int idx = getIndex(room.getPlayers(), user);
-        room.getPlayers().remove(idx);
+        for(int i = 1; i <= room.getRoomSize(); i++) {
+          if(room.getPlayers().get(i).equals(user)) {
+            room.getPlayers().remove(i);
+            selectNewHost(userInfo, system, room);
+            roomRepository.save(room);
+            message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
+            break;
+          }
+        }
 
         // 방의 인원이 0이 되면 방 목록에서 삭제
-        if (room.getPlayers().size() == 0) {
+        if (room.getPlayers().isEmpty()) {
           roomRepository.delete(room);
           break;
         }
-
-        selectNewHost(userInfo, system, room);
-
-        roomRepository.save(room);
-
-        message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-        break;
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
   private void selectNewHost(UserInfo userInfo, UserInfo system, GameRoom room) {
     if (userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-      for (int i = 1; i <= 8; i++) {
+      for (int i = 1; i <= room.getRoomSize(); i++) {
         User nextHost = room.getPlayers().get(i);
         log.info("방장 선발");
         if (nextHost != null) {
@@ -119,14 +119,5 @@ public class MessageController {
         }
       }
     }
-  }
-  public static <K, V> K getIndex(Map<K, V> map, V value) {
-
-    for (K key : map.keySet()) {
-      if (value.equals(map.get(key))) {
-        return key;
-      }
-    }
-    throw new AuthenticationException(ErrorCode.INVALID_USER);
   }
 }
