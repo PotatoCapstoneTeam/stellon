@@ -66,7 +66,7 @@ public class MessageController {
           }
 
           if (room.getPlayers().get(i) == null) {
-            room.getPlayers().put(i, user);
+            room.addPlayer(i, user);
             userInfo.setPlayerNumber(i);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
@@ -90,7 +90,7 @@ public class MessageController {
       case EXIT:
         UserInfo findUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
         if(!room.getPlayers().isEmpty()) {
-          room.getPlayers().remove(findUserInfo.getPlayerNumber());
+          room.removePlayer(findUserInfo.getPlayerNumber());
         }
 
         message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
