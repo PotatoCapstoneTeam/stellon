@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import useWebSocket from '../hooks/useWebSocket';
+import useLobbyWebSocket from '../hooks/useLobbyWebSocket';
 import { customColor } from '../constants/customColor';
 import { Typography } from './Typography';
 
@@ -10,20 +10,19 @@ interface IChatRoom {
 
 const ChatRoom = ({ state }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { connect, send, stompClient } = useWebSocket();
+  const { send } = useLobbyWebSocket();
   const [chat, setChat] = useState([]);
-  const [socketing, setSocketing] = useState('');
 
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
     if (formRef.current != null) {
-      const chattingl = {
+      const chatting = {
         roomId: 1,
         user: { id: 1, nickname: 'test' },
         message: formRef.current['chat'].value,
       };
-      send();
+      send(chatting);
       formRef.current['chat'].value = '';
     }
     // stompClient.disconnect(); 웹소켓 연결 해제

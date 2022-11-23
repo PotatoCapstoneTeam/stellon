@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
-import useWebSocket from '../../hooks/useWebSocket';
 import Info from './components/Info';
 import GameList from './components/GameList';
 import Chat from './components/Chat';
@@ -21,7 +20,6 @@ const LobbyPage = () => {
     'user_refresh_token',
   ]); // 쿠키 훅
   const [modalOpen, setModalOpen] = useState(false);
-  const { connect, send, stompClient } = useWebSocket();
   const navigate = useNavigate();
   const { firstEntering, enteringUser } = useApi();
   const [list, setList] = useState([]);
@@ -119,7 +117,6 @@ const LobbyPage = () => {
 
   useEffect(() => {
     login();
-    connect();
   }, []);
 
   useEffect(() => {
