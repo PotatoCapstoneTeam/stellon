@@ -10,6 +10,7 @@ import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
+import org.gamza.server.Error.Exception.AuthenticationException;
 import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
@@ -18,6 +19,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -82,7 +85,8 @@ public class MessageController {
         break;
       case EXIT:
         UserInfo pickUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("user");
-        room.getPlayers().remove(pickUserInfo.getPlayerNumber());
+        Integer idx = getIndex(room.getPlayers(), user);
+        room.getPlayers().remove(idx);
 
         // 방의 인원이 0이 되면 방 목록에서 삭제
         if (room.getPlayers().size() == 0) {
@@ -121,5 +125,14 @@ public class MessageController {
         }
       }
     }
+  }
+  public static <K, V> K getIndex(Map<K, V> map, V value) {
+
+    for (K key : map.keySet()) {
+      if (value.equals(map.get(key))) {
+        return key;
+      }
+    }
+    throw new AuthenticationException(ErrorCode.INVALID_USER);
   }
 }
