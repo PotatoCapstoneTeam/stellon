@@ -83,7 +83,7 @@ public class MessageController {
         for(int i = 1; i <= room.getRoomSize(); i++) {
           if(room.getPlayers().get(i).equals(user)) {
             room.getPlayers().remove(i);
-            selectNewHost(userInfo, system, room);
+            selectNewHost(userInfo, room);
             roomRepository.save(room);
             message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
             break;
@@ -99,22 +99,22 @@ public class MessageController {
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
-  private void selectNewHost(UserInfo userInfo, UserInfo system, GameRoom room) {
+  private void selectNewHost(UserInfo userInfo, GameRoom room) {
     if (userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
       for (int i = 1; i <= room.getRoomSize(); i++) {
         User nextHost = room.getPlayers().get(i);
         log.info("방장 선발");
         if (nextHost != null) {
-          UserInfo userInfo1 = UserInfo.builder()
+          UserInfo hostInfo = UserInfo.builder()
             .user(nextHost)
             .userStatus(UserStatus.ROLE_MANAGER)
             .build();
-          Message nextHostMessage = new Message();
-          nextHostMessage.setType(Message.MessageType.ROOM);
-          nextHostMessage.setGameRoom(room);
-          nextHostMessage.setUserInfo(system);
-          nextHostMessage.setMessage(userInfo1.getUser().getNickname() + " 님이 방장이 되셨습니다.");
-          operations.convertAndSend("/sub/room/" + room.getId(), nextHostMessage);
+          Message newHostMsg = Message.builder()
+            .type(Message.MessageType.ROOM)
+            .gameRoom(room)
+            .userInfo(hostInfo)
+            .message(hostInfo.getUser().getNickname() + "님이 방장이 되셨습니다.").build();
+          operations.convertAndSend("/sub/room/" + room.getId(), newHostMsg);
           break;
         }
       }

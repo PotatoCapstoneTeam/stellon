@@ -1,10 +1,12 @@
 package org.gamza.server.Entity;
 
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-  @Getter
-  @Setter
+  @Data
+  @Builder
   public class Message {
 
     // 메시지 타입: 입장, 대기방, 인 게임, 퇴장
