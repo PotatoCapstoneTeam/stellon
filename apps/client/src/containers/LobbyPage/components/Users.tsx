@@ -1,12 +1,15 @@
-import React from 'react';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
-const Users = () => {
+interface IUser {
+  list: string;
+}
+
+const Users = ({ list }: IUser) => {
   return (
     <User>
       <UserName color="black" size="12" fontWeight="900">
-        임송재
+        {list}
       </UserName>
       <UserInfoBtn>정보</UserInfoBtn>
     </User>

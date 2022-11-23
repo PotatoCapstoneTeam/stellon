@@ -6,7 +6,6 @@ export const Api = {
 
   getWithToken: async (url: string, token: string) =>
     await axios.get(setting.baseURL + url, {
-      // withCredentials: true,
       headers: { Authorization: token },
     }),
 
@@ -15,7 +14,6 @@ export const Api = {
       setting.baseURL + url,
       {},
       {
-        // withCredentials: true,
         headers: {
           Authorization: token,
           RefreshToken: refreshToken,

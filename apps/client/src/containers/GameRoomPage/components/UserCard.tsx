@@ -12,7 +12,6 @@ export const UserCard = ({ state }: IUserCard) => {
     <Container>
       <MySpaceShip>
         <SpaceShipImg src="../assets/UserCard/redSpaceShip_2.png" alt="none" />
-
         {state && (
           <Ready color="yellow" size="40" fontWeight="900">
             READY
@@ -86,6 +85,5 @@ const Container = styled.div`
   width: 200px;
   height: 184px;
   border: 2px solid transparent;
-  /* border: 2px solid yellow; */
   border-radius: 15px;
 `;

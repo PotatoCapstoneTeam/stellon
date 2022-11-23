@@ -1,11 +1,32 @@
+import { lobbyApi } from '../../../api/lobbyApi';
+import { useCookies } from 'react-cookie';
 import styled, { css } from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
 import Users from './Users';
-
+import { useEffect, useState } from 'react';
+interface IUserList {
+  nickname: string;
+}
 const UserList = () => {
+  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']);
+  const [list, setList] = useState<IUserList[]>([]);
+  const watchConnector = async () => {
+    try {
+      const res = await lobbyApi.connectingUser(cookies['user_access_token']);
+      console.log(res.data);
+      setList(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    watchConnector();
+  }, [cookies['user_access_token']]);
+
   return (
-    <ListBox>
+    <ListBox onClick={() => console.log(list)}>
       <Header>
         <Img src="../assets/InfoAirplane.png" />
         <Typography color="black" size="12">
@@ -13,8 +34,8 @@ const UserList = () => {
         </Typography>
       </Header>
       <List>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((e, index) => (
-          <Users key={index} />
+        {list.map((e, index) => (
+          <Users key={index} list={e.nickname} />
         ))}
       </List>
     </ListBox>

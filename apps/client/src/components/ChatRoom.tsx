@@ -1,17 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
 import useLobbyWebSocket from '../hooks/useLobbyWebSocket';
 import { customColor } from '../constants/customColor';
-import { Typography } from './Typography';
+import Chat from './Chat';
 
 interface IChatRoom {
   state: string;
 }
 
+export interface IChat {
+  nickname: string;
+  message: string;
+}
+
 const ChatRoom = ({ state }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { send } = useLobbyWebSocket();
-  const [chat, setChat] = useState([]);
+  const { send, lobbyChat } = useLobbyWebSocket();
 
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
@@ -25,21 +29,13 @@ const ChatRoom = ({ state }: IChatRoom) => {
       send(chatting);
       formRef.current['chat'].value = '';
     }
-    // stompClient.disconnect(); 웹소켓 연결 해제
   };
-
-  // useEffect(() => {
-  //   connect();
-  // }, []);
 
   return (
     <Room state={state}>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        끝말잇기빌런2 : 배고파여
-      </Chat>
+      {lobbyChat.map((e: IChat, index: number) => (
+        <Chat key={index} {...e} />
+      ))}
       <ChattingBox ref={formRef} onSubmit={submitChat}>
         <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
         <ChattingBtn type="submit">Enter</ChattingBtn>
@@ -70,12 +66,6 @@ const ChattingBox = styled.form`
   border-radius: 15px;
   background-color: rgba(127, 127, 127, 1);
   margin: 8px auto;
-`;
-const Chat = styled(Typography)`
-  width: 97%;
-  padding: 8px 6px;
-  border-bottom: 0.8px solid black;
-  margin: 0 auto;
 `;
 
 const Chatting = styled.input`

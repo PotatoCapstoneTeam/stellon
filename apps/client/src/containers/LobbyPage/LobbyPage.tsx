@@ -12,7 +12,6 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import CreateRoomModal from './modal/CreateRoomModal';
 import { lobbyApi } from '../../api/lobbyApi';
-import useApi from '../../util/useApi';
 
 const LobbyPage = () => {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -21,9 +20,7 @@ const LobbyPage = () => {
   ]); // 쿠키 훅
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { firstEntering, enteringUser } = useApi();
   const [list, setList] = useState([]);
-  const [stomp, setStomp] = useState(true);
 
   const logOut = () => {
     removeCookie('user_access_token');
@@ -45,7 +42,6 @@ const LobbyPage = () => {
     try {
       await loginApi.loginCheck(cookies['user_access_token']);
       console.log('로그인 성공');
-      // connect();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.response.data.code);
@@ -64,7 +60,6 @@ const LobbyPage = () => {
         'https://stellon.shop/auth/reissue',
         {},
         {
-          // withCredentials: true,
           headers: {
             Authorization: cookies['user_access_token'],
             RefreshToken: cookies['user_refresh_token'],
@@ -76,7 +71,6 @@ const LobbyPage = () => {
       setCookie('user_access_token', newAccessToken, { path: '/' }); // 쿠키에 access 토큰 저장
       setCookie('user_refresh_token', newRefreshToken, { path: '/' }); // 쿠키에 refresh 토큰 저장
       console.log('토큰 재발급 성공');
-      // connect();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err);
@@ -92,42 +86,28 @@ const LobbyPage = () => {
     // console.log(response);
   };
 
-  const watchConnector = async () => {
-    axios
-      .post(
-        'https://stellon.shop/room/lobby/users',
-        {},
-        {
-          // withCredentials: true,
-          headers: { Authorization: cookies['user_access_token'] },
-        }
-      )
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err + '게임방 리스트 POST'));
+  const register = async () => {
+    try {
+      const connectors = await lobbyApi.registration(
+        cookies['user_access_token']
+      );
+      console.log(connectors);
+    } catch (err) {
+      console.log(err);
+    }
   };
-  // try {
-  //   const connectors = await lobbyApi.connectors(
-  //     cookies['user_access_token']
-  //   );
-  //   console.log(connectors);
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  // };
-
+  
   useEffect(() => {
-    login();
+    (async () => {
+      await login();
+    })();
   }, []);
 
   useEffect(() => {
-    if (!cookies['user_access_token']) return;
     watchRoom();
+    register();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies['user_access_token']]);
-
-  // useEffect(() => {
-  //   console.log('웹 소켓 연결');
-  // }, [stomp]);
 
   return (
     <div>
