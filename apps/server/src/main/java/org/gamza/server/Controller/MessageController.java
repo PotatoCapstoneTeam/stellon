@@ -16,7 +16,6 @@ import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
@@ -33,7 +32,7 @@ public class MessageController {
   private final SimpMessageSendingOperations operations;
 
   @MessageMapping("/message")
-  public void sendMessage(Message message, SimpMessageHeaderAccessor headerAccessor) {
+  public void sendMessage(Message message) {
     UserInfo userInfo = message.getUserInfo();
     FindRoomDto findRoomDto = FindRoomDto.builder()
       .id(message.getGameRoom().getId())
@@ -68,9 +67,6 @@ public class MessageController {
             userInfo.setPlayerNumber(i);
 
             roomRepository.save(room);
-
-            headerAccessor.getSessionAttributes().put("user", userInfo);
-            headerAccessor.getSessionAttributes().put("roomId", message.getGameRoom().getId());
             break;
           }
         }
@@ -84,8 +80,7 @@ public class MessageController {
         message.setMessage("곧 게임이 시작됩니다.");
         break;
       case EXIT:
-        UserInfo pickUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("user");
-        Integer idx = getIndex(room.getPlayers(), user);
+        int idx = getIndex(room.getPlayers(), user);
         room.getPlayers().remove(idx);
 
         // 방의 인원이 0이 되면 방 목록에서 삭제
@@ -94,10 +89,9 @@ public class MessageController {
           break;
         }
 
-        selectNewHost(pickUserInfo, system, room);
+        selectNewHost(userInfo, system, room);
 
-        headerAccessor.getSessionAttributes().remove("user");
-        headerAccessor.getSessionAttributes().remove("room");
+        roomRepository.save(room);
 
         message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
         break;

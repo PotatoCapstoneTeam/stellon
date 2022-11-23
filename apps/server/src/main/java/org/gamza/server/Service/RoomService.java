@@ -108,8 +108,12 @@ public class RoomService {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    int idx = lobby.getPlayers().size();
-    lobby.getPlayers().put(idx + 1, findUser);
+    for(int i = 1; i<= 100; i++) {
+      if(lobby.getPlayers().get(i) == null) {
+        lobby.getPlayers().put(i, findUser);
+        break;
+      }
+    }
     roomRepository.save(lobby);
   }
 
