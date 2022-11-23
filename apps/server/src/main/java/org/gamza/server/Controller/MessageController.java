@@ -89,8 +89,9 @@ public class MessageController {
 
       case EXIT:
         UserInfo findUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
-
-        room.getPlayers().remove(findUserInfo.getPlayerNumber());
+        if(!room.getPlayers().isEmpty()) {
+          room.getPlayers().remove(findUserInfo.getPlayerNumber());
+        }
 
         message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
 
@@ -98,6 +99,7 @@ public class MessageController {
         if (room.getPlayers().isEmpty()) {
           headerAccessor.getSessionAttributes().remove("userInfo");
           headerAccessor.getSessionAttributes().remove("roomId");
+          room.getPlayers().clear();
           roomRepository.delete(room);
           break;
         }
@@ -108,6 +110,7 @@ public class MessageController {
         }
         headerAccessor.getSessionAttributes().remove("userInfo");
         headerAccessor.getSessionAttributes().remove("roomId");
+        break;
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
