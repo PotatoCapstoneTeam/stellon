@@ -10,7 +10,6 @@ import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
-import org.gamza.server.Error.Exception.AuthenticationException;
 import org.gamza.server.Error.Exception.RoomEnterException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
@@ -18,8 +17,6 @@ import org.gamza.server.Service.RoomService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,6 +68,7 @@ public class MessageController {
         }
         message.setMessage("가득 찬 방입니다.");
         break;
+
       case START:
         if (room.getPlayers().size() % 2 == 1) {
           message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
@@ -79,11 +77,12 @@ public class MessageController {
         message.setUserInfo(system);
         message.setMessage("곧 게임이 시작됩니다.");
         break;
+
       case EXIT:
+        boolean isManager = userInfo.getUserStatus() == UserStatus.ROLE_MANAGER;
         for(int i = 1; i <= room.getRoomSize(); i++) {
           if(room.getPlayers().get(i).equals(user)) {
             room.getPlayers().remove(i);
-            selectNewHost(userInfo, room);
             roomRepository.save(room);
             message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
             break;
@@ -95,28 +94,32 @@ public class MessageController {
           roomRepository.delete(room);
           break;
         }
+
+        // 방장이였다면 방장 재선택
+        if(isManager) {
+          selectNewHost(room);
+          break;
+        }
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
-  private void selectNewHost(UserInfo userInfo, GameRoom room) {
-    if (userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-      for (int i = 1; i <= room.getRoomSize(); i++) {
-        User nextHost = room.getPlayers().get(i);
-        log.info("방장 선발");
-        if (nextHost != null) {
-          UserInfo hostInfo = UserInfo.builder()
-            .user(nextHost)
-            .userStatus(UserStatus.ROLE_MANAGER)
-            .build();
-          Message newHostMsg = Message.builder()
-            .type(Message.MessageType.ROOM)
-            .gameRoom(room)
-            .userInfo(hostInfo)
-            .message(hostInfo.getUser().getNickname() + "님이 방장이 되셨습니다.").build();
-          operations.convertAndSend("/sub/room/" + room.getId(), newHostMsg);
-          break;
-        }
+  private void selectNewHost(GameRoom room) {
+    for (int i = 1; i <= room.getRoomSize(); i++) {
+      User nextHost = room.getPlayers().get(i);
+      log.info("방장 선발");
+      if (nextHost != null) {
+        UserInfo hostInfo = UserInfo.builder()
+          .user(nextHost)
+          .userStatus(UserStatus.ROLE_MANAGER)
+          .build();
+        Message newHostMsg = Message.builder()
+          .type(Message.MessageType.ROOM)
+          .gameRoom(room)
+          .userInfo(hostInfo)
+          .message(hostInfo.getUser().getNickname() + "님이 방장이 되셨습니다.").build();
+        operations.convertAndSend("/sub/room/" + room.getId(), newHostMsg);
+        break;
       }
     }
   }
