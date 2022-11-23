@@ -15,8 +15,12 @@ import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,7 +33,7 @@ public class MessageController {
   private final SimpMessageSendingOperations operations;
 
   @MessageMapping("/message")
-  public void sendMessage(Message message) {
+  public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
     UserInfo userInfo = message.getUserInfo();
     FindRoomDto findRoomDto = FindRoomDto.builder()
       .id(message.getGameRoom().getId())
@@ -38,6 +42,8 @@ public class MessageController {
       .build();
 
     User user = userRepository.findByNickname(userInfo.getUser().getNickname());
+    userInfo.setUser(user);
+    userInfo.setUserStatus(UserStatus.ROLE_USER);
     GameRoom room = roomService.findRoom(findRoomDto);
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
       throw new RoomEnterException(ErrorCode.BAD_REQUEST);
@@ -48,7 +54,7 @@ public class MessageController {
     message.setGameRoom(room);
 
     switch (message.getType()) { // 메시지 타입 검사
-      case JOIN: // 방 입장
+      case JOIN: // 방 입장 => 잘 됨
         if(room.getPlayers().size() == room.getRoomSize()) {
           message.setMessage("가득 찬 방입니다.");
           break;
@@ -57,13 +63,13 @@ public class MessageController {
         for (int i = 1; i <= room.getRoomSize(); i++) {
           if (room.getPlayers().isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
-          } else {
-            userInfo.setUserStatus(UserStatus.ROLE_USER);
           }
 
           if (room.getPlayers().get(i) == null) {
             room.getPlayers().put(i, user);
             userInfo.setPlayerNumber(i);
+            headerAccessor.getSessionAttributes().put("userInfo", userInfo);
+            headerAccessor.getSessionAttributes().put("roomId", room.getId());
             message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
 
             roomRepository.save(room);
@@ -72,7 +78,7 @@ public class MessageController {
         }
         break;
 
-      case START:
+      case START: // 잘 됨
         if (room.getPlayers().size() % 2 == 1) {
           message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
           break;
@@ -82,29 +88,26 @@ public class MessageController {
         break;
 
       case EXIT:
-        boolean isManager = userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER);
-        for(int i = 1; i <= room.getRoomSize(); i++) {
-          System.out.println(room.getPlayers().get(i));
-          System.out.println(user);
-          if(room.getPlayers().get(i).equals(userInfo.getUser())) {
-            room.getPlayers().remove(i);
-            roomRepository.save(room);
-            message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-            break;
-          }
-        }
+        UserInfo findUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
+
+        room.getPlayers().remove(findUserInfo.getPlayerNumber());
+
+        message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
 
         // 방의 인원이 0이 되면 방 목록에서 삭제
         if (room.getPlayers().isEmpty()) {
+          headerAccessor.getSessionAttributes().remove("userInfo");
+          headerAccessor.getSessionAttributes().remove("roomId");
           roomRepository.delete(room);
           break;
         }
 
         // 방장이였다면 방장 재선택
-        if(isManager) {
+        if(findUserInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
           selectNewHost(room);
-          break;
         }
+        headerAccessor.getSessionAttributes().remove("userInfo");
+        headerAccessor.getSessionAttributes().remove("roomId");
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
