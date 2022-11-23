@@ -5,10 +5,12 @@ import { Stage } from './stages';
 
 const router = express.Router();
 
+type Team = 'RED_TEAM' | 'BLUE_TEAM';
+
 type User = {
-  id: string;
+  id: number;
   nickname: string;
-  team: 'red' | 'blue';
+  team: Team;
 };
 
 type ApiPostRequestBody = {
@@ -20,7 +22,7 @@ type ApiPostRequestBody = {
 type ApiPostResponseBody = {
   id: string;
   users: {
-    id: string;
+    id: number;
     token: string;
   }[];
 };
@@ -55,7 +57,7 @@ router.post(
           id: stage.id,
           users: req.body.users.map((user) => {
             return {
-              id: user.id,
+              userId: user.id,
               kill: 10,
               death: 10,
             };
