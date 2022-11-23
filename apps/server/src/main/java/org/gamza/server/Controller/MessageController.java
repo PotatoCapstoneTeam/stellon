@@ -49,6 +49,10 @@ public class MessageController {
 
     switch (message.getType()) { // 메시지 타입 검사
       case JOIN: // 방 입장
+        if(room.getPlayers().size() == room.getRoomSize()) {
+          message.setMessage("가득 찬 방입니다.");
+          break;
+        }
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
         for (int i = 1; i <= room.getRoomSize(); i++) {
           if (room.getPlayers().isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
@@ -66,7 +70,6 @@ public class MessageController {
             break;
           }
         }
-        message.setMessage("가득 찬 방입니다.");
         break;
 
       case START:
@@ -79,9 +82,11 @@ public class MessageController {
         break;
 
       case EXIT:
-        boolean isManager = userInfo.getUserStatus() == UserStatus.ROLE_MANAGER;
+        boolean isManager = userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER);
         for(int i = 1; i <= room.getRoomSize(); i++) {
-          if(room.getPlayers().get(i).equals(user)) {
+          System.out.println(room.getPlayers().get(i));
+          System.out.println(user);
+          if(room.getPlayers().get(i).equals(userInfo.getUser())) {
             room.getPlayers().remove(i);
             roomRepository.save(room);
             message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
