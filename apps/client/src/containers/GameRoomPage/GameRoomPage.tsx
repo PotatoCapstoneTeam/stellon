@@ -62,7 +62,7 @@ const BackgroundBox = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(198, 198, 198, 1);
-  opacity: 0.7;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: 10px;
   border-radius: 10px;
 `;

@@ -9,7 +9,7 @@ export const Api = {
       headers: { Authorization: token },
     }),
 
-  postWithToken: async (url: string, token: any, refreshToken?: any) =>
+  postWithToken: async (url: string, token: string, refreshToken?: string) =>
     await axios.post(
       setting.baseURL + url,
       {},

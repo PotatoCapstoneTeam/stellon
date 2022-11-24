@@ -1,6 +1,7 @@
-import { Stomp } from '@stomp/stompjs';
+import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { IChat } from '../components/ChatRoom';
 
 interface IUser {
   id: number;
@@ -13,31 +14,47 @@ interface IMessage {
 }
 
 const useLobbyWebSocket = () => {
-  const [lobbyChat, setLobbyChat] = useState<any>([]);
-  const socket = new SockJS('https://stellon.shop/ws-stomp');
-  const stompClient = Stomp.over(() => {
-    return socket;
-  });
+  const [lobbyChat, setLobbyChat] = useState<IChat[]>([]);
+  const client = useRef<CompatClient>();
 
-  stompClient.connect({}, (frame: string) => {
-    console.log('Connected: ' + frame);
+  useEffect(() => {
+    if (!client.current) {
+      const socket = new SockJS('https://stellon.shop/ws-stomp');
+      client.current = Stomp.over(() => {
+        return socket;
+      });
 
-    stompClient.subscribe('/sub/lobby', (res) => {
-      if (res != null) {
-        console.log(JSON.parse(res.body));
-        setLobbyChat((prev: any) => [...prev, JSON.parse(res.body)]);
-        console.log(lobbyChat);
-      } else {
-        console.log('none');
-      }
-    });
-  });
+      client.current.connect({}, (frame: string) => {
+        console.log('Connected: ' + frame);
+
+        client.current?.subscribe('/sub/lobby', (res) => {
+          if (res != null) {
+            console.log(JSON.parse(res.body));
+            setLobbyChat((prev: IChat[]) => {
+              const chat = [...prev, JSON.parse(res.body)];
+              console.log(chat);
+              return chat;
+            });
+          } else {
+            console.log('none');
+          }
+        });
+      });
+    }
+    return () => {
+      client.current?.disconnect();
+      client.current = undefined;
+      console.log('웹소켓 끊어짐');
+    };
+  }, []);
 
   const send = (chatting: IMessage) => {
-    stompClient.send('/pub/chat', {}, JSON.stringify(chatting));
+    if (client.current?.connected) {
+      client.current.send('/pub/chat', {}, JSON.stringify(chatting));
+    }
   };
 
-  return { send, stompClient, lobbyChat };
+  return { send, lobbyChat };
 };
 
 export default useLobbyWebSocket;
