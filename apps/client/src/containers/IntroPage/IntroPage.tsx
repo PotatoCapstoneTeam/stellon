@@ -1,14 +1,14 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { css, keyframes } from 'styled-components';
+import styled from 'styled-components';
 import axios from 'axios';
 import Space from '../../canvas/Space';
 import { useCookies } from 'react-cookie';
 import { Typography } from '../../components/Typography';
+import SignUpButton from './components/SignUpButton';
+import LoginButton from './components/LoginButton';
 
 const IntroPage = () => {
-  const [loginHover, setLoginHover] = useState(false);
-  const [signUpHover, setSignUpHover] = useState(false);
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const [cookies, setCookie] = useCookies([
@@ -57,43 +57,8 @@ const IntroPage = () => {
             </PwBox>
           </LoginBox>
           <BtnBox>
-            <SignUpBtn
-              type="button"
-              onMouseOver={() => {
-                setSignUpHover(true);
-              }}
-              onMouseOut={() => {
-                setSignUpHover(false);
-              }}
-              onClick={() => navigate('/signUp')}
-            >
-              <BtnTypography size="24" color="white">
-                SIGN UP
-              </BtnTypography>
-              <SignUpImg
-                src="../assets/redFighter.png"
-                alt="none"
-                hover={signUpHover}
-              />
-            </SignUpBtn>
-            <LoginBtn
-              type="submit"
-              onMouseOver={() => {
-                setLoginHover(true);
-              }}
-              onMouseOut={() => {
-                setLoginHover(false);
-              }}
-            >
-              <BtnTypography size="24" color="white">
-                LOGIN
-              </BtnTypography>
-              <LoginImg
-                src="../assets/blueFighter.png"
-                alt="none"
-                hover={loginHover}
-              />
-            </LoginBtn>
+            <SignUpButton />
+            <LoginButton />
           </BtnBox>
         </LoginForm>
       </Container>
@@ -103,68 +68,9 @@ const IntroPage = () => {
 
 export default IntroPage;
 
-const hoverBtn = keyframes`
-  0%{
-    left: 2px;
-  }
-  50%{
-    left: 4px;
-  }
-  100%{
-    left: 8px;
-  }
-`;
-
-const Animate = css`
-  animation: ${hoverBtn} 0.5s linear 1s infinite;
-`;
-
-const Img = styled.img<{ hover: boolean }>`
-  position: relative;
-  width: 32px;
-  height: 32px;
-  margin-left: 12px;
-`;
-
-const SignUpImg = styled(Img)<{ hover: boolean }>`
-  ${(props) => props.hover && Animate};
-`;
-
-const LoginImg = styled(Img)<{ hover: boolean }>`
-  ${(props) => props.hover && Animate};
-`;
-
-const LoginBtn = styled.button`
-  border: 0;
-  background-color: transparent;
-  outline: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  height: 36px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
 const BtnBox = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const SignUpBtn = styled.button`
-  border: 0;
-  background-color: transparent;
-  outline: 0;
-  &:hover {
-    cursor: pointer;
-  }
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  height: 36px;
-  margin-right: 12px;
 `;
 
 const LoginBox = styled.div`
@@ -217,9 +123,5 @@ const IntroImg = styled.img`
 const NewTypography = styled(Typography)`
   width: 48px;
   text-align: center;
-  line-height: 32px;
-`;
-
-const BtnTypography = styled(Typography)`
   line-height: 32px;
 `;

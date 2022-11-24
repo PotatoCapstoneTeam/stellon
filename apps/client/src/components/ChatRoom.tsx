@@ -1,42 +1,41 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
-import useWebSocket from '../hooks/useWebSocket';
+import useLobbyWebSocket from '../hooks/useLobbyWebSocket';
 import { customColor } from '../constants/customColor';
-import { Typography } from './Typography';
+import Chat from './Chat';
 
 interface IChatRoom {
   state: string;
 }
 
+export interface IChat {
+  nickname: string;
+  message: string;
+}
+
 const ChatRoom = ({ state }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const [chat, setChat] = useState([]);
-  const [socketing, setSocketing] = useState('');
-  const { connect, send } = useWebSocket();
+  const { send, lobbyChat } = useLobbyWebSocket();
+
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = formRef.current?.['chat'].value;
-
-    // stompClient.disconnect(); 웹소켓 연결 해제
     if (formRef.current != null) {
-      send();
+      const chatting = {
+        roomId: 1,
+        user: { id: 1, nickname: 'test' },
+        message: formRef.current['chat'].value,
+      };
+      send(chatting);
       formRef.current['chat'].value = '';
     }
   };
 
-  useEffect(() => {
-    connect();
-  }, []);
-
   return (
     <Room state={state}>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        끝말잇기빌런2 : 배고파여
-      </Chat>
+      {lobbyChat.map((e: IChat, index: number) => (
+        <Chat key={index} {...e} />
+      ))}
       <ChattingBox ref={formRef} onSubmit={submitChat}>
         <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
         <ChattingBtn type="submit">Enter</ChattingBtn>
@@ -67,12 +66,6 @@ const ChattingBox = styled.form`
   border-radius: 15px;
   background-color: rgba(127, 127, 127, 1);
   margin: 8px auto;
-`;
-const Chat = styled(Typography)`
-  width: 97%;
-  padding: 8px 6px;
-  border-bottom: 0.8px solid black;
-  margin: 0 auto;
 `;
 
 const Chatting = styled.input`
