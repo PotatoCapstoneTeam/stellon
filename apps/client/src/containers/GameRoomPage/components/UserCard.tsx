@@ -7,7 +7,6 @@ interface IUserCard {
 }
 
 export const UserCard = ({ state }: IUserCard) => {
-  console.log(state);
   return (
     <Container>
       <MySpaceShip>

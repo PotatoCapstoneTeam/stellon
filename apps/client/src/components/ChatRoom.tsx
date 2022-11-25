@@ -6,6 +6,8 @@ import Chat from './Chat';
 
 interface IChatRoom {
   state: string;
+  roomId?: string;
+  nickname?: string;
 }
 
 export interface IChat {
@@ -13,18 +15,18 @@ export interface IChat {
   message: string;
 }
 
-const ChatRoom = ({ state }: IChatRoom) => {
+const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { send, lobbyChat } = useLobbyWebSocket();
-
+  const { send, lobbyChat } = useLobbyWebSocket(state, roomId as string);
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formRef.current != null) {
+    if (formRef.current != null && formRef.current['chat'].value !== '') {
+      const message = formRef.current['chat'].value;
       const chatting = {
-        roomId: 1,
-        user: { id: 1, nickname: 'test' },
-        message: formRef.current['chat'].value,
+        roomId: roomId ? parseInt(roomId) : 1,
+        user: { id: 1, nickname: nickname ?? '이름 없음' },
+        message,
       };
       send(chatting);
       formRef.current['chat'].value = '';

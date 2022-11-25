@@ -1,12 +1,27 @@
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import ChatRoom from '../../components/ChatRoom';
+import useLogin from '../../hooks/useLogin';
+import useUser from '../../hooks/useUser';
 import { Map, Title, Info, Client, State } from './components/index';
 
 const GameRoomPage = () => {
   const { id } = useParams();
-  console.log(id);
+  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
+  const { login } = useLogin();
+  const { user, deleteUserList, userInfo } = useUser();
+
+  useEffect(() => {
+    (async () => {
+      await login();
+      await deleteUserList();
+      user();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookies['user_access_token']]);
 
   return (
     <div>
@@ -20,7 +35,11 @@ const GameRoomPage = () => {
         <Article>
           <Client />
           <Map />
-          <ChatRoom state="chatRoom" />
+          <ChatRoom
+            state="chatRoom"
+            roomId={id}
+            nickname={userInfo?.nickname}
+          />
           <State />
         </Article>
       </Container>

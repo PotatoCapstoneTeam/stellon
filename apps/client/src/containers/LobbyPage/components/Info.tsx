@@ -1,40 +1,15 @@
-import { lobbyApi } from '../../../api/lobbyApi';
-import { useCookies } from 'react-cookie';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
-import { useEffect, useState } from 'react';
+import { IInfo } from '../LobbyPage';
 
-interface IInfo {
-  nickname: string;
-  winRecord: number;
-  loseRecord: number;
-}
-
-const Info = () => {
-  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']);
-  const [data, setData] = useState<IInfo>();
-  const win = data?.winRecord || 0;
-  const lose = data?.loseRecord || 0;
-  const percentage = (win! * 100) / (lose! + win!) || 0;
-
-  const user = async () => {
-    try {
-      const info = await lobbyApi.myInfo(cookies['user_access_token']);
-      console.log(info.data);
-      setData(info.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    user();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies['user_access_token']]);
+const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
+  const win = winRecord || 0;
+  const lose = loseRecord || 0;
+  const percentage = (win * 100) / (lose + win) || 0;
 
   return (
-    <InfoBox onClick={() => console.log(data)}>
+    <InfoBox>
       <InfoHeader>
         <InfoAirplane src="../assets/InfoAirplane.png" alt="none" />
         <Typography color="black" size="16">
@@ -46,7 +21,7 @@ const Info = () => {
       </AirplaneBox>
       <NickName>
         <Typography color="black" size="16" fontWeight="900">
-          {data?.nickname || '이름없음'}
+          {nickname || '이름없음'}
         </Typography>
       </NickName>
       <Record>
