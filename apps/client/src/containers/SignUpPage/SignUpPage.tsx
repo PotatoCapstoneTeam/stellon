@@ -1,12 +1,10 @@
 import styled, { css, keyframes } from 'styled-components';
-import Space from '../canvas/Space';
-import { Typography } from '../components/Typography';
+import Space from '../../canvas/Space';
+import { Typography } from '../../components/Typography';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { errorMonitor } from 'events';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import IntroPage from '../containers/IntroPage/IntroPage';
 
 interface IFormInput {
   email: string;
@@ -21,13 +19,15 @@ const SignUp = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
 
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-    
   } = useForm<IFormInput>();
+  const password = useRef({});
+
 
   const onSubmit: SubmitHandler<IFormInput> = async (data, events) => {
     console.log(data);
@@ -45,6 +45,8 @@ const SignUp = () => {
       alert(err.response.data.error);
     }
   };
+
+  
 
 
  
@@ -70,6 +72,7 @@ const SignUp = () => {
                   },
                 })}
                 placeholder="이메일을 입력해주세요"
+                name = "email"
               />
             </EmailBox>
             {errors.email && <Message>{errors.email.message}</Message>}
@@ -91,6 +94,7 @@ const SignUp = () => {
                   },
                 })}
                 placeholder="닉네임을 입력해주세요"
+                name = "nickname"
               />
             </NameBox>
             {errors.nickname && <Message>{errors.nickname.message}</Message>}
@@ -112,6 +116,7 @@ const SignUp = () => {
                 })}
                 placeholder="비밀번호를 입력해주세요"
                 type="password"
+                name = "password"
               />
             </PwBox>
             {errors.password && <Message>{errors.password.message}</Message>}
@@ -123,14 +128,17 @@ const SignUp = () => {
               <PwChkInput
                 {...register('passwordCheck', {
                   required: '비밀번호를 확인해주세요',
+                  validate: (value) => value === watch('password'),
+                
                 })}
+
                 type="password"
                 placeholder="비밀번호를 확인해주세요"
+                name = "passwordCheck"
               />
             </PwChkBox>
-            {errors.passwordCheck && (
-              <Message>{errors.passwordCheck.message}</Message>
-            )}
+           <Message></Message>
+            
           </SignUpBox>
           <BtnBox>
             <LoginBtn
