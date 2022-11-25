@@ -35,7 +35,7 @@ public class User extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   private Authority authority;
 
-  @Column(nullable = false)
+  @Column
   @Enumerated(EnumType.STRING)
   private TeamStatus teamStatus;
 
