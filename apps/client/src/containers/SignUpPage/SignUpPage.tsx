@@ -19,20 +19,27 @@ const SignUp = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
 
-
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
+    setError,
   } = useForm<IFormInput>();
-  const password = useRef({});
+
+  const passwordRef = useRef<string | null>(null)
+    passwordRef.current = watch("password")
+
+
+
 
 
   const onSubmit: SubmitHandler<IFormInput> = async (data, events) => {
     console.log(data);
     events?.preventDefault();
+
     try {
+    
       const res = await axios.post('https://stellon.shop/auth/join', {
         email: formRef.current?.['email'].value,
         nickname: formRef.current?.['nickname'].value,
@@ -45,11 +52,6 @@ const SignUp = () => {
       alert(err.response.data.error);
     }
   };
-
-  
-
-
- 
 
   return (
     <>
@@ -72,7 +74,7 @@ const SignUp = () => {
                   },
                 })}
                 placeholder="이메일을 입력해주세요"
-                name = "email"
+                name="email"
               />
             </EmailBox>
             {errors.email && <Message>{errors.email.message}</Message>}
@@ -94,7 +96,7 @@ const SignUp = () => {
                   },
                 })}
                 placeholder="닉네임을 입력해주세요"
-                name = "nickname"
+                name="nickname"
               />
             </NameBox>
             {errors.nickname && <Message>{errors.nickname.message}</Message>}
@@ -116,7 +118,7 @@ const SignUp = () => {
                 })}
                 placeholder="비밀번호를 입력해주세요"
                 type="password"
-                name = "password"
+                name="password"
               />
             </PwBox>
             {errors.password && <Message>{errors.password.message}</Message>}
@@ -126,19 +128,20 @@ const SignUp = () => {
                 PW Check
               </NewTypography>
               <PwChkInput
-                {...register('passwordCheck', {
-                  required: '비밀번호를 확인해주세요',
-                  validate: (value) => value === watch('password'),
-                
-                })}
-
+                 {...register("passwordCheck", {
+                  required: "비밀번호를 확인해주세요",
+                  validate: (value) => value === passwordRef.current,
+                  })} 
                 type="password"
                 placeholder="비밀번호를 확인해주세요"
-                name = "passwordCheck"
-              />
+                name="passwordCheck"
+                />
             </PwChkBox>
-           <Message></Message>
-            
+            {errors.passwordCheck && errors.passwordCheck.type === "validate" && (
+        		<Message>비밀번호가 일치하지않습니다</Message>
+        	)}
+
+           
           </SignUpBox>
           <BtnBox>
             <LoginBtn
