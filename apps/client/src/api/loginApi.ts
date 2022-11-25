@@ -1,11 +1,20 @@
 import { Api } from './common';
 
+interface ILogin {
+  email: string;
+  password: string;
+}
+
 export const loginApi = {
-  loginCheck: async (token: any) => {
-    await Api.postWithToken('/auth/validate', token);
+  loginCheck: async (token: string) => {
+    return await Api.postWithToken('/auth/validate', token);
   },
 
-  receiveRefreshToken: async (accessToken: any, refreshToken: any) => {
-    await Api.postWithToken('/auth/reissue', accessToken, refreshToken);
+  receiveRefreshToken: async (accessToken: string, refreshToken: string) => {
+    return await Api.postWithToken('/auth/reissue', accessToken, refreshToken);
+  },
+
+  login: async (data: ILogin) => {
+    return await Api.postWithParams('/auth/login', data);
   },
 };
