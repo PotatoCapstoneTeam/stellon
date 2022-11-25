@@ -6,6 +6,7 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
+import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
@@ -127,10 +128,11 @@ public class RoomService {
   }
 
   @Transactional
-  public void validateRoomPass(FindRoomDto findRoomDto) {
-    GameRoom room = this.findRoom(findRoomDto);
+  public void validateRoomPass(RoomValidDto roomValidDto) {
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId())
+      .orElseThrow();
     if(!room.getPassword().isBlank()) {
-      if(!passwordEncoder.matches(findRoomDto.getPassword(), room.getPassword())) {
+      if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
         throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
       }
     }
