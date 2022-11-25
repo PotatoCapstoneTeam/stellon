@@ -9,7 +9,7 @@ import org.gamza.server.Enum.RoomStatus;
 @Getter
 @Setter
 public class FindRoomDto {
-  private Long id;
+  private Long roomId;
   private String roomName;
-  private RoomStatus roomStatus;
+  private String password;
 }

@@ -1,12 +1,10 @@
 package org.gamza.server.Error;
 
 import lombok.extern.slf4j.Slf4j;
-import org.gamza.server.Error.Exception.AuthenticationException;
-import org.gamza.server.Error.Exception.DuplicateException;
-import org.gamza.server.Error.Exception.LoginFailedException;
-import org.gamza.server.Error.Exception.RoomEnterException;
+import org.gamza.server.Error.Exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,11 +33,17 @@ public class ErrorExceptionHandler {
     return new ResponseEntity<>(response, ErrorCode.INVALID_USER.getStatus());
   }
 
-  @ExceptionHandler(RoomEnterException.class)
-  public ResponseEntity<ErrorResponse> handleRoomEnterException(RoomEnterException ex) {
-    log.error("handleRoomEnterException", ex);
-    ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage());
+  @ExceptionHandler(RoomException.class)
+  public ResponseEntity<ErrorResponse> handleRoomException(RoomException ex) {
+    log.error("handleRoomException", ex);
+    ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getMessage());
     return new ResponseEntity<>(response, ErrorCode.BAD_REQUEST.getStatus());
   }
 
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleNotValidException(NotValidException ex) {
+    log.error("handleNotValidException", ex);
+    ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage());
+    return new ResponseEntity<>(response, ErrorCode.BAD_REQUEST.getStatus());
+  }
 }

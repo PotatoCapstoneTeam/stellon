@@ -10,6 +10,7 @@ import org.gamza.server.Enum.RoomType;
 import javax.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class GameRoom extends BaseTimeEntity {
   @Column(nullable = false)
   private String roomName;
 
-  @OneToMany(fetch = FetchType.EAGER)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
@@ -46,4 +47,14 @@ public class GameRoom extends BaseTimeEntity {
 
   @Column
   private String password;
+
+  public void addPlayer(int idx, User user) {
+    HashMap<Integer, User> playersHashMap = new HashMap<>();
+    playersHashMap.put(idx, user);
+    this.players = playersHashMap;
+  }
+
+  public void removePlayer(int idx) {
+    this.players.remove(idx);
+  }
 }

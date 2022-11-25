@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
@@ -7,13 +6,11 @@ interface IUserCard {
   // 레디상태, 닉네임, 비행기 색깔와 기종, 유저의 정보 필요
 }
 
-const UserCard = ({ state }: IUserCard) => {
-  console.log(state);
+export const UserCard = ({ state }: IUserCard) => {
   return (
     <Container>
       <MySpaceShip>
         <SpaceShipImg src="../assets/UserCard/redSpaceShip_2.png" alt="none" />
-
         {state && (
           <Ready color="yellow" size="40" fontWeight="900">
             READY
@@ -87,6 +84,5 @@ const Container = styled.div`
   width: 200px;
   height: 184px;
   border: 2px solid transparent;
-  /* border: 2px solid yellow; */
   border-radius: 15px;
 `;

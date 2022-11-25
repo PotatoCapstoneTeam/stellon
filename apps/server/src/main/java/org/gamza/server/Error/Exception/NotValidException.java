@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.gamza.server.Error.ErrorCode;
 
 @Getter
-public class RoomEnterException extends RuntimeException {
-  private ErrorCode errorCode;
+public class NotValidException extends IllegalStateException {
+  private final ErrorCode errorCode;
 
-  public RoomEnterException(ErrorCode errorCode) {
+  public NotValidException(ErrorCode errorCode) {
     this.errorCode = errorCode;
   }
 }

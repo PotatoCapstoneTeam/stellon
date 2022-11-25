@@ -14,7 +14,7 @@ export function App() {
           <Route path="/" element={<Intro />} />
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/game_room" element={<GameRoom />} />
+          <Route path="/game_room/:id" element={<GameRoom />} />
         </Routes>
       </BrowserRouter>
     </CookiesProvider>
