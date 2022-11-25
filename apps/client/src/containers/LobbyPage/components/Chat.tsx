@@ -1,8 +1,9 @@
 import ChatRoom from '../../../components/ChatRoom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
+import { IInfo } from '../LobbyPage';
 
-const Chat = () => {
+const Chat = (data: IInfo) => {
   return (
     <ChatBox>
       <ChatHeader>
@@ -11,7 +12,7 @@ const Chat = () => {
           실시간 채팅
         </LiveChat>
       </ChatHeader>
-      <ChatRoom state="lobby" />
+      <ChatRoom state="lobby" {...data} />
     </ChatBox>
   );
 };

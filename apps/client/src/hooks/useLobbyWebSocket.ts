@@ -13,11 +13,12 @@ interface IMessage {
   message: string;
 }
 
-const useLobbyWebSocket = () => {
+const useLobbyWebSocket = (state: string, roomId: string) => {
   const [lobbyChat, setLobbyChat] = useState<IChat[]>([]);
   const client = useRef<CompatClient>();
 
   useEffect(() => {
+    const url = state === 'lobby' ? `/sub/lobby` : `/sub/room/${roomId}`;
     if (!client.current) {
       const socket = new SockJS('https://stellon.shop/ws-stomp');
       client.current = Stomp.over(() => {
@@ -25,9 +26,9 @@ const useLobbyWebSocket = () => {
       });
 
       client.current.connect({}, (frame: string) => {
-        console.log('Connected: ' + frame);
+        console.log('웹소켓 연결');
 
-        client.current?.subscribe('/sub/lobby', (res) => {
+        client.current?.subscribe(url, (res) => {
           if (res != null) {
             console.log(JSON.parse(res.body));
             setLobbyChat((prev: IChat[]) => {

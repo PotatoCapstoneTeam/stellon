@@ -12,6 +12,11 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import CreateRoomModal from './modal/CreateRoomModal';
 import { lobbyApi } from '../../api/lobbyApi';
+export interface IInfo {
+  nickname: string;
+  winRecord: number;
+  loseRecord: number;
+}
 
 const LobbyPage = () => {
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -20,6 +25,7 @@ const LobbyPage = () => {
   ]); // 쿠키 훅
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [data, setData] = useState<IInfo>();
   const [list, setList] = useState([]);
 
   const logOut = () => {
@@ -31,7 +37,6 @@ const LobbyPage = () => {
   const watchRoom = async () => {
     try {
       const rooms = await lobbyApi.loadRoom(cookies['user_access_token']);
-      console.log('룸 데이터 가져오기 성공', rooms.data);
       setList(rooms.data);
     } catch (err) {
       console.log(err);
@@ -96,16 +101,24 @@ const LobbyPage = () => {
       console.log(err);
     }
   };
-  
+
+  const user = async () => {
+    try {
+      const info = await lobbyApi.myInfo(cookies['user_access_token']);
+      console.log(info.data);
+      setData(info.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       await login();
+      register();
+      watchRoom();
+      user();
     })();
-  }, []);
-
-  useEffect(() => {
-    watchRoom();
-    register();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies['user_access_token']]);
 
@@ -116,9 +129,9 @@ const LobbyPage = () => {
         <Header setModalOpen={setModalOpen} />
         <ContentBox>
           <BackgroundBox />
-          <Info />
+          <Info {...data!} />
           <GameList list={list} />
-          <Chat />
+          <Chat {...data!} />
           <UserList />
         </ContentBox>
       </Container>

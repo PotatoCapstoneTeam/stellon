@@ -14,7 +14,6 @@ const UserList = () => {
   const watchConnector = async () => {
     try {
       const res = await lobbyApi.connectingUser(cookies['user_access_token']);
-      console.log(res.data);
       setList(res.data);
     } catch (err) {
       console.log(err);
