@@ -4,10 +4,11 @@ import lombok.Getter;
 import org.gamza.server.Error.ErrorCode;
 
 @Getter
-public class LoginFailedException extends RuntimeException {
+public class RoomException extends RuntimeException {
   private final ErrorCode errorCode;
-
-  public LoginFailedException(ErrorCode errorCode) {
+  private final String message;
+  public RoomException(ErrorCode errorCode, String message) {
     this.errorCode = errorCode;
+    this.message = message;
   }
 }

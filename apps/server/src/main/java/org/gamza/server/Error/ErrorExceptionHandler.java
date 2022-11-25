@@ -33,10 +33,10 @@ public class ErrorExceptionHandler {
     return new ResponseEntity<>(response, ErrorCode.INVALID_USER.getStatus());
   }
 
-  @ExceptionHandler(RoomEnterException.class)
-  public ResponseEntity<ErrorResponse> handleRoomEnterException(RoomEnterException ex) {
-    log.error("handleRoomEnterException", ex);
-    ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage());
+  @ExceptionHandler(RoomException.class)
+  public ResponseEntity<ErrorResponse> handleRoomException(RoomException ex) {
+    log.error("handleRoomException", ex);
+    ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getMessage());
     return new ResponseEntity<>(response, ErrorCode.BAD_REQUEST.getStatus());
   }
 

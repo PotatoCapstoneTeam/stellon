@@ -5,7 +5,7 @@ import org.gamza.server.Error.ErrorCode;
 
 @Getter
 public class NotValidException extends IllegalStateException {
-  private ErrorCode errorCode;
+  private final ErrorCode errorCode;
 
   public NotValidException(ErrorCode errorCode) {
     this.errorCode = errorCode;

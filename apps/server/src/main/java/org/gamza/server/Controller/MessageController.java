@@ -8,18 +8,23 @@ import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
-import org.gamza.server.Error.Exception.RoomEnterException;
+import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -35,30 +40,29 @@ public class MessageController {
   @MessageMapping("/message")
   public void sendMessage(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
     UserInfo userInfo = message.getUserInfo();
+    userInfo.setSystem("notSystem");
     FindRoomDto findRoomDto = FindRoomDto.builder()
-      .id(message.getGameRoom().getId())
+      .roomId(message.getGameRoom().getId())
       .roomName(message.getGameRoom().getRoomName())
-      .roomStatus(message.getGameRoom().getRoomStatus())
+      .password(message.getGameRoom().getPassword())
       .build();
 
     User user = userRepository.findByNickname(userInfo.getUser().getNickname());
     userInfo.setUser(user);
     userInfo.setUserStatus(UserStatus.ROLE_USER);
     GameRoom room = roomService.findRoom(findRoomDto);
+
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
-      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+      throw new RoomException(ErrorCode.BAD_REQUEST, "Room Type 이 로비입니다.");
     }
     UserInfo system = UserInfo.builder()
       .system("system")
       .build();
+    message.setUserInfo(system);
     message.setGameRoom(room);
 
     switch (message.getType()) { // 메시지 타입 검사
-      case JOIN: // 방 입장 => 잘 됨
-        if(room.getPlayers().size() == room.getRoomSize()) {
-          message.setMessage("가득 찬 방입니다.");
-          break;
-        }
+      case JOIN:
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
         for (int i = 1; i <= room.getRoomSize(); i++) {
           if (room.getPlayers().isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
@@ -66,6 +70,7 @@ public class MessageController {
           }
 
           if (room.getPlayers().get(i) == null) {
+            userInfo.getUser().updateTeam(i % 2 == 0 ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
             room.addPlayer(i, user);
             userInfo.setPlayerNumber(i);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
@@ -83,36 +88,58 @@ public class MessageController {
           message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
           break;
         }
-        message.setUserInfo(system);
         message.setMessage("곧 게임이 시작됩니다.");
-        break;
-
-      case EXIT:
-        UserInfo findUserInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
-        if(!room.getPlayers().isEmpty()) {
-          room.removePlayer(findUserInfo.getPlayerNumber());
-        }
-
-        message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-
-        // 방의 인원이 0이 되면 방 목록에서 삭제
-        if (room.getPlayers().isEmpty()) {
-          headerAccessor.getSessionAttributes().remove("userInfo");
-          headerAccessor.getSessionAttributes().remove("roomId");
-          room.getPlayers().clear();
-          roomRepository.delete(room);
-          break;
-        }
-
-        // 방장이였다면 방장 재선택
-        if(findUserInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-          selectNewHost(room);
-        }
-        headerAccessor.getSessionAttributes().remove("userInfo");
-        headerAccessor.getSessionAttributes().remove("roomId");
         break;
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
+  }
+
+  @EventListener
+  public void webSocketDisconnectListener(SessionDisconnectEvent event) {
+    StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+
+    // 유저인포와 방 id 가져오기
+    UserInfo userInfo = (UserInfo) Objects.requireNonNull(accessor.getSessionAttributes()).get("userInfo");
+    Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
+
+    // 유저 찾기
+    User user = userRepository.findByNickname(userInfo.getUser().getNickname());
+
+    // 방 찾기
+    Optional<GameRoom> room = roomRepository.findById(roomId);
+    if(room.isEmpty()) {
+      throw new RoomException(ErrorCode.BAD_REQUEST, "잘못된 방 ID 값입니다.");
+    }
+
+    // 메시지 생성
+    Message message = Message.builder()
+      .type(Message.MessageType.EXIT)
+      .userInfo(UserInfo.builder().system("system").build())
+      .gameRoom(room.get())
+      .build();
+
+    // 방에서 해당 유저 삭제
+    room.get().removePlayer(userInfo.getPlayerNumber());
+    // 유저 정보 수정
+    user.updateTeam(TeamStatus.NONE);
+
+    message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
+
+    // 방이 빈 방이면 방 삭제 후 리턴
+    if (room.get().getPlayers().isEmpty()) {
+      accessor.getSessionAttributes().remove("userInfo");
+      accessor.getSessionAttributes().remove("roomId");
+      room.get().getPlayers().clear();
+      roomRepository.delete(room.get());
+      return;
+    }
+
+    // 나간 애가 방장이면 방장 새로 선출
+    if(userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
+      selectNewHost(room.get());
+    }
+
+    operations.convertAndSend("/sub/room/" + room.get().getId(), message);
   }
 
   private void selectNewHost(GameRoom room) {
