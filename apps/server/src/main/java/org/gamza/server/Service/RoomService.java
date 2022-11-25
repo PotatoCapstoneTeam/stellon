@@ -6,7 +6,6 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
-import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
@@ -14,7 +13,7 @@ import org.gamza.server.Enum.RoomStatus;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.AuthenticationException;
-import org.gamza.server.Error.Exception.RoomEnterException;
+import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.User.UserService;
@@ -52,7 +51,7 @@ public class RoomService {
 
   @Transactional
   public GameRoom findRoom(FindRoomDto findRoomDto) {
-    return roomRepository.findById(findRoomDto.getId()).orElseThrow(() ->
+    return roomRepository.findById(findRoomDto.getRoomId()).orElseThrow(() ->
       new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
@@ -128,11 +127,15 @@ public class RoomService {
   }
 
   @Transactional
-  public void validateGameRoom(RoomValidDto roomValidDto) {
-    GameRoom findGameRoom = roomRepository.findById(roomValidDto.getRoomId())
-      .orElseThrow(() -> new RoomEnterException(ErrorCode.BAD_REQUEST));
-    if(!passwordEncoder.matches(roomValidDto.getPassword(), findGameRoom.getPassword())) {
-      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+  public void validateRoomPass(FindRoomDto findRoomDto) {
+    GameRoom room = this.findRoom(findRoomDto);
+    if(!room.getPassword().isBlank()) {
+      if(!passwordEncoder.matches(findRoomDto.getPassword(), room.getPassword())) {
+        throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+      }
+    }
+    if(room.getRoomSize() == room.getPlayers().size()) {
+      throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
     }
   }
 

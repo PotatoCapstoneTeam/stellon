@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Enum.TeamStatus;
 
 import javax.persistence.*;
 
@@ -31,14 +32,21 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String password;
 
+  @Column
+  @Enumerated(EnumType.STRING)
+  private TeamStatus team;
+
   @Enumerated(EnumType.STRING)
   private Authority authority;
 
   @Column
   private String refreshToken;
 
-  public User updateToken(String newRefreshToken) {
+  public void updateToken(String newRefreshToken) {
     this.refreshToken = newRefreshToken;
-    return this;
+  }
+
+  public void updateTeam(TeamStatus team) {
+    this.team = team;
   }
 }

@@ -1,9 +1,9 @@
 package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
-import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
 import org.gamza.server.Dto.LobbyDto.LobbyResponseDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class RoomController {
   }
 
   @PostMapping("")
-  public RoomResponseDto createRoom(@RequestBody RoomCreateDto createDto) {
+  public RoomResponseDto createRoom(@Valid @RequestBody RoomCreateDto createDto) {
     GameRoom room = roomService.addRoom(createDto);
     RoomResponseDto roomResponseDto = new RoomResponseDto(room);
 
@@ -35,8 +36,9 @@ public class RoomController {
   }
 
   @PostMapping("/validate")
-  public ResponseEntity<String> validateRoom(@RequestBody RoomValidDto roomValidDto) {
-    roomService.validateGameRoom(roomValidDto);
+  public ResponseEntity<String> validateRoom(@RequestBody FindRoomDto findRoomDto) {
+
+    roomService.validateRoomPass(findRoomDto);
     return ResponseEntity.ok("검증 완료");
   }
 
