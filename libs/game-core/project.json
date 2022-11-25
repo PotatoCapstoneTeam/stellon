@@ -1,23 +1,24 @@
 {
+  "name": "game-core",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/game-client/src",
+  "sourceRoot": "libs/game-core/src",
   "projectType": "library",
-  "tags": [],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/game-client/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["libs/game-core/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/game-client"],
+      "outputs": ["coverage/libs/game-core"],
       "options": {
-        "jestConfig": "libs/game-client/jest.config.ts",
+        "jestConfig": "libs/game-core/jest.config.ts",
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "tags": []
 }

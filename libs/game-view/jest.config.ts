@@ -1,10 +1,10 @@
 /* eslint-disable */
 export default {
-  displayName: 'game-client',
+  displayName: 'game-view',
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/game-client',
+  coverageDirectory: '../../coverage/libs/game-view',
 };

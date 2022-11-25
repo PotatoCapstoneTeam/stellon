@@ -4,8 +4,11 @@
   "projects": {
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
-    "game-client": "libs/game-client",
+    "game-core": "libs/game-core",
+    "game-demo": "apps/game-demo",
     "game-server": "apps/game-server",
+    "game-stage": "libs/game-stage",
+    "game-view": "libs/game-view",
     "server": "apps/server"
   }
 }
