@@ -17,6 +17,7 @@ import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
 import org.json.simple.JSONArray;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,7 +41,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class MessageController {
-
+  @Value("${secretKey}")
+  private String secretKey;
   private final RoomService roomService;
   private final UserRepository userRepository;
   private final RoomRepository roomRepository;
@@ -119,6 +121,7 @@ public class MessageController {
         }
 
         response.add("callback", "https://game.stellon.io/api");
+        response.add("secretKey", secretKey);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
 
         restTemplate.postForEntity(url, request, String.class); // post 전송
