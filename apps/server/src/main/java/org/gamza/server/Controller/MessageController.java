@@ -8,6 +8,7 @@ import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.RoomEnterException;
@@ -93,7 +94,7 @@ public class MessageController {
         message.setUserInfo(system);
         message.setMessage("곧 게임이 시작됩니다.");
 
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate(); // 게임 서버 연결 시작
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -116,7 +117,7 @@ public class MessageController {
         response.add("callback", "https://game.stellon.io/api");
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
 
-        restTemplate.postForEntity(url, request, String.class);
+        restTemplate.postForEntity(url, request, String.class); // post 전송
         break;
 
       case EXIT:
