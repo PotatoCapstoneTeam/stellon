@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
 
   @Column
   @Enumerated(EnumType.STRING)
-  private TeamStatus team;
+  private TeamStatus teamStatus;
 
   @Enumerated(EnumType.STRING)
   private Authority authority;
@@ -46,7 +46,7 @@ public class User extends BaseTimeEntity {
     this.refreshToken = newRefreshToken;
   }
 
-  public void updateTeam(TeamStatus team) {
-    this.team = team;
+  public void updateTeamStatus(TeamStatus team) {
+    this.teamStatus = team;
   }
 }
