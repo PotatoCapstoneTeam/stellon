@@ -11,6 +11,7 @@ import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Entity.CustomUserDetails;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.DuplicateException;
 import org.gamza.server.Error.Exception.LoginFailedException;
@@ -42,6 +43,7 @@ public class AuthService {
     User joinUser = User.builder().email(userJoinDto.getEmail())
       .nickname(userJoinDto.getNickname())
       .password(passwordEncoder.encode(userJoinDto.getPassword()))
+      .teamStatus(TeamStatus.NONE)
       .authority(Authority.ROLE_USER)
       .build();
     userRepository.save(joinUser);
