@@ -7,6 +7,7 @@ import { useCookies } from 'react-cookie';
 import { Typography } from '../../components/Typography';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
+import { loginApi } from '../../api/loginApi';
 
 const IntroPage = () => {
   const navigate = useNavigate();
@@ -16,8 +17,15 @@ const IntroPage = () => {
     'user_refresh_token',
   ]); // 쿠키 훅
 
-  const loginHandleSubmit = (e: React.FormEvent) => {
+  const loginHandleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // const data = await loginApi.tryLogin({
+    //   email: formRef.current?.['email'].value,
+    //   password: formRef.current?.['password'].value,
+    // });
+
+    // console.log(data);
 
     axios
       .post('https://stellon.shop/auth/login', {

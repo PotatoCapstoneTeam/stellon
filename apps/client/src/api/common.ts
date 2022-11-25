@@ -20,4 +20,7 @@ export const Api = {
         },
       }
     ),
+
+  postWithParams: async (url: string, params: any) =>
+    await axios.post(setting.baseURL + url, params),
 };
