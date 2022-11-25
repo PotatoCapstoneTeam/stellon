@@ -31,7 +31,7 @@ public class GameRoom extends BaseTimeEntity {
   @Column(nullable = false)
   private String roomName;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
