@@ -32,7 +32,7 @@ public class GameRoom extends BaseTimeEntity {
   private String roomName;
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  private Map<Integer, User> players = new HashMap<>();
+  private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
