@@ -111,8 +111,9 @@ public class RoomService {
   }
 
   @Transactional
-  public void addUserToRoom(GameRoom room, int idx, User user) {
-    room.getPlayers().put(idx, user);
+  public void addUserToRoom(Long roomId, int idx, User user) {
+    GameRoom room = roomRepository.findById(roomId).orElse(null);
+    room.getPlayers().putIfAbsent(idx, user);
     roomRepository.save(room);
   }
 
@@ -131,7 +132,8 @@ public class RoomService {
   }
 
   @Transactional
-  public void removeUserToRoom(GameRoom room, int idx) {
+  public void removeUserToRoom(Long roomId, int idx) {
+    GameRoom room = roomRepository.findById(roomId).orElse(null);
     room.getPlayers().remove(idx);
     roomRepository.save(room);
   }
