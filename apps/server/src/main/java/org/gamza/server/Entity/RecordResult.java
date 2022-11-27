@@ -21,10 +21,10 @@ public class RecordResult extends BaseTimeEntity {
   private Long id;
 
   @Column
-  private int kill;
+  private int killPoint;
 
   @Column
-  private int death;
+  private int deathPoint;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "users")
