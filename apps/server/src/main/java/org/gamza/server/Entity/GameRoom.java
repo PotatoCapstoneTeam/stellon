@@ -49,9 +49,7 @@ public class GameRoom extends BaseTimeEntity {
   private String password;
 
   public void addPlayer(int idx, User user) {
-    HashMap<Integer, User> playersHashMap = new HashMap<>();
-    playersHashMap.put(idx, user);
-    this.players = playersHashMap;
+    this.players.put(idx, user);
   }
 
   public void removePlayer(int idx) {
