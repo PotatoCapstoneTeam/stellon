@@ -8,6 +8,7 @@ import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
+import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Enum.UserStatus;
@@ -80,6 +81,7 @@ public class MessageController {
 
           if (room.getPlayers().get(i) == null) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+            userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             room.addPlayer(i, user);
             userInfo.setPlayerNumber(i);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
@@ -131,13 +133,11 @@ public class MessageController {
         break;
 
       case CHANGE:
-        if (userInfo.getUser().getTeamStatus() == TeamStatus.RED_TEAM) {
-          userInfo.getUser().updateTeamStatus(TeamStatus.BLUE_TEAM);
-        } else {
-          userInfo.getUser().updateTeamStatus(TeamStatus.RED_TEAM);
-        }
-
+        userInfo.getUser().updateTeamStatus(userInfo.getUser().getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
         break;
+
+      case READY:
+        userInfo.getUser().updateReadyStatus(userInfo.getUser().getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
     }
     operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
@@ -170,6 +170,7 @@ public class MessageController {
     room.get().removePlayer(userInfo.getPlayerNumber());
     // 유저 정보 수정
     user.updateTeamStatus(TeamStatus.NONE);
+    user.updateReadyStatus(ReadyStatus.NONE);
 
     message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
 
