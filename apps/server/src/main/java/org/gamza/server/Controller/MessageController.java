@@ -36,7 +36,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -81,10 +80,19 @@ public class MessageController {
       case JOIN:
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
         for (int i = 0; i < room.getRoomSize(); i++) {
-          if (players.isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
+          if (players.isEmpty()) { // 방이 처음 만들어졌을 시 방장 유저 설정
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
-          }
+            userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
+            userInfo.getUser().updateTeamStatus(TeamStatus.RED_TEAM);
+            room.addPlayer(0, user);
+            userInfo.setPlayerNumber(i);
+            headerAccessor.getSessionAttributes().put("userInfo", userInfo);
+            headerAccessor.getSessionAttributes().put("roomId", room.getId());
+            message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
 
+            roomRepository.save(room);
+            break;
+          }
           if (players.get(i) == null) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
@@ -110,8 +118,8 @@ public class MessageController {
           break;
         }
 
-        for (int i = 0; i < players.size(); i++) {
-          if(players.get(i).getReadyStatus() == ReadyStatus.NOT_READY) {
+        for (User player : players) {
+          if (player.getReadyStatus() == ReadyStatus.NOT_READY) {
             message.setMessage("모두가 READY 상태여야 시작할 수 있습니다.");
             isNotReady = true;
             break;
@@ -132,12 +140,12 @@ public class MessageController {
 
         response.add("id", room.getId().toString());
 
-        for (int i = 0; i < players.size(); i++) {
+        for (User player : players) {
           JSONArray req_array = new JSONArray();
 
-          req_array.add(players.get(i).getId());
-          req_array.add(players.get(i).getNickname());
-          req_array.add(players.get(i).getTeamStatus());
+          req_array.add(player.getId());
+          req_array.add(player.getNickname());
+          req_array.add(player.getTeamStatus());
 
           response.add("users", req_array);
         }
