@@ -3,6 +3,8 @@ package org.gamza.server.Repository;
 import org.gamza.server.Entity.RecordResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ResultRepository extends JpaRepository<RecordResult, Long> {
+import java.util.List;
 
+public interface ResultRepository extends JpaRepository<RecordResult, Long> {
+  List<RecordResult> findByGameRoomId(Long id);
 }

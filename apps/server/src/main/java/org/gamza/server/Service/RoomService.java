@@ -6,6 +6,7 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
+import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
@@ -50,8 +51,8 @@ public class RoomService {
   }
 
   @Transactional
-  public GameRoom findRoom(FindRoomDto findRoomDto) {
-    return roomRepository.findById(findRoomDto.getRoomId()).orElseThrow(() ->
+  public GameRoom findRoom(Long id) {
+    return roomRepository.findById(id).orElseThrow(() ->
       new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
@@ -103,6 +104,12 @@ public class RoomService {
   }
 
   @Transactional
+  public Map<Integer, User> getRoomUsers(Long id) {
+    GameRoom room = roomRepository.findById(id).orElse(null);
+    return room.getPlayers();
+  }
+
+  @Transactional
   public void addUserToLobby(HttpServletRequest request) {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
@@ -127,10 +134,11 @@ public class RoomService {
   }
 
   @Transactional
-  public void validateRoomPass(FindRoomDto findRoomDto) {
-    GameRoom room = this.findRoom(findRoomDto);
+  public void validateRoomPass(RoomValidDto roomValidDto) {
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId())
+      .orElseThrow();
     if(!room.getPassword().isBlank()) {
-      if(!passwordEncoder.matches(findRoomDto.getPassword(), room.getPassword())) {
+      if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
         throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
       }
     }
