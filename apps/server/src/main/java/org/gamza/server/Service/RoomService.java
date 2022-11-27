@@ -104,9 +104,10 @@ public class RoomService {
   }
 
   @Transactional
-  public Map<Integer, User> getRoomUsers(Long id) {
+  public List<User> getRoomUsers(Long id) {
     GameRoom room = roomRepository.findById(id).orElse(null);
-    return room.getPlayers();
+    List<User> userList = new ArrayList<>(room.getPlayers().values());
+    return userList;
   }
 
   @Transactional

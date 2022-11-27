@@ -35,6 +35,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -54,7 +55,7 @@ public class MessageController {
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
-    Map<Integer, User> players = roomService.getRoomUsers(room.getId());
+    List<User> players = roomService.getRoomUsers(room.getId());
 
     UserInfo userInfo = UserInfo.builder()
       .user(user)
@@ -79,13 +80,13 @@ public class MessageController {
     switch (messageDto.getType()) { // 메시지 타입 검사
       case JOIN:
         // 최대 8명 까지 할당 번호 검사하여 없으면 할당
-        for (int i = 1; i <= room.getRoomSize(); i++) {
+        for (int i = 0; i < room.getRoomSize(); i++) {
           if (players.isEmpty()) { // 방이 처음 만들어졌을 시 방장 설정
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
           }
 
           if (players.get(i) == null) {
-            userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+            userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             room.addPlayer(i, user);
             userInfo.setPlayerNumber(i);
@@ -109,7 +110,7 @@ public class MessageController {
           break;
         }
 
-        for (int i = 1; i <= players.size(); i++) {
+        for (int i = 0; i < players.size(); i++) {
           if(players.get(i).getReadyStatus() == ReadyStatus.NOT_READY) {
             message.setMessage("모두가 READY 상태여야 시작할 수 있습니다.");
             isNotReady = true;
@@ -131,7 +132,7 @@ public class MessageController {
 
         response.add("id", room.getId().toString());
 
-        for (int i = 1; i <= players.size(); i++) {
+        for (int i = 0; i < players.size(); i++) {
           JSONArray req_array = new JSONArray();
 
           req_array.add(players.get(i).getId());
@@ -187,6 +188,7 @@ public class MessageController {
 
     // 방에서 해당 유저 삭제
     room.removePlayer(userInfo.getPlayerNumber());
+
     // 유저 정보 수정
     user.updateTeamStatus(TeamStatus.NONE);
     user.updateReadyStatus(ReadyStatus.NONE);
@@ -208,7 +210,7 @@ public class MessageController {
   }
 
   private void selectNewHost(GameRoom room) {
-    for (int i = 1; i <= room.getRoomSize(); i++) {
+    for (int i = 0; i <= room.getRoomSize(); i++) {
       User nextHost = roomService.getRoomUsers(room.getId()).get(i);
       log.info("방장 선발");
       if (nextHost != null) {
