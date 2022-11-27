@@ -3,7 +3,6 @@ package org.gamza.server.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
-import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
@@ -107,7 +106,8 @@ public class RoomService {
   public List<User> getRoomUsers(Long id) {
     GameRoom room = roomRepository.findById(id).orElse(null);
     List<User> userList = new ArrayList<>(room.getPlayers().values());
-    return userList;
+    List<Long> userIdList = userList.stream().map(user -> user.getId()).collect(Collectors.toList());
+    return userService.getUsers(userIdList);
   }
 
   @Transactional

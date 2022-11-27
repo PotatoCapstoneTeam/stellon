@@ -54,7 +54,8 @@ public class MessageController {
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
-    List<User> players = roomService.getRoomUsers(room.getId());
+    Long roomId = room.getId();
+    List<User> players = roomService.getRoomUsers(roomId);
 
     UserInfo userInfo = UserInfo.builder()
       .user(user)
