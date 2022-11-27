@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,16 @@ public class UserService {
   public List<UserResponseDto> findAll() {
     List<User> userList = new ArrayList<>(userRepository.findAll());
     return getUserResponseDtos(userList);
+  }
+
+  @Transactional
+  public List<User> getUsers(List<Long> idList) {
+    List<User> userList = new ArrayList<>();
+    for(Long id : idList) {
+      Optional<User> user = userRepository.findById(id);
+      userList.add(user.get());
+    }
+    return userList;
   }
 
   @Transactional
