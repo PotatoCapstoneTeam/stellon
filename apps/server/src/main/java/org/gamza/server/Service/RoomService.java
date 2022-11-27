@@ -51,8 +51,8 @@ public class RoomService {
   }
 
   @Transactional
-  public GameRoom findRoom(FindRoomDto findRoomDto) {
-    return roomRepository.findById(findRoomDto.getRoomId()).orElseThrow(() ->
+  public GameRoom findRoom(Long id) {
+    return roomRepository.findById(id).orElseThrow(() ->
       new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
@@ -101,6 +101,12 @@ public class RoomService {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     List<User> userList = new ArrayList<>(lobby.getPlayers().values());
     return userService.getUserResponseDtos(userList);
+  }
+
+  @Transactional
+  public Map<Integer, User> getRoomUsers(Long id) {
+    GameRoom room = roomRepository.findById(id).orElse(null);
+    return room.getPlayers();
   }
 
   @Transactional

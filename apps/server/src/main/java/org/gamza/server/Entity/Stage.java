@@ -20,5 +20,5 @@ public class Stage {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
-  private List<Object> users = new ArrayList<>();
+  private List<Long> users = new ArrayList<>();
 }
