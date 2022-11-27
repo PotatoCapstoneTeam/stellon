@@ -36,6 +36,11 @@ public class UserService {
   }
 
   @Transactional
+  public User findByNickname(String nickname) {
+    return userRepository.findByNickname(nickname);
+  }
+
+  @Transactional
   public List<UserResponseDto> getUserResponseDtos(List<User> userList) {
     List<UserResponseDto> allUserNickname = new ArrayList<>();
     for (User user : userList) {

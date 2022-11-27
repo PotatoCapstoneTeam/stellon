@@ -15,8 +15,8 @@ import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
-import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.RoomService;
+import org.gamza.server.Service.User.UserService;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
@@ -37,7 +37,6 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,13 +46,13 @@ public class MessageController {
   @Value("${secretKey}")
   private String secretKey;
   private final RoomService roomService;
-  private final UserRepository userRepository;
+  private final UserService userService;
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
 
   @MessageMapping("/message")
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
-    User user = userRepository.findByNickname(messageDto.getNickname());
+    User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
     Map<Integer, User> players = roomService.getRoomUsers(room.getId());
 
@@ -174,23 +173,20 @@ public class MessageController {
     Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
 
     // 유저 찾기
-    User user = userRepository.findByNickname(userInfo.getUser().getNickname());
+    User user = userService.findByNickname(userInfo.getUser().getNickname());
 
     // 방 찾기
-    Optional<GameRoom> room = roomRepository.findById(roomId);
-    if(room.isEmpty()) {
-      throw new RoomException(ErrorCode.BAD_REQUEST, "잘못된 방 ID 값입니다.");
-    }
+    GameRoom room = roomService.findRoom(roomId);
 
     // 메시지 생성
     Message message = Message.builder()
       .type(Message.MessageType.EXIT)
       .userInfo(UserInfo.builder().system("system").build())
-      .gameRoom(room.get())
+      .gameRoom(room)
       .build();
 
     // 방에서 해당 유저 삭제
-    room.get().removePlayer(userInfo.getPlayerNumber());
+    room.removePlayer(userInfo.getPlayerNumber());
     // 유저 정보 수정
     user.updateTeamStatus(TeamStatus.NONE);
     user.updateReadyStatus(ReadyStatus.NONE);
@@ -199,16 +195,16 @@ public class MessageController {
 
     // 방이 빈 방이면 방 삭제 후 리턴
     if (roomService.getRoomUsers(roomId).isEmpty()) {
-      roomRepository.delete(room.get());
+      roomRepository.delete(room);
       return;
     }
 
     // 나간 애가 방장이면 방장 새로 선출
     if(userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-      selectNewHost(room.get());
+      selectNewHost(room);
     }
 
-    operations.convertAndSend("/sub/room/" + room.get().getId(), message);
+    operations.convertAndSend("/sub/room/" + room.getId(), message);
   }
 
   private void selectNewHost(GameRoom room) {
