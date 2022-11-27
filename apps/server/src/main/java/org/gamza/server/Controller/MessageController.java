@@ -56,6 +56,11 @@ public class MessageController {
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
     Map<Integer, User> players = roomService.getRoomUsers(room.getId());
 
+    UserInfo userInfo = UserInfo.builder()
+      .user(user)
+      .userStatus(UserStatus.ROLE_USER)
+      .build();
+
     UserInfo system = UserInfo.builder()
       .system("system")
       .build();
@@ -63,11 +68,6 @@ public class MessageController {
     Message message = Message.builder()
       .type(messageDto.getType())
       .build();
-
-    UserInfo userInfo = message.getUserInfo();
-
-    userInfo.setUser(user);
-    userInfo.setUserStatus(UserStatus.ROLE_USER);
 
     message.setUserInfo(userInfo);
     message.setGameRoom(room);
