@@ -47,12 +47,4 @@ public class GameRoom extends BaseTimeEntity {
 
   @Column
   private String password;
-
-  public void addPlayer(int idx, User user) {
-    this.players.put(idx, user);
-  }
-
-  public void removePlayer(int idx) {
-    this.players.remove(idx);
-  }
 }
