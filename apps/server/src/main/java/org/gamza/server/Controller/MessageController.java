@@ -84,8 +84,8 @@ public class MessageController {
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             userInfo.getUser().updateTeamStatus(TeamStatus.RED_TEAM);
-            room.addPlayer(0, user);
-            userInfo.setPlayerNumber(i);
+            roomService.addUserToRoom(room, 0, user);
+            userInfo.setPlayerNumber(0);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
             message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
@@ -96,7 +96,7 @@ public class MessageController {
           if (players.get(i) == null) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
-            room.addPlayer(i, user);
+            roomService.addUserToRoom(room, i, user);
             userInfo.setPlayerNumber(i);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
@@ -195,7 +195,7 @@ public class MessageController {
       .build();
 
     // 방에서 해당 유저 삭제
-    room.removePlayer(userInfo.getPlayerNumber());
+    roomService.removeUserToRoom(room, userInfo.getPlayerNumber());
 
     // 유저 정보 수정
     user.updateTeamStatus(TeamStatus.NONE);

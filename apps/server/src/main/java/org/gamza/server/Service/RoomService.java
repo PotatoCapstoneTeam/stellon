@@ -111,6 +111,12 @@ public class RoomService {
   }
 
   @Transactional
+  public void addUserToRoom(GameRoom room, int idx, User user) {
+    room.getPlayers().put(idx, user);
+    roomRepository.save(room);
+  }
+
+  @Transactional
   public void addUserToLobby(HttpServletRequest request) {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
@@ -122,6 +128,12 @@ public class RoomService {
       }
     }
     roomRepository.save(lobby);
+  }
+
+  @Transactional
+  public void removeUserToRoom(GameRoom room, int idx) {
+    room.getPlayers().remove(idx);
+    roomRepository.save(room);
   }
 
   @Transactional
