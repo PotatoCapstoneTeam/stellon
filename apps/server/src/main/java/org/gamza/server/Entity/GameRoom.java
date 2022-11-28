@@ -1,5 +1,6 @@
 package org.gamza.server.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.gamza.server.Enum.RoomType;
 
 import javax.persistence.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -29,6 +31,7 @@ public class GameRoom extends BaseTimeEntity {
   private String roomName;
 
   @OneToMany(cascade = CascadeType.ALL)
+  @JsonIgnore
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)
