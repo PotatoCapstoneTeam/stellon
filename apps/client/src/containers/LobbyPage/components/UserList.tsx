@@ -22,7 +22,7 @@ const UserList = () => {
 
   useEffect(() => {
     watchConnector();
-  }, [cookies['user_access_token']]);
+  }, []);
 
   return (
     <ListBox onClick={() => console.log(list)}>

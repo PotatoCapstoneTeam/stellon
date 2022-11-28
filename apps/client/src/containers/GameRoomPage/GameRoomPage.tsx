@@ -1,34 +1,54 @@
+import axios from 'axios';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import ChatRoom from '../../components/ChatRoom';
+import { setting } from '../../constants/setting';
 import useLogin from '../../hooks/useLogin';
+import useRoomWebSocket from '../../hooks/useRoomWebSocket';
 import useUser from '../../hooks/useUser';
 import { Map, Title, Info, Client, State } from './components/index';
-
+import { gameRoomApi } from '../../api/gameRoomApi';
 const GameRoomPage = () => {
   const { id } = useParams();
   const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
-  const { login } = useLogin();
+  const { loginCheck } = useLogin();
   const { user, deleteUserList, userInfo } = useUser();
+  const { send } = useRoomWebSocket(id as string);
+
+  const join = () => {
+    console.log('방에 입장합니다.');
+    send({
+      type: 'JOIN',
+      roomId: 7,
+      nickname: 'testUser',
+    });
+  };
 
   useEffect(() => {
     (async () => {
-      await login();
-      await deleteUserList();
-      user();
+      await loginCheck();
+      await user();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies['user_access_token']]);
+  }, []);
 
   return (
     <div>
       <Space />
       <Container>
-        <BackgroundBox />
-        <Header>
+        <BackgroundBox
+          onClick={() => {
+            join();
+          }}
+        />
+        <Header
+          onClick={() => {
+            deleteUserList();
+          }}
+        >
           <Title />
           <Info />
         </Header>
@@ -40,7 +60,7 @@ const GameRoomPage = () => {
             roomId={id}
             nickname={userInfo?.nickname}
           />
-          <State />
+          <State send={send} />
         </Article>
       </Container>
     </div>

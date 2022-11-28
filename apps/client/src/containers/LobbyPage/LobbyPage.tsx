@@ -20,16 +20,16 @@ export interface IInfo {
 const LobbyPage = () => {
   const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
   const [modalOpen, setModalOpen] = useState(false);
-  const { login } = useLogin();
+  const { loginCheck } = useLogin();
   const { user, register, userInfo } = useUser();
   const { watchRoom, list } = useRoom();
 
   useEffect(() => {
     (async () => {
-      await login();
+      await loginCheck();
       register();
-      watchRoom();
       user();
+      watchRoom();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies['user_access_token']]);

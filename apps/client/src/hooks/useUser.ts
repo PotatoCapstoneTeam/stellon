@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { gameRoomApi } from '../api/gameRoomApi';
 import { lobbyApi } from '../api/lobbyApi';
+import useLogin from '../hooks/useLogin';
 
 interface IInfo {
   nickname: string;
@@ -8,9 +10,10 @@ interface IInfo {
   loseRecord: number;
 }
 
-const useLogin = () => {
+const useUser = () => {
   const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
   const [userInfo, setUserInfo] = useState<IInfo>();
+  const { loginCheck } = useLogin();
 
   const register = async () => {
     try {
@@ -34,10 +37,11 @@ const useLogin = () => {
   };
 
   const deleteUserList = async () => {
-    console.log('접속자목록에서 지우기');
+    console.log('로비리스트 삭제');
+    await gameRoomApi.deleteConnector(cookies['user_access_token']);
   };
 
   return { register, user, deleteUserList, userInfo };
 };
 
-export default useLogin;
+export default useUser;

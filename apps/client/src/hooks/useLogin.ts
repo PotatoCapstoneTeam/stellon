@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { loginApi } from '../api/loginApi';
@@ -9,11 +8,13 @@ const useLogin = () => {
     'user_refresh_token',
   ]); // 쿠키 훅
   const navigate = useNavigate();
-  
-  const login = async () => {
+
+  // 로그인 체크 (토큰 체크)
+  const loginCheck = async () => {
     try {
       await loginApi.loginCheck(cookies['user_access_token']);
-      console.log('로그인 성공');
+      console.log('로그인 중입니다.');
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log(err.response.data.code);
@@ -27,18 +28,14 @@ const useLogin = () => {
     }
   };
 
+  // 재로그인 (토큰 재발급)
   const reLogin = async () => {
     try {
-      const res = await axios.post(
-        'https://stellon.shop/auth/reissue',
-        {},
-        {
-          headers: {
-            Authorization: cookies['user_access_token'],
-            RefreshToken: cookies['user_refresh_token'],
-          },
-        }
+      const res = await loginApi.receiveRefreshToken(
+        cookies['user_access_token'],
+        cookies['user_refresh_token']
       );
+      console.log(res.data);
       const newAccessToken = res.data.response.accessToken;
       const newRefreshToken = res.data.response.refreshToken;
       setCookie('user_access_token', newAccessToken, { path: '/' }); // 쿠키에 access 토큰 저장
@@ -49,22 +46,23 @@ const useLogin = () => {
       console.log(err);
       logOut();
     }
-    // const access = cookies['user_access_token'];
-    // const refresh = cookies['user_refresh_token'];
-
-    // const response = await loginApi.receiveRefreshToken(
-    //   access,
-    //   refresh
-    // );
-    // console.log(response);
   };
 
-  const logOut = () => {
-    removeCookie('user_access_token');
-    removeCookie('user_refresh_token');
-    navigate('/');
+  // 로그아웃
+  const logOut = async () => {
+    try {
+      const token = cookies['user_access_token'];
+      console.log(token);
+      await loginApi.logout(token);
+
+      removeCookie('user_access_token');
+      removeCookie('user_refresh_token');
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
   };
-  return { login, logOut, reLogin };
+  return { loginCheck, logOut, reLogin };
 };
 
 export default useLogin;

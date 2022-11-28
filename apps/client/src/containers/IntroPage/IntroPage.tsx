@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
@@ -7,6 +7,7 @@ import { Typography } from '../../components/Typography';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
 import { loginApi } from '../../api/loginApi';
+import useLogin from '../../hooks/useLogin';
 
 const IntroPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const IntroPage = () => {
     'user_access_token',
     'user_refresh_token',
   ]); // 쿠키 훅
+
+  const { logOut } = useLogin();
+
 
   const loginHandleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
