@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Dto.StageDto.StageRequestDto;
+import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
@@ -54,8 +55,11 @@ public class MessageController {
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
-    Long roomId = room.getId();
-    List<User> players = roomService.getRoomUsers(roomId);
+    // Lazy Exception 프록시 생각하기 room 호출 시 players 는 프록시 객체 상태임 그리고 여기는 Controller 라서 영속 상태 X
+    // players 를 fetch join 으로 가져오기 or Dto 사용(?)
+
+    // players userDto 형태로 가져옴
+    List<AddUserDto> players = roomService.getRoomUsers(room.getId());
 
     UserInfo userInfo = UserInfo.builder()
       .user(user)
@@ -119,7 +123,7 @@ public class MessageController {
           break;
         }
 
-        for (User player : players) {
+        for (AddUserDto player : players) {
           if (player.getReadyStatus() == ReadyStatus.NOT_READY) {
             message.setMessage("모두가 READY 상태여야 시작할 수 있습니다.");
             isNotReady = true;
@@ -141,7 +145,7 @@ public class MessageController {
 
         response.add("id", room.getId().toString());
 
-        for (User player : players) {
+        for (AddUserDto player : players) {
           JSONArray req_array = new JSONArray();
 
           req_array.add(player.getId());
@@ -220,7 +224,8 @@ public class MessageController {
 
   private void selectNewHost(GameRoom room) {
     for (int i = 0; i <= room.getRoomSize(); i++) {
-      User nextHost = roomService.getRoomUsers(room.getId()).get(i);
+      AddUserDto userDto = roomService.getRoomUsers(room.getId()).get(i);
+      User nextHost = userService.findUserByDto(userDto);
       log.info("방장 선발");
       if (nextHost != null) {
         UserInfo hostInfo = UserInfo.builder()
