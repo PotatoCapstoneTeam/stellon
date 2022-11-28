@@ -74,7 +74,7 @@ public class MessageController {
       .type(messageDto.getType())
       .build();
 
-    message.setUserInfo(userInfo);
+    message.setUserInfo(system);
     message.setGameRoom(room);
 
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
@@ -115,8 +115,6 @@ public class MessageController {
 
       case START: // 잘 됨
         boolean isNotReady = false;
-
-        message.setUserInfo(system);
 
         if (players.size() % 2 == 1) {
           message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
@@ -175,7 +173,7 @@ public class MessageController {
       case READY:
         userInfo.getUser().updateReadyStatus(userInfo.getUser().getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
     }
-    operations.convertAndSend("/sub/room/" + room.getId(), message);
+    operations.convertAndSend("/sub/room/" + message.getGameRoom().getId(), message);
   }
 
   @EventListener
@@ -219,7 +217,7 @@ public class MessageController {
       selectNewHost(room);
     }
 
-    operations.convertAndSend("/sub/room/" + room.getId(), message);
+    operations.convertAndSend("/sub/room/" + message.getGameRoom().getId(), message);
   }
 
   private void selectNewHost(GameRoom room) {
