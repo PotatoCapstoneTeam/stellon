@@ -52,7 +52,8 @@ public class RoomService {
 
   @Transactional
   public GameRoom findRoom(Long id) {
-    return roomRepository.findGameRoomById(id);
+    return roomRepository.findById(id).orElseThrow(() ->
+      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
   }
 
 
