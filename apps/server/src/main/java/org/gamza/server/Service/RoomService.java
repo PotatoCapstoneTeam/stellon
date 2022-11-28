@@ -52,8 +52,7 @@ public class RoomService {
 
   @Transactional
   public GameRoom findRoom(Long id) {
-    return roomRepository.findById(id).orElseThrow(() ->
-      new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
+    return roomRepository.findGameRoomById(id);
   }
 
 

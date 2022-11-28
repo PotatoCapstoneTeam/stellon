@@ -31,7 +31,6 @@ public class GameRoom extends BaseTimeEntity {
   private String roomName;
 
   @OneToMany(cascade = CascadeType.ALL)
-  @JsonIgnore
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)

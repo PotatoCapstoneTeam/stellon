@@ -16,5 +16,5 @@ public class Message {
   private MessageType type;   // 메시지 타입
   private UserInfo userInfo;
   private String message;
-  private RoomMessageDto gameRoom;
+  private GameRoom gameRoom;
 }

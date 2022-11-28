@@ -62,8 +62,6 @@ public class MessageController {
     // players userDto 형태로 가져옴
     List<AddUserDto> players = roomService.getRoomUsers(room.getId());
 
-    RoomMessageDto roomMessageDto = new RoomMessageDto(room);
-
     UserInfo userInfo = UserInfo.builder()
       .user(user)
       .userStatus(UserStatus.ROLE_USER)
@@ -76,7 +74,7 @@ public class MessageController {
     Message message = Message.builder()
       .userInfo(system)
       .type(messageDto.getType())
-      .gameRoom(roomMessageDto)
+      .gameRoom(room)
       .build();
 
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
@@ -91,7 +89,7 @@ public class MessageController {
             userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             userInfo.getUser().updateTeamStatus(TeamStatus.RED_TEAM);
-            roomService.addUserToRoom(room.getId(), 0, user);
+            room.getPlayers().put(i, user);
             userInfo.setPlayerNumber(0);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
@@ -103,7 +101,7 @@ public class MessageController {
           if (players.get(i) == null) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
-            roomService.addUserToRoom(room.getId(), i, user);
+            room.getPlayers().put(i, user);
             userInfo.setPlayerNumber(i);
             headerAccessor.getSessionAttributes().put("userInfo", userInfo);
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
@@ -191,13 +189,12 @@ public class MessageController {
 
     // 방 찾기
     GameRoom room = roomService.findRoom(roomId);
-    RoomMessageDto roomMessageDto = new RoomMessageDto(room);
 
     // 메시지 생성
     Message message = Message.builder()
       .type(Message.MessageType.EXIT)
       .userInfo(UserInfo.builder().system("system").build())
-      .gameRoom(roomMessageDto)
+      .gameRoom(room)
       .build();
 
     // 방에서 해당 유저 삭제
@@ -217,13 +214,13 @@ public class MessageController {
 
     // 나간 애가 방장이면 방장 새로 선출
     if(userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-      selectNewHost(roomMessageDto);
+      selectNewHost(room);
     }
 
     operations.convertAndSend("/sub/room/" + roomId, message);
   }
 
-  private void selectNewHost(RoomMessageDto room) {
+  private void selectNewHost(GameRoom room) {
     for (int i = 0; i <= room.getRoomSize(); i++) {
       AddUserDto userDto = roomService.getRoomUsers(room.getId()).get(i);
       User nextHost = userService.findUserByDto(userDto);
