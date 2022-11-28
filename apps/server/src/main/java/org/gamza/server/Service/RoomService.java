@@ -6,6 +6,7 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
+import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
@@ -103,11 +104,10 @@ public class RoomService {
   }
 
   @Transactional
-  public List<User> getRoomUsers(Long id) {
+  public List<AddUserDto> getRoomUsers(Long id) {
     GameRoom room = roomRepository.findById(id).orElse(null);
     List<User> userList = new ArrayList<>(room.getPlayers().values());
-    List<Long> userIdList = userList.stream().map(user -> user.getId()).collect(Collectors.toList());
-    return userService.getUsers(userIdList);
+    return userService.getAddUserDtos(userList);
   }
 
   @Transactional
