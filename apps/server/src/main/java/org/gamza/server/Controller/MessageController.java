@@ -2,6 +2,7 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.MessageDto.MessageDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Dto.StageDto.StageRequestDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;
@@ -70,12 +71,13 @@ public class MessageController {
       .system("system")
       .build();
 
-    Message message = Message.builder()
+    MessageDto msg = MessageDto.builder()
       .type(messageDto.getType())
+      .room(room)
+      .userInfo(system)
       .build();
 
-    message.setUserInfo(system);
-    message.setGameRoom(room);
+    Message message = msg.toEntity();
 
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
       throw new RoomException(ErrorCode.BAD_REQUEST, "Room Type 이 로비입니다.");
