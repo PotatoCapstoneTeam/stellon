@@ -173,7 +173,7 @@ public class MessageController {
       case READY:
         userInfo.getUser().updateReadyStatus(userInfo.getUser().getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
     }
-    operations.convertAndSend("/sub/room/" + message.getGameRoom().getId(), message);
+    operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);
   }
 
   @EventListener
@@ -217,7 +217,7 @@ public class MessageController {
       selectNewHost(room);
     }
 
-    operations.convertAndSend("/sub/room/" + message.getGameRoom().getId(), message);
+    operations.convertAndSend("/sub/room/" + roomId, message);
   }
 
   private void selectNewHost(GameRoom room) {
