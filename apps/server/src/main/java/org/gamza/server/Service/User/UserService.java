@@ -85,12 +85,14 @@ public class UserService {
   }
 
   @Transactional
-  public void updateReadyStatus(User user) {
+  public void updateReadyStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
     user.updateReadyStatus(user.getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
   }
 
   @Transactional
-  public void updateTeamStatus(User user) {
+  public void updateTeamStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
     user.updateTeamStatus(user.getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
   }
 

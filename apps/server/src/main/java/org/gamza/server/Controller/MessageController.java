@@ -164,11 +164,11 @@ public class MessageController {
         break;
 
       case CHANGE:
-        userService.updateTeamStatus(user);
+        userService.updateTeamStatus(messageDto.getNickname());
         break;
 
       case READY:
-        userService.updateReadyStatus(user);
+        userService.updateReadyStatus(messageDto.getNickname());
         break;
     }
     operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);
