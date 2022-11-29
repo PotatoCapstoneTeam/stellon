@@ -1,10 +1,11 @@
 package org.gamza.server.Service.User;
 
-import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.User;
+import org.gamza.server.Enum.ReadyStatus;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
 import org.gamza.server.Error.Exception.NotValidException;
@@ -81,6 +82,16 @@ public class UserService {
       .winRecord(100)
       .loseRecord(100)
       .build();
+  }
+
+  @Transactional
+  public void updateReadyStatus(User user) {
+    user.updateReadyStatus(user.getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+  }
+
+  @Transactional
+  public void updateTeamStatus(User user) {
+    user.updateTeamStatus(user.getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
   }
 
   @Transactional

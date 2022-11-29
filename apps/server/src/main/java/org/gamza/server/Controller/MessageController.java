@@ -164,11 +164,12 @@ public class MessageController {
         break;
 
       case CHANGE:
-        userInfo.getUser().updateTeamStatus(userInfo.getUser().getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+        userService.updateTeamStatus(user);
         break;
 
       case READY:
-        userInfo.getUser().updateReadyStatus(userInfo.getUser().getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+        userService.updateReadyStatus(user);
+        break;
     }
     operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);
   }
