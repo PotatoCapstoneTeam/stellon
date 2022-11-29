@@ -154,9 +154,8 @@ public class MessageController {
         response.add("secretKey", secretKey);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
 
-        restTemplate.postForEntity(url, request, String.class); // post 전송
 
-        ResponseEntity<StageRequestDto> responseEntity = restTemplate.getForEntity(url, StageRequestDto.class);
+        ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
         StageRequestDto stageRequestDto = responseEntity.getBody();
         stageRequestDto.toEntity();
