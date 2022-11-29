@@ -47,18 +47,19 @@ public class User extends BaseTimeEntity {
   @Column
   private String refreshToken;
 
-  public User updateToken(String newRefreshToken) {
+  public void updateToken(String newRefreshToken) {
     this.refreshToken = newRefreshToken;
-    return this;
   }
 
-  public User updateTeamStatus(TeamStatus teamStatus) {
+  public void deleteToken() {
+    this.refreshToken = null;
+  }
+
+  public void updateTeamStatus(TeamStatus teamStatus) {
     this.teamStatus = teamStatus;
-    return this;
   }
 
-  public User updateReadyStatus(ReadyStatus readyStatus) {
+  public void updateReadyStatus(ReadyStatus readyStatus) {
     this.readyStatus = readyStatus;
-    return this;
   }
 }

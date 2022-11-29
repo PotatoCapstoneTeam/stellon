@@ -12,8 +12,8 @@ public class GameResponseDto {
 
   public GameResponseDto(RecordResult recordResult) {
     this.roomId = recordResult.getGameRoom().getId();
-    this.kill = recordResult.getKillPoint();
-    this.death = recordResult.getDeathPoint();
+    this.kill = recordResult.getKill();
+    this.death = recordResult.getDeath();
     this.userId = recordResult.getUser().getId();
   }
 }

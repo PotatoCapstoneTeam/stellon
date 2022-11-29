@@ -30,8 +30,8 @@ public class GameService {
 
     for (RecordResult results : gameRequestDto.getUsers()) {
       RecordResult recordResult = RecordResult.builder()
-        .killPoint(results.getKillPoint())
-        .deathPoint(results.getDeathPoint())
+        .kill(results.getKill())
+        .death(results.getDeath())
         .user(userRepository.findById(results.getId()).orElseThrow())
         .gameRoom(roomRepository.findById(id).orElseThrow())
         .build();

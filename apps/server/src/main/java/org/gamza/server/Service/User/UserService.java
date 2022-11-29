@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,11 +51,8 @@ public class UserService {
 
   @Transactional
   public List<UserResponseDto> getUserResponseDtos(List<User> userList) {
-    List<UserResponseDto> allUserNickname = new ArrayList<>();
-    for (User user : userList) {
-      String nickname = user.getNickname();
-      allUserNickname.add(UserResponseDto.builder().nickname(nickname).build());
-    }
+    List<UserResponseDto> allUserNickname = userList.stream().map(User::getNickname)
+      .map(nickname -> UserResponseDto.builder().nickname(nickname).build()).collect(Collectors.toList());
     Collections.reverse(allUserNickname);
     return allUserNickname;
   }
