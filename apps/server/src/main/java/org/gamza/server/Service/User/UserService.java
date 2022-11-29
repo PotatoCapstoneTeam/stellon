@@ -3,10 +3,7 @@ package org.gamza.server.Service.User;
 import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
-import org.gamza.server.Dto.UserDto.UserLoginDto;
-import org.gamza.server.Dto.UserDto.UserRecordDto;
-import org.gamza.server.Dto.UserDto.UserRequestDto;
-import org.gamza.server.Dto.UserDto.UserResponseDto;
+import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
@@ -20,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,22 @@ public class UserService {
   public List<UserResponseDto> findAll() {
     List<User> userList = new ArrayList<>(userRepository.findAll());
     return getUserResponseDtos(userList);
+  }
+
+  @Transactional
+  public User findUserByDto(AddUserDto userDto) {
+    return userRepository.findById(userDto.getId()).get();
+  }
+
+  @Transactional
+  public List<AddUserDto> getAddUserDtos(List<User> userList) {
+    List<AddUserDto> dtoList = userList.stream().map(AddUserDto::new).collect(Collectors.toList());
+    return dtoList;
+  }
+
+  @Transactional
+  public User findByNickname(String nickname) {
+    return userRepository.findByNickname(nickname);
   }
 
   @Transactional
