@@ -55,8 +55,6 @@ public class MessageController {
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
-    // Lazy Exception 프록시 생각하기 room 호출 시 players 는 프록시 객체 상태임 그리고 여기는 Controller 라서 영속 상태 X
-    // players 를 fetch join 으로 가져오기 or Dto 사용(?)
 
     // players userDto 형태로 가져옴
     List<AddUserDto> players = roomService.getRoomUsers(room.getId());
@@ -97,7 +95,7 @@ public class MessageController {
             roomRepository.save(room);
             break;
           }
-          if (players.get(i) == null) {
+          if (!room.getPlayers().containsKey(i)) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             room.getPlayers().put(i, user);
