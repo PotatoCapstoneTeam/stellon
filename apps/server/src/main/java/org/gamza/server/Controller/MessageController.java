@@ -2,7 +2,6 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.gamza.server.Dto.GameRoomDto.RoomMessageDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Dto.StageDto.StageRequestDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;

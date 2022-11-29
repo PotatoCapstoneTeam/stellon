@@ -20,10 +20,10 @@ public class RecordResult extends BaseTimeEntity {
   @GeneratedValue(strategy = IDENTITY)
   private Long id;
 
-  @Column
+  @Column(name = "kill_point")
   private int kill;
 
-  @Column
+  @Column(name = "death_point")
   private int death;
 
   @ManyToOne(fetch = FetchType.EAGER)

@@ -87,6 +87,18 @@ public class AuthService {
     return response;
   }
 
+  @Transactional
+  public void logout(HttpServletRequest request) {
+    String accessToken = request.getHeader("Authorization");
+
+    if(accessToken != null && jwtTokenProvider.validateToken(request, accessToken)) {
+      String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+      User findUser = userRepository.findByEmail(email);
+
+      findUser.deleteToken();
+    }
+  }
+
   private void validateUser(UserLoginDto userLoginDto) {
     User findUser = userRepository.findByEmail(userLoginDto.getEmail());
     if (findUser == null) {

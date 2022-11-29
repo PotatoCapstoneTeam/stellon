@@ -11,7 +11,9 @@ public interface RoomRepository extends JpaRepository<GameRoom, Long> {
   List<GameRoom> findGameRoomsByRoomType(RoomType roomType);
   GameRoom findGameRoomByRoomType(RoomType roomType);
 
-  @Override
   @EntityGraph(attributePaths = {"players"})
-  Optional<GameRoom> findById(Long id);
+  Optional<GameRoom> findWithPlayersById(Long id);
+
+  @EntityGraph(attributePaths = {"players"})
+  GameRoom findWithPlayersByRoomType(RoomType roomType);
 }
