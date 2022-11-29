@@ -52,7 +52,7 @@ public class RoomService {
 
   @Transactional
   public GameRoom findRoom(Long id) {
-    return roomRepository.findById(id).orElseThrow(() ->
+    return roomRepository.findWithPlayersById(id).orElseThrow(() ->
       new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
   }
 
@@ -111,18 +111,11 @@ public class RoomService {
   }
 
   @Transactional
-  public void addUserToRoom(Long roomId, int idx, User user) {
-    GameRoom room = roomRepository.findById(roomId).orElse(null);
-    room.getPlayers().putIfAbsent(idx, user);
-    roomRepository.save(room);
-  }
-
-  @Transactional
   public void addUserToLobby(HttpServletRequest request) {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    for(int i = 1; i<= 100; i++) {
+    for(int i = 0; i < 100; i++) {
       if(lobby.getPlayers().get(i) == null) {
         lobby.getPlayers().put(i, findUser);
         break;
@@ -140,7 +133,7 @@ public class RoomService {
 
   @Transactional
   public void removeUserToLobby(HttpServletRequest request) {
-    GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
+    GameRoom lobby = roomRepository.findWithPlayersByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
     int index = getIndex(lobby.getPlayers(), findUser);

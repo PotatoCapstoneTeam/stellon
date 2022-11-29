@@ -29,6 +29,12 @@ public class AuthController {
     return authService.login(userLoginDto);
   }
 
+  @PostMapping("/logout")
+  public ResponseEntity<Boolean> logout(HttpServletRequest request) {
+    authService.logout(request);
+    return ResponseEntity.ok(true);
+  }
+
   @PostMapping("/reissue")
   public TokenApiResponse reissue(HttpServletRequest request) {
     return authService.refresh(request);
