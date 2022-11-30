@@ -137,24 +137,10 @@ public class MessageController {
           " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 
         String url = "https://game.stellon.io/api";
-//        MultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
-//
-//        for (AddUserDto player : players) {
-//          JSONArray req_array = new JSONArray();
-//
-//          req_array.add(player.getId());
-//          req_array.add(player.getNickname());
-//          req_array.add(player.getTeamStatus());
-//
-//          response.add("users", req_array);
-//        }
-//
-//        response.add("callback", "https://game.stellon.io/api");
-//        response.add("secretKey", secretKey);
 
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("callback", "https://game.stellon.io/api");
+        jsonObject.put("callback", "https://api.stellon.io/game/reqeust");
         jsonObject.put("secret", secretKey);
 
         JSONArray usersJsonArray = new JSONArray();
