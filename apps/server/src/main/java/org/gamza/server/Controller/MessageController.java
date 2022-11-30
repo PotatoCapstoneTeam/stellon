@@ -19,6 +19,7 @@ import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Service.RoomService;
 import org.gamza.server.Service.User.UserService;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
@@ -138,24 +139,41 @@ public class MessageController {
           " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 
         String url = "https://game.stellon.io/api";
-        MultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
+//        MultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
+//
+//        for (AddUserDto player : players) {
+//          JSONArray req_array = new JSONArray();
+//
+//          req_array.add(player.getId());
+//          req_array.add(player.getNickname());
+//          req_array.add(player.getTeamStatus());
+//
+//          response.add("users", req_array);
+//        }
+//
+//        response.add("callback", "https://game.stellon.io/api");
+//        response.add("secretKey", secretKey);
 
-        response.add("id", room.getId().toString());
+        var jsonObject = new JSONObject();
+
+        jsonObject.put("callback", "https://game.stellon.io/api");
+        jsonObject.put("secretKey", secretKey);
+
+        var usersJsonArray = new JSONArray();
 
         for (AddUserDto player : players) {
-          JSONArray req_array = new JSONArray();
+          var userJsonObject = new JSONObject();
 
-          req_array.add(player.getId());
-          req_array.add(player.getNickname());
-          req_array.add(player.getTeamStatus());
+          userJsonObject.put("id", player.getId());
+          userJsonObject.put("nickname", player.getNickname());
+          userJsonObject.put("team", player.getTeamStatus());
 
-          response.add("users", req_array);
+          usersJsonArray.add(userJsonObject);
         }
 
-        response.add("callback", "https://game.stellon.io/api");
-        response.add("secretKey", secretKey);
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
+        jsonObject.put("users", usersJsonArray);
 
+        HttpEntity<String> request = new HttpEntity<String>(jsonObject.toString(), httpHeaders);
 
         ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
