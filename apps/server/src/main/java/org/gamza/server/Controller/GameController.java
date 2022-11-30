@@ -21,9 +21,4 @@ public class GameController {
     gameService.gameRequest(gameRequestDto);
     return new ResponseEntity<>("게임 데이터 저장 완료", HttpStatus.OK);
   }
-
-  @GetMapping("/game/response")
-  public List<GameResponseDto> gameResponse(@RequestParam Long id) {
-    return gameService.gameResponse(id);
-  }
 }
