@@ -15,17 +15,8 @@ interface IInfo {
 
 const GameRoomPage = () => {
   const { id } = useParams();
-  const { send } = useRoomWebSocket(id as string);
   const [myInfo, setMyInfo] = useState<IInfo>();
-
-  const join = () => {
-    console.log('방에 입장합니다.');
-    send({
-      type: 'JOIN',
-      roomId: 7,
-      nickname: 'testUser',
-    });
-  };
+  const { ready, start } = useRoomWebSocket(id as string, myInfo);
 
   useEffect(() => {
     (async () => {
@@ -42,10 +33,14 @@ const GameRoomPage = () => {
       <Container>
         <BackgroundBox
           onClick={() => {
-            join();
+            ready();
           }}
         />
-        <Header>
+        <Header
+          onClick={() => {
+            start();
+          }}
+        >
           <Title />
           <Info />
         </Header>
@@ -53,7 +48,7 @@ const GameRoomPage = () => {
           <Client />
           <Map />
           <ChatRoom state="chatRoom" roomId={id} nickname={myInfo?.nickname} />
-          <State send={send} />
+          <State ready={ready} start={start} />
         </Article>
       </Container>
     </div>

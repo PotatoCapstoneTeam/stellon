@@ -5,25 +5,24 @@ import { customColor } from '../../../constants/customColor';
 import { useNavigate } from 'react-router-dom';
 
 interface IState {
-  send: (chatting: ISend) => void;
+  ready: () => void;
+  start: () => void;
 }
 
-export const State = ({ send }: IState) => {
+export const State = ({ ready, start }: IState) => {
   const navigate = useNavigate();
-  const start = (e: React.MouseEvent<HTMLElement>) => {
-    send({
-      type: 'START',
-      roomId: 61,
-      nickname: 'testUser',
-    });
-  };
 
   const outRoom = () => {
     navigate(-1);
   };
+
+  const readyMyUser = () => {
+    ready();
+  };
+
   return (
     <StateBox>
-      <div onClick={start}>
+      <div onClick={() => ready}>
         <Ready color="black" size="24" fontWeight="900">
           준비
         </Ready>
