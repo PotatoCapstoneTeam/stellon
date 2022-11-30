@@ -164,14 +164,14 @@ public class MessageController {
 
           userJsonObject.put("id", player.getId());
           userJsonObject.put("nickname", player.getNickname());
-          userJsonObject.put("team", player.getTeamStatus());
+          userJsonObject.put("team", player.getTeamStatus().toString());
 
           usersJsonArray.add(userJsonObject);
         }
 
         jsonObject.put("users", usersJsonArray);
         System.out.println("전송되는 JSONObject : " + jsonObject);
-        HttpEntity<String> request = new HttpEntity<>(jsonObject.toJSONString(), httpHeaders);
+        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
         ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
