@@ -32,8 +32,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -154,15 +152,15 @@ public class MessageController {
 //        response.add("callback", "https://game.stellon.io/api");
 //        response.add("secretKey", secretKey);
 
-        var jsonObject = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("callback", "https://game.stellon.io/api");
         jsonObject.put("secretKey", secretKey);
 
-        var usersJsonArray = new JSONArray();
+        JSONArray usersJsonArray = new JSONArray();
 
         for (AddUserDto player : players) {
-          var userJsonObject = new JSONObject();
+          JSONObject userJsonObject = new JSONObject();
 
           userJsonObject.put("id", player.getId());
           userJsonObject.put("nickname", player.getNickname());
@@ -172,8 +170,8 @@ public class MessageController {
         }
 
         jsonObject.put("users", usersJsonArray);
-
-        HttpEntity<String> request = new HttpEntity<String>(jsonObject.toString(), httpHeaders);
+        System.out.println("전송되는 JSONObject : " + jsonObject);
+        HttpEntity<String> request = new HttpEntity<>(jsonObject.toJSONString(), httpHeaders);
 
         ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
