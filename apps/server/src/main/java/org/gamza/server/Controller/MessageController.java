@@ -206,10 +206,10 @@ public class MessageController {
     message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
 
     // 방이 빈 방이면 방 삭제 후 리턴
-    if (roomService.getRoomUsers(roomId).isEmpty()) {
-      roomRepository.delete(room);
-      return;
-    }
+//    if (roomService.getRoomUsers(roomId).isEmpty()) {
+//      roomRepository.delete(room);
+//      return;
+//    }
 
     // 나간 애가 방장이면 방장 새로 선출
     if(userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
