@@ -34,4 +34,10 @@ export const Api = {
       headers: { Authorization: token },
     });
   },
+
+  deleteWithToken: async (url: string, token: string) => {
+    return await axios.delete(setting.baseURL + url, {
+      headers: { Authorization: token },
+    });
+  },
 };

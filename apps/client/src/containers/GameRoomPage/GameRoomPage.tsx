@@ -1,33 +1,50 @@
-import { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+import axios from '../../util/axios';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import ChatRoom from '../../components/ChatRoom';
-import useLogin from '../../hooks/useLogin';
-import useUser from '../../hooks/useUser';
+import useRoomWebSocket from '../../hooks/useRoomWebSocket';
 import { Map, Title, Info, Client, State } from './components/index';
+
+interface IInfo {
+  nickname: string;
+  winRecord: number;
+  loseRecord: number;
+}
 
 const GameRoomPage = () => {
   const { id } = useParams();
-  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
-  const { login } = useLogin();
-  const { user, deleteUserList, userInfo } = useUser();
+  const { send } = useRoomWebSocket(id as string);
+  const [myInfo, setMyInfo] = useState<IInfo>();
+
+  const join = () => {
+    console.log('방에 입장합니다.');
+    send({
+      type: 'JOIN',
+      roomId: 7,
+      nickname: 'testUser',
+    });
+  };
 
   useEffect(() => {
     (async () => {
-      await login();
-      await deleteUserList();
-      user();
+      await axios.delete('/room/lobby/users');
+      const myInfo = await axios.get('/user');
+      setMyInfo(myInfo.data);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies['user_access_token']]);
+  }, []);
 
   return (
     <div>
       <Space />
       <Container>
-        <BackgroundBox />
+        <BackgroundBox
+          onClick={() => {
+            join();
+          }}
+        />
         <Header>
           <Title />
           <Info />
@@ -35,12 +52,8 @@ const GameRoomPage = () => {
         <Article>
           <Client />
           <Map />
-          <ChatRoom
-            state="chatRoom"
-            roomId={id}
-            nickname={userInfo?.nickname}
-          />
-          <State />
+          <ChatRoom state="chatRoom" roomId={id} nickname={myInfo?.nickname} />
+          <State send={send} />
         </Article>
       </Container>
     </div>

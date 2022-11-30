@@ -1,9 +1,15 @@
 import { Typography } from '../../../components/Typography';
 import styled, { css } from 'styled-components';
+import useLogin from '../../../hooks/useLogin';
 
 const GameStart = () => {
+  const { logOut } = useLogin();
   return (
-    <GameStartBtn>
+    <GameStartBtn
+      onClick={() => {
+        logOut();
+      }}
+    >
       <SearchImg src="../assets/direction.png" alt="none" />
       <Typography color="white" size="16">
         빠른 시작

@@ -6,33 +6,35 @@ import GameList from './components/GameList';
 import Chat from './components/Chat';
 import UserList from './components/UserList';
 import Header from './components/Header';
-import { useCookies } from 'react-cookie';
 import CreateRoomModal from './modal/CreateRoomModal';
-import useLogin from '../../hooks/useLogin';
-import useUser from '../../hooks/useUser';
-import useRoom from '../../hooks/useRoom';
+import axios from '../../util/axios';
 export interface IInfo {
   nickname: string;
   winRecord: number;
   loseRecord: number;
 }
+export interface IUser {
+  nickname: string;
+}
 
 const LobbyPage = () => {
-  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
   const [modalOpen, setModalOpen] = useState(false);
-  const { login } = useLogin();
-  const { user, register, userInfo } = useUser();
-  const { watchRoom, list } = useRoom();
+  const [list, setList] = useState([]);
+  const [userList, setUserList] = useState<IUser[]>([]);
+  const [myInfo, setMyInfo] = useState<IInfo>();
 
   useEffect(() => {
     (async () => {
-      await login();
-      register();
-      watchRoom();
-      user();
+      await axios.post('/room/lobby/users');
+      const myInfo = await axios.get('/user');
+      const watchRoom = await axios.get('/room');
+      const watchUserList = await axios.get('/room/lobby/users');
+      setUserList(watchUserList.data);
+      setList(watchRoom.data);
+      setMyInfo(myInfo.data);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies['user_access_token']]);
+  }, []);
 
   return (
     <div>
@@ -41,10 +43,10 @@ const LobbyPage = () => {
         <Header setModalOpen={setModalOpen} />
         <ContentBox>
           <BackgroundBox />
-          <Info {...userInfo!} />
+          <Info {...myInfo!} />
           <GameList list={list} />
-          <Chat {...userInfo!} />
-          <UserList />
+          <Chat {...myInfo!} />
+          <UserList userList={userList} />
         </ContentBox>
       </Container>
       {modalOpen && <CreateRoomModal setModalOpen={setModalOpen} />}

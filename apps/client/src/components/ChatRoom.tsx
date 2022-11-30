@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
-import useLobbyWebSocket from '../hooks/useLobbyWebSocket';
+import useLobbyWebSocket from '../hooks/useChatWebSocket';
 import { customColor } from '../constants/customColor';
 import Chat from './Chat';
 

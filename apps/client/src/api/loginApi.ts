@@ -17,4 +17,8 @@ export const loginApi = {
   login: async (data: ILogin) => {
     return await Api.postWithParams('/auth/login', data);
   },
+
+  logout: async (token: string) => {
+    return await Api.deleteWithToken('/room/lobby/users', token);
+  },
 };

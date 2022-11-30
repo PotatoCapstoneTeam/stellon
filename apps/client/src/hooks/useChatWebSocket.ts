@@ -13,7 +13,7 @@ interface IMessage {
   message: string;
 }
 
-const useLobbyWebSocket = (state: string, roomId: string) => {
+const useChatWebSocket = (state: string, roomId: string) => {
   const [lobbyChat, setLobbyChat] = useState<IChat[]>([]);
   const client = useRef<CompatClient>();
 
@@ -26,7 +26,7 @@ const useLobbyWebSocket = (state: string, roomId: string) => {
       });
 
       client.current.connect({}, (frame: string) => {
-        console.log('웹소켓 연결');
+        console.log('채팅 웹소켓 연결');
 
         client.current?.subscribe(url, (res) => {
           if (res != null) {
@@ -45,7 +45,7 @@ const useLobbyWebSocket = (state: string, roomId: string) => {
     return () => {
       client.current?.disconnect();
       client.current = undefined;
-      console.log('웹소켓 끊어짐');
+      console.log('채팅 웹소켓 끊어짐');
     };
   }, []);
 
@@ -58,4 +58,4 @@ const useLobbyWebSocket = (state: string, roomId: string) => {
   return { send, lobbyChat };
 };
 
-export default useLobbyWebSocket;
+export default useChatWebSocket;

@@ -1,14 +1,34 @@
+import { ISend } from '../../../hooks/useRoomWebSocket';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
+import { useNavigate } from 'react-router-dom';
 
-export const State = () => {
+interface IState {
+  send: (chatting: ISend) => void;
+}
+
+export const State = ({ send }: IState) => {
+  const navigate = useNavigate();
+  const start = (e: React.MouseEvent<HTMLElement>) => {
+    send({
+      type: 'START',
+      roomId: 61,
+      nickname: 'testUser',
+    });
+  };
+
+  const outRoom = () => {
+    navigate(-1);
+  };
   return (
     <StateBox>
-      <Ready color="black" size="24" fontWeight="900">
-        준비
-      </Ready>
-      <OutBox>
+      <div onClick={start}>
+        <Ready color="black" size="24" fontWeight="900">
+          준비
+        </Ready>
+      </div>
+      <OutBox onClick={outRoom}>
         <Out src="../assets/logout.png" alt="none"></Out>
       </OutBox>
     </StateBox>
