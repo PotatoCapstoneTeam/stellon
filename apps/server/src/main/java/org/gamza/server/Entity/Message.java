@@ -2,7 +2,6 @@ package org.gamza.server.Entity;
 
 import lombok.Builder;
 import lombok.Data;
-import org.gamza.server.Dto.GameRoomDto.RoomMessageDto;
 
 @Data
 @Builder
