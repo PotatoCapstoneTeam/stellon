@@ -15,14 +15,14 @@ import org.gamza.server.Enum.RoomStatus;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.AuthenticationException;
+import org.gamza.server.Error.Exception.DuplicateException;
 import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.User.UserService;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -123,8 +123,12 @@ public class RoomService {
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
     for(int i = 0; i < 100; i++) {
       if(lobby.getPlayers().get(i) == null) {
-        lobby.getPlayers().put(i, findUser);
-        break;
+        try {
+          lobby.getPlayers().put(i, findUser);
+          break;
+        } catch (DataIntegrityViolationException e) {
+          throw new DuplicateException(ErrorCode.DUPLICATE_KEY, "player_key 중복 에러입니다. 다시 요청해주세요.");
+        }
       }
     }
     roomRepository.save(lobby);
