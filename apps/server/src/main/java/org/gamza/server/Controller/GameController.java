@@ -19,11 +19,6 @@ public class GameController {
   @PostMapping("/game/reqeust")
   public ResponseEntity<String> gameRequest(@RequestBody GameRequestDto gameRequestDto) {
     gameService.gameRequest(gameRequestDto);
-    return new ResponseEntity<String>("게임 데이터 저장 완료", HttpStatus.OK);
-  }
-
-  @GetMapping("/game/response")
-  public List<GameResponseDto> gameResponse(@RequestParam Long id) {
-    return gameService.gameResponse(id);
+    return new ResponseEntity<>("게임 데이터 저장 완료", HttpStatus.OK);
   }
 }

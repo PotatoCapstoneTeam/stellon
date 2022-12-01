@@ -53,10 +53,10 @@ public class AuthService {
 
   private void isDuplicateUser(UserJoinDto userJoinDto) {
     if (userRepository.findByEmail(userJoinDto.getEmail()) != null) {
-      throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL);
+      throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL, ErrorCode.DUPLICATE_EMAIL.getMessage());
     }
     if (userRepository.existsByNickname(userJoinDto.getNickname())) {
-      throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
+      throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME, ErrorCode.DUPLICATE_NICKNAME.getMessage());
     }
   }
 

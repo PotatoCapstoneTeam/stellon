@@ -19,6 +19,7 @@ import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Service.RoomService;
 import org.gamza.server.Service.User.UserService;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
@@ -31,8 +32,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -55,8 +54,6 @@ public class MessageController {
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
-    // Lazy Exception 프록시 생각하기 room 호출 시 players 는 프록시 객체 상태임 그리고 여기는 Controller 라서 영속 상태 X
-    // players 를 fetch join 으로 가져오기 or Dto 사용(?)
 
     // players userDto 형태로 가져옴
     List<AddUserDto> players = roomService.getRoomUsers(room.getId());
@@ -97,7 +94,7 @@ public class MessageController {
             roomRepository.save(room);
             break;
           }
-          if (players.get(i) == null) {
+          if (!room.getPlayers().containsKey(i)) {
             userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
             userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
             room.getPlayers().put(i, user);
@@ -136,29 +133,32 @@ public class MessageController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" +
+          " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 
         String url = "https://game.stellon.io/api";
-        MultiValueMap<String, Object> response = new LinkedMultiValueMap<>();
 
-        response.add("id", room.getId().toString());
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("callback", "https://api.stellon.io/game/reqeust");
+        jsonObject.put("secret", secretKey);
+
+        JSONArray usersJsonArray = new JSONArray();
 
         for (AddUserDto player : players) {
-          JSONArray req_array = new JSONArray();
+          JSONObject userJsonObject = new JSONObject();
 
-          req_array.add(player.getId());
-          req_array.add(player.getNickname());
-          req_array.add(player.getTeamStatus());
+          userJsonObject.put("id", player.getId());
+          userJsonObject.put("nickname", player.getNickname());
+          userJsonObject.put("team", player.getTeamStatus().toString());
 
-          response.add("users", req_array);
+          usersJsonArray.add(userJsonObject);
         }
 
-        response.add("callback", "https://game.stellon.io/api");
-        response.add("secretKey", secretKey);
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(response, httpHeaders);
+        jsonObject.put("users", usersJsonArray);
+        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
-        restTemplate.postForEntity(url, request, String.class); // post 전송
-
-        ResponseEntity<StageRequestDto> responseEntity = restTemplate.getForEntity(url, StageRequestDto.class);
+        ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
         StageRequestDto stageRequestDto = responseEntity.getBody();
         stageRequestDto.toEntity();
@@ -166,77 +166,15 @@ public class MessageController {
         break;
 
       case CHANGE:
-        userInfo.getUser().updateTeamStatus(userInfo.getUser().getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+        userService.updateTeamStatus(messageDto.getNickname());
+        message.setGameRoom(roomService.findRoom(room.getId()));
         break;
 
       case READY:
-        userInfo.getUser().updateReadyStatus(userInfo.getUser().getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+        userService.updateReadyStatus(messageDto.getNickname());
+        message.setGameRoom(roomService.findRoom(room.getId()));
+        break;
     }
     operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);
-  }
-
-  @EventListener
-  public void webSocketDisconnectListener(SessionDisconnectEvent event) {
-    StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-
-    // 유저인포와 방 id 가져오기
-    UserInfo userInfo = (UserInfo) Objects.requireNonNull(accessor.getSessionAttributes()).get("userInfo");
-    Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
-
-    // 유저 찾기
-    User user = userService.findByNickname(userInfo.getUser().getNickname());
-
-    // 방 찾기
-    GameRoom room = roomService.findRoom(roomId);
-
-    // 메시지 생성
-    Message message = Message.builder()
-      .type(Message.MessageType.EXIT)
-      .userInfo(UserInfo.builder().system("system").build())
-      .gameRoom(room)
-      .build();
-
-    // 방에서 해당 유저 삭제
-    roomService.removeUserToRoom(roomId, userInfo.getPlayerNumber());
-
-    // 유저 정보 수정
-    user.updateTeamStatus(TeamStatus.NONE);
-    user.updateReadyStatus(ReadyStatus.NONE);
-
-    message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-
-    // 방이 빈 방이면 방 삭제 후 리턴
-    if (roomService.getRoomUsers(roomId).isEmpty()) {
-      roomRepository.delete(room);
-      return;
-    }
-
-    // 나간 애가 방장이면 방장 새로 선출
-    if(userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-      selectNewHost(room);
-    }
-
-    operations.convertAndSend("/sub/room/" + roomId, message);
-  }
-
-  private void selectNewHost(GameRoom room) {
-    for (int i = 0; i <= room.getRoomSize(); i++) {
-      AddUserDto userDto = roomService.getRoomUsers(room.getId()).get(i);
-      User nextHost = userService.findUserByDto(userDto);
-      log.info("방장 선발");
-      if (nextHost != null) {
-        UserInfo hostInfo = UserInfo.builder()
-          .user(nextHost)
-          .userStatus(UserStatus.ROLE_MANAGER)
-          .build();
-        Message newHostMsg = Message.builder()
-          .type(Message.MessageType.ROOM)
-          .gameRoom(room)
-          .userInfo(hostInfo)
-          .message(hostInfo.getUser().getNickname() + "님이 방장이 되셨습니다.").build();
-        operations.convertAndSend("/sub/room/" + room.getId(), newHostMsg);
-        break;
-      }
-    }
   }
 }
