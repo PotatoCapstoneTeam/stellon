@@ -91,7 +91,6 @@ public class MessageController {
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
             message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
 
-            roomRepository.save(room);
             break;
           }
           if (!room.getPlayers().containsKey(i)) {
@@ -103,7 +102,6 @@ public class MessageController {
             headerAccessor.getSessionAttributes().put("roomId", room.getId());
             message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
 
-            roomRepository.save(room);
             break;
           }
         }
@@ -173,6 +171,7 @@ public class MessageController {
         userService.updateReadyStatus(messageDto.getNickname());
         break;
     }
+    roomRepository.save(room);
     operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);
   }
 

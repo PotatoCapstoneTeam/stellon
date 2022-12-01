@@ -51,12 +51,11 @@ public class MessageEventListener {
         .gameRoom(room)
         .build();
 
+      // 유저 정보 수정
+      userService.initStatus(user.getNickname());
+
       // 방에서 해당 유저 삭제
       roomService.removeUserToRoom(roomId, userInfo);
-
-      // 유저 정보 수정
-      user.updateTeamStatus(TeamStatus.NONE);
-      user.updateReadyStatus(ReadyStatus.NONE);
 
       message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
 
