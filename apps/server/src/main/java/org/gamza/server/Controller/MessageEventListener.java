@@ -34,6 +34,9 @@ public class MessageEventListener {
     UserInfo userInfo = (UserInfo) accessor.getSessionAttributes().get("userInfo");
     Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
 
+    System.out.println("========== 찾은 유저 : " + userInfo.getUser().getNickname());
+    System.out.println("========== 찾은 방 : " + roomId + "번 방");
+
     // 유저 찾기
     User user = userService.findByNickname(userInfo.getUser().getNickname());
 
@@ -46,9 +49,6 @@ public class MessageEventListener {
       .userInfo(UserInfo.builder().system("system").build())
       .gameRoom(room)
       .build();
-
-    System.out.println("========== 찾은 유저 : " + user.getNickname());
-    System.out.println("========== 찾은 방 : " + roomId + "번 방");
 //
 //    // 방에서 해당 유저 삭제
 //    roomService.removeUserToRoom(roomId, userInfo.getPlayerNumber());
