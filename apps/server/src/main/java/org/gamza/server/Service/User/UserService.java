@@ -97,6 +97,13 @@ public class UserService {
   }
 
   @Transactional
+  public void initStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
+    user.updateTeamStatus(TeamStatus.NONE);
+    user.updateReadyStatus(ReadyStatus.NONE);
+  }
+
+  @Transactional
   public void removeUser(UserLoginDto loginDto) {
     User findUser = userRepository.findByEmail(loginDto.getEmail());
     if (findUser == null) {
