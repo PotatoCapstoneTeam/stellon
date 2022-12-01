@@ -126,7 +126,7 @@ public class RoomService {
 
   @Transactional
   public void removeUserToRoom(Long roomId, int idx) {
-    GameRoom room = roomRepository.findById(roomId).orElse(null);
+    GameRoom room = roomRepository.findWithPlayersById(roomId).orElse(null);
     room.getPlayers().remove(idx);
     roomRepository.save(room);
   }
