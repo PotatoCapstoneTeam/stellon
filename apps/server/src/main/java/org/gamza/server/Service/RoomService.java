@@ -10,6 +10,7 @@ import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
+import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomStatus;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Error.ErrorCode;
@@ -95,6 +96,11 @@ public class RoomService {
     return roomRepository.save(room);
   }
 
+  @Transactional
+  public void removeRoom(Long id) {
+    roomRepository.deleteById(id);
+  }
+
   // lobby 의 players 조회
   @Transactional
   public List<UserResponseDto> getLobbyUsers() {
@@ -125,9 +131,9 @@ public class RoomService {
   }
 
   @Transactional
-  public void removeUserToRoom(Long roomId, int idx) {
+  public void removeUserToRoom(Long roomId, UserInfo userInfo) {
     GameRoom room = roomRepository.findWithPlayersById(roomId).orElse(null);
-    room.getPlayers().remove(idx);
+    room.getPlayers().remove(userInfo.getPlayerNumber());
     roomRepository.save(room);
   }
 
