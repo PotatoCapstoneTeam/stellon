@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
-import useLobbyWebSocket from '../hooks/useChatWebSocket';
+import useChatWebSocket from '../hooks/useChatWebSocket';
 import { customColor } from '../constants/customColor';
 import Chat from './Chat';
 
@@ -17,7 +17,7 @@ export interface IChat {
 
 const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { send, lobbyChat } = useLobbyWebSocket(state, roomId as string);
+  const { send, lobbyChat } = useChatWebSocket(state, roomId as string);
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
       const message = formRef.current['chat'].value;
       const chatting = {
         roomId: roomId ? parseInt(roomId) : 1,
-        user: { id: 1, nickname: nickname ?? '이름 없음' },
+        user: { nickname: nickname ?? '이름 없음' },
         message,
       };
       send(chatting);

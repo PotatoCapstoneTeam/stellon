@@ -3,30 +3,29 @@ import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
 import { useNavigate } from 'react-router-dom';
+import ReadyBtn from '../../LobbyPage/components/ReadyBtn';
+import { useState } from 'react';
+import ReReady from '../../LobbyPage/components/ReReady';
 
-interface IState {
+export interface IState {
   ready: () => void;
   start: () => void;
 }
 
 export const State = ({ ready, start }: IState) => {
   const navigate = useNavigate();
-
+  const [readyToggle, setReadyToggle] = useState(false);
   const outRoom = () => {
     navigate(-1);
   };
 
-  const readyMyUser = () => {
-    ready();
-  };
-
   return (
     <StateBox>
-      <div onClick={() => ready}>
-        <Ready color="black" size="24" fontWeight="900">
-          준비
-        </Ready>
-      </div>
+      {!readyToggle ? (
+        <ReadyBtn ready={ready} setReadyToggle={setReadyToggle} />
+      ) : (
+        <ReReady ready={ready} setReadyToggle={setReadyToggle}/>
+      )}
       <OutBox onClick={outRoom}>
         <Out src="../assets/logout.png" alt="none"></Out>
       </OutBox>

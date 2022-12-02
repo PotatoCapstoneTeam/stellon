@@ -25,9 +25,9 @@ const LobbyPage = () => {
 
   useEffect(() => {
     (async () => {
-      await axios.post('/room/lobby/users');
       const myInfo = await axios.get('/user');
       const watchRoom = await axios.get('/room');
+      await axios.post('/room/lobby/users');
       const watchUserList = await axios.get('/room/lobby/users');
       setUserList(watchUserList.data);
       setList(watchRoom.data);

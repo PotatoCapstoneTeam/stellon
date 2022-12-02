@@ -2,6 +2,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { IInfo } from '../containers/LobbyPage/LobbyPage';
+import axios from '../util/axios';
 
 export interface ISend {
   type: 'JOIN' | 'ROOM' | 'START' | 'PLAY' | 'CHANGE' | 'EXIT' | 'READY';
@@ -9,9 +10,45 @@ export interface ISend {
   nickname: string;
 }
 
+export interface IPlayer {
+  authority: string;
+  email: string;
+  id: number;
+  modifiedDate: string;
+  nickname: string;
+  password: string;
+  readyStatus: string;
+  refreshToken: string;
+  teamStatus: string;
+}
+interface IPlayers {
+  [key: string]: IPlayer;
+}
+export interface IWebSocketData {
+  gameRoom: {
+    createdDate: string;
+    id: number;
+    modifiedDate: string;
+    password: string | null;
+    players: IPlayers;
+    roomName: string;
+    roomSize: number;
+    roomStatus: string;
+    roomType: string;
+  };
+  message: any;
+  type: string;
+  userInfo: {
+    playerNumber: number;
+    system: string;
+    user: any;
+    userStatus: any;
+  };
+}
+
 const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const client = useRef<CompatClient>();
-
+  const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
       const socket = new SockJS('https://stellon.shop/ws-stomp');
@@ -22,15 +59,15 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
       client.current.connect({}, (frame: string) => {
         console.log('룸 웹소켓 연결 후 조인합니다');
 
-          send({
-            type: 'JOIN',
-            roomId: Number(roomId),
-            nickname: myInfo.nickname,
-          });
+        send({
+          type: 'JOIN',
+          roomId: Number(roomId),
+          nickname: myInfo.nickname,
+        });
 
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            console.log(JSON.parse(res.body));
+            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
             console.log('none');
           }
@@ -39,11 +76,17 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
 
     return () => {
-      client.current?.disconnect();
-      client.current = undefined;
-      console.log('룸 웹소켓 끊어짐');
+      client.current?.disconnect(async () => {
+        client.current = undefined;
+        console.log('룸 웹소켓 끊어짐');
+        !roomId && (await axios.post('/room/lobby/users'));
+      });
     };
   }, [myInfo, roomId]);
+
+  useEffect(() => {
+    console.log(webSocketData);
+  }, [webSocketData]);
 
   const send = (message: ISend) => {
     console.log('send');
@@ -62,7 +105,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
       });
     }
   };
-  
+
   const start = () => {
     console.log('시작합니다');
     if (roomId && myInfo) {
@@ -74,7 +117,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
-  return { send, ready, start };
+  return { send, ready, start, webSocketData };
 };
 
 export default useRoomWebSocket;

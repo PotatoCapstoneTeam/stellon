@@ -16,7 +16,10 @@ interface IInfo {
 const GameRoomPage = () => {
   const { id } = useParams();
   const [myInfo, setMyInfo] = useState<IInfo>();
-  const { ready, start } = useRoomWebSocket(id as string, myInfo);
+  const { ready, start, webSocketData } = useRoomWebSocket(
+    id as string,
+    myInfo
+  );
 
   useEffect(() => {
     (async () => {
@@ -31,21 +34,29 @@ const GameRoomPage = () => {
     <div>
       <Space />
       <Container>
-        <BackgroundBox
-          onClick={() => {
-            ready();
-          }}
-        />
+        <BackgroundBox />
         <Header
           onClick={() => {
             start();
           }}
         >
-          <Title />
-          <Info />
+          <Title
+            name={webSocketData[0]?.gameRoom.roomName}
+            id={webSocketData[0]?.gameRoom.id}
+          />
+          <Info
+            entire={webSocketData[0]?.gameRoom.roomSize}
+            now={
+              0
+              // webSocketData[webSocketData.length - 1]?.gameRoom.players &&
+              // Object.keys(
+              //   webSocketData[webSocketData.length - 1]?.gameRoom.players
+              // ).length
+            }
+          />
         </Header>
         <Article>
-          <Client />
+          <Client data={webSocketData} />
           <Map />
           <ChatRoom state="chatRoom" roomId={id} nickname={myInfo?.nickname} />
           <State ready={ready} start={start} />
