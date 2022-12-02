@@ -18,9 +18,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.util.List;
-import java.util.Objects;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -58,6 +55,7 @@ public class MessageEventListener {
       roomService.removeUserToRoom(roomId, userInfo);
 
       message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
+      message.setGameRoom(room);
 
       // 방이 빈 방이면 방 삭제 후 리턴
       if (roomService.getRoomUsers(roomId).isEmpty()) {
