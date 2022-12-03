@@ -3,7 +3,6 @@ package org.gamza.server.Controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
-import org.gamza.server.Dto.StageDto.StageRequestDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
@@ -21,22 +20,17 @@ import org.gamza.server.Service.User.UserService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -158,11 +152,7 @@ public class MessageController {
         jsonObject.put("users", usersJsonArray);
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
-        ResponseEntity<StageRequestDto> responseEntity = restTemplate.postForEntity(url, request, StageRequestDto.class);
-
-        StageRequestDto stageRequestDto = responseEntity.getBody();
-        stageRequestDto.toEntity();
-
+        restTemplate.postForEntity(url, request, String.class);
         break;
 
       case CHANGE:
