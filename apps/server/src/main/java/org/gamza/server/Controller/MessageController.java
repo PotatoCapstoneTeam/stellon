@@ -2,6 +2,8 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.GameDto.StageDataDto;
+import org.gamza.server.Dto.GameDto.StageRequestDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Entity.GameRoom;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -30,7 +33,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,6 +48,7 @@ public class MessageController {
   private final UserService userService;
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
+  private Map<Long, String> userMap = new HashMap<>();
 
   @MessageMapping("/message")
   public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
@@ -101,6 +107,8 @@ public class MessageController {
             break;
           }
         }
+
+        userMap.put(user.getId(), headerAccessor.getUser().getName());
         break;
 
       case START: // 잘 됨
@@ -152,8 +160,13 @@ public class MessageController {
         jsonObject.put("users", usersJsonArray);
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
-        restTemplate.postForEntity(url, request, String.class);
-        break;
+        ResponseEntity<StageRequestDto> response = restTemplate.postForEntity(url, request, StageRequestDto.class);
+
+        for (StageDataDto stageDataDto : response.getBody().getUsers()) {
+          message.setToken(stageDataDto.getToken());
+          operations.convertAndSendToUser(userMap.get(stageDataDto.getId()), "/sub/room/" + messageDto.getRoomId(), message);
+        }
+        return;
 
       case CHANGE:
         userService.updateTeamStatus(messageDto.getNickname());
