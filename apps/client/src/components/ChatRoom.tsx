@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import useChatWebSocket from '../hooks/useChatWebSocket';
 import { customColor } from '../constants/customColor';
@@ -17,6 +17,8 @@ export interface IChat {
 
 const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
+
   const { send, lobbyChat } = useChatWebSocket(state, roomId as string);
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
@@ -33,11 +35,18 @@ const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
     }
   };
 
+  useEffect(() => {
+    if (!roomRef.current) return;
+    roomRef.current.scrollTo(0, roomRef.current.scrollHeight);
+  }, [lobbyChat]);
+
   return (
-    <Room state={state}>
-      {lobbyChat.map((e: IChat, index: number) => (
-        <Chat key={index} {...e} />
-      ))}
+    <Room state={state} ref={roomRef}>
+      {lobbyChat
+        .filter((e) => e.message)
+        .map((e: IChat, index: number) => (
+          <Chat key={index} {...e} />
+        ))}
       <ChattingBox ref={formRef} onSubmit={submitChat}>
         <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
         <ChattingBtn type="submit">Enter</ChattingBtn>

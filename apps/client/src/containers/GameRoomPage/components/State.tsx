@@ -18,13 +18,20 @@ export const State = ({ ready, start }: IState) => {
   const outRoom = () => {
     navigate(-1);
   };
-
+  const startGame = () => {
+    start();
+  };
   return (
     <StateBox>
+      <StartBox onClick={startGame}>
+        <Start color="black" size="24" fontWeight="900">
+          시작
+        </Start>
+      </StartBox>
       {!readyToggle ? (
         <ReadyBtn ready={ready} setReadyToggle={setReadyToggle} />
       ) : (
-        <ReReady ready={ready} setReadyToggle={setReadyToggle}/>
+        <ReReady ready={ready} setReadyToggle={setReadyToggle} />
       )}
       <OutBox onClick={outRoom}>
         <Out src="../assets/logout.png" alt="none"></Out>
@@ -48,16 +55,23 @@ const StateBox = styled.div`
   align-items: end;
   width: 312px;
   justify-content: space-between;
+  flex-wrap: wrap;
 `;
-const Ready = styled(Typography)`
+const StartBox = styled.div``;
+const Start = styled(Typography)`
+  align-items: center;
+  justify-content: center;
+  display: flex;
   background-color: ${customColor.white};
-  padding: 5px 15px;
   padding: 20px 88px;
   border-radius: 20px;
+  height: 70px;
+  width: 230px;
   &:hover {
     cursor: pointer;
   }
 `;
+
 const Out = styled.img`
   width: 24px;
   height: 24px;

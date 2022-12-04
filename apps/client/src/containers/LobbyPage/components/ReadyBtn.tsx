@@ -26,11 +26,13 @@ export default ReadyBtn;
 const Container = styled.div``;
 const Ready = styled(Typography)`
   background-color: ${customColor.white};
-  padding: 5px 15px;
   padding: 20px 88px;
   border-radius: 20px;
   height: 70px;
   width: 230px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
   &:hover {
     cursor: pointer;
   }

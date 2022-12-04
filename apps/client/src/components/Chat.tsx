@@ -5,7 +5,7 @@ import { Typography } from './Typography';
 const Chat = ({ nickname, message }: IChat) => {
   return (
     <ChatBox size="12" color="black">
-      {(nickname || 'System') + ' :'} {message}
+      {(nickname || 'System') + ' : ' + message}
     </ChatBox>
   );
 };

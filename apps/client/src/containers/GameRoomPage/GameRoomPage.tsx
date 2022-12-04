@@ -30,30 +30,31 @@ const GameRoomPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    console.log(webSocketData);
+  }, [webSocketData]);
+
+  const nowData = () => {
+    if (webSocketData.length === 0) return 0;
+    if (
+      !Object.keys(webSocketData[webSocketData.length - 1]).includes('gameRoom')
+    ) {
+      return 0;
+    }
+    return Object.keys(webSocketData[webSocketData.length - 1].gameRoom.players)
+      .length;
+  };
   return (
     <div>
       <Space />
       <Container>
         <BackgroundBox />
-        <Header
-          onClick={() => {
-            start();
-          }}
-        >
+        <Header>
           <Title
             name={webSocketData[0]?.gameRoom.roomName}
             id={webSocketData[0]?.gameRoom.id}
           />
-          <Info
-            entire={webSocketData[0]?.gameRoom.roomSize}
-            now={
-              0
-              // webSocketData[webSocketData.length - 1]?.gameRoom.players &&
-              // Object.keys(
-              //   webSocketData[webSocketData.length - 1]?.gameRoom.players
-              // ).length
-            }
-          />
+          <Info entire={webSocketData[0]?.gameRoom.roomSize} now={nowData()} />
         </Header>
         <Article>
           <Client data={webSocketData} />

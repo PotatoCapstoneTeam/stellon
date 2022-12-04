@@ -21,7 +21,7 @@ export interface IPlayer {
   refreshToken: string;
   teamStatus: string;
 }
-interface IPlayers {
+export interface IPlayers {
   [key: string]: IPlayer;
 }
 export interface IWebSocketData {

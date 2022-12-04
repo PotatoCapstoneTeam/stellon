@@ -8,19 +8,24 @@ interface IClient {
 }
 
 export const Client = ({ data }: IClient) => {
-  const [list, setList] = useState<any>([]);
-  useEffect(
-    () =>
-      data[data.length - 1]?.gameRoom.players
-        ? setList(data[data.length - 1]?.gameRoom.players)
-        : setList((prev: any) => prev),
-    [data]
-  );
+  const [list, setList] = useState<IPlayer[]>([]);
+
+  useEffect(() => {
+    if (data.length === 0) return;
+    if (!Object.keys(data[data.length - 1]).includes('gameRoom'))
+      return console.log('없음');
+
+    setList(Object.values(data[data.length - 1].gameRoom.players));
+  }, [data]);
+
+  useEffect(() => {
+    console.log('리스트 값', list);
+  }, [list]);
 
   return (
     <UserBox>
       {list &&
-        Object.values(list).map((e: any, i: any) => (
+        list.map((e: IPlayer, i: number) => (
           <UserCard state={e['readyStatus']} nickname={e['nickname']} key={i} />
         ))}
     </UserBox>
@@ -34,7 +39,7 @@ const UserBox = styled.div`
   height: 380px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   margin: 12px 0;
 `;
