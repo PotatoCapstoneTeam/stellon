@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Enum.ReadyStatus;
+import org.gamza.server.Enum.TeamStatus;
 
 import javax.persistence.*;
 
@@ -34,11 +36,30 @@ public class User extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   private Authority authority;
 
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private TeamStatus teamStatus;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ReadyStatus readyStatus;
+
   @Column
   private String refreshToken;
 
-  public User updateToken(String newRefreshToken) {
+  public void updateToken(String newRefreshToken) {
     this.refreshToken = newRefreshToken;
-    return this;
+  }
+
+  public void deleteToken() {
+    this.refreshToken = null;
+  }
+
+  public void updateTeamStatus(TeamStatus teamStatus) {
+    this.teamStatus = teamStatus;
+  }
+
+  public void updateReadyStatus(ReadyStatus readyStatus) {
+    this.readyStatus = readyStatus;
   }
 }

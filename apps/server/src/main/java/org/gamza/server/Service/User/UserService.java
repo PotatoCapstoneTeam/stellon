@@ -1,13 +1,11 @@
 package org.gamza.server.Service.User;
 
-import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
-import org.gamza.server.Dto.UserDto.UserLoginDto;
-import org.gamza.server.Dto.UserDto.UserRecordDto;
-import org.gamza.server.Dto.UserDto.UserRequestDto;
-import org.gamza.server.Dto.UserDto.UserResponseDto;
+import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.User;
+import org.gamza.server.Enum.ReadyStatus;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
 import org.gamza.server.Error.Exception.NotValidException;
@@ -20,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,12 +35,25 @@ public class UserService {
   }
 
   @Transactional
+  public User findUserByDto(AddUserDto userDto) {
+    return userRepository.findById(userDto.getId()).get();
+  }
+
+  @Transactional
+  public List<AddUserDto> getAddUserDtos(List<User> userList) {
+    List<AddUserDto> dtoList = userList.stream().map(AddUserDto::new).collect(Collectors.toList());
+    return dtoList;
+  }
+
+  @Transactional
+  public User findByNickname(String nickname) {
+    return userRepository.findByNickname(nickname);
+  }
+
+  @Transactional
   public List<UserResponseDto> getUserResponseDtos(List<User> userList) {
-    List<UserResponseDto> allUserNickname = new ArrayList<>();
-    for (User user : userList) {
-      String nickname = user.getNickname();
-      allUserNickname.add(UserResponseDto.builder().nickname(nickname).build());
-    }
+    List<UserResponseDto> allUserNickname = userList.stream().map(User::getNickname)
+      .map(nickname -> UserResponseDto.builder().nickname(nickname).build()).collect(Collectors.toList());
     Collections.reverse(allUserNickname);
     return allUserNickname;
   }
@@ -70,6 +82,25 @@ public class UserService {
       .winRecord(100)
       .loseRecord(100)
       .build();
+  }
+
+  @Transactional
+  public void updateReadyStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
+    user.updateReadyStatus(user.getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+  }
+
+  @Transactional
+  public void updateTeamStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
+    user.updateTeamStatus(user.getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+  }
+
+  @Transactional
+  public void initStatus(String nickname) {
+    User user = userRepository.findByNickname(nickname);
+    user.updateTeamStatus(TeamStatus.NONE);
+    user.updateReadyStatus(ReadyStatus.NONE);
   }
 
   @Transactional
