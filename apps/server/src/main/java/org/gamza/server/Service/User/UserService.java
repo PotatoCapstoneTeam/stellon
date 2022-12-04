@@ -3,12 +3,14 @@ package org.gamza.server.Service.User;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.UserDto.*;
+import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
 import org.gamza.server.Error.Exception.NotValidException;
+import org.gamza.server.Repository.ResultRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
+  private final ResultRepository resultRepository;
 
   @Transactional
   public List<UserResponseDto> findAll() {
@@ -59,28 +62,19 @@ public class UserService {
   }
 
   @Transactional
-  public UserRecordDto getUserRecord(UserRequestDto requestDto) {
-    User findUser = userRepository.findByNickname(requestDto.getNickname());
-    if(findUser == null) {
-      throw new NotValidException(ErrorCode.INVALID_USER);
-    }
-    UserRecordDto recordDto = UserRecordDto.builder()
-      .nickname(findUser.getNickname())
-      .winRecord(1)
-      .loseRecord(1)
-      .build();
-    return recordDto;
-  }
-
-  @Transactional
   public UserRecordDto getUserRecordByToken(HttpServletRequest request) {
     String token = request.getHeader("Authorization");
+
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
+    List<RecordResult> recordResult = resultRepository.findByUserId(findUser.getId());
+
+    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
+    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
 
     return UserRecordDto.builder()
       .nickname(findUser.getNickname())
-      .winRecord(100)
-      .loseRecord(100)
+      .kill(kill)
+      .death(death)
       .build();
   }
 
