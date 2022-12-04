@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
@@ -6,8 +5,7 @@ import { IRoom } from './GameList';
 
 const Room = ({ id, map, players, roomName, roomSize, roomStatus }: IRoom) => {
   const navigate = useNavigate();
-
-  const moveGameRoom = () => {
+  const moveGameRoom = async () => {
     navigate(`/game_room/${id}`);
   };
 

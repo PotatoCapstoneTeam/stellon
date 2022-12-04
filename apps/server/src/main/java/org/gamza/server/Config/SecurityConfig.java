@@ -49,6 +49,7 @@ public class SecurityConfig {
       .authorizeRequests()
       .antMatchers("/ws-stomp/**").permitAll()
       .antMatchers("/auth/login", "/auth/join", "/auth/reissue").permitAll()
+      .antMatchers("/game/**").permitAll()
       .anyRequest().authenticated()
       .and()
 
