@@ -26,11 +26,10 @@ public class RecordResult extends BaseTimeEntity {
   @Column(name = "death_point")
   private int death;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "users")
   private User user;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "rooms")
-  private GameRoom gameRoom;
+  @Column(name = "stage_id")
+  private String stageId;
 }
