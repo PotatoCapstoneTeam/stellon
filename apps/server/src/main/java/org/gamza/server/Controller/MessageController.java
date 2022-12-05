@@ -2,8 +2,9 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.GameDto.StageDataDto;
+import org.gamza.server.Dto.GameDto.StageRequestDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
-import org.gamza.server.Dto.StageDto.StageRequestDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -31,7 +33,10 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,9 +49,10 @@ public class MessageController {
   private final UserService userService;
   private final RoomRepository roomRepository;
   private final SimpMessageSendingOperations operations;
+  private Map<Long, String> userMap = new HashMap<>();
 
   @MessageMapping("/message")
-  public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
+  public void sendMessage(Principal principal, @Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
 
@@ -102,6 +108,8 @@ public class MessageController {
             break;
           }
         }
+
+        userMap.put(user.getId(), principal.getName());
         break;
 
       case START: // 잘 됨
@@ -131,11 +139,11 @@ public class MessageController {
         httpHeaders.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" +
           " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 
-        String url = "https://game.stellon.io/api";
+        String url = "https://stage.stellon.io/api";
 
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("callback", "https://api.stellon.io/game/reqeust");
+        jsonObject.put("callback", "https://api.stellon.io/game/result/save");
         jsonObject.put("secret", secretKey);
 
         JSONArray usersJsonArray = new JSONArray();
@@ -153,9 +161,13 @@ public class MessageController {
         jsonObject.put("users", usersJsonArray);
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
-        restTemplate.postForEntity(url, request, StageRequestDto.class);
+        ResponseEntity<StageRequestDto> response = restTemplate.postForEntity(url, request, StageRequestDto.class);
 
-        break;
+        for (StageDataDto stageDataDto : response.getBody().getUsers()) {
+          message.setToken(stageDataDto.getToken());
+          operations.convertAndSendToUser(userMap.get(stageDataDto.getId()), "/sub/room/" + messageDto.getRoomId(), message);
+        }
+        return;
 
       case CHANGE:
         userService.updateTeamStatus(messageDto.getNickname());
