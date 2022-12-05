@@ -143,7 +143,7 @@ public class MessageController {
 
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("callback", "https://api.stellon.io/game/reqeust");
+        jsonObject.put("callback", "https://api.stellon.io/game/reqeust/save");
         jsonObject.put("secret", secretKey);
 
         JSONArray usersJsonArray = new JSONArray();
