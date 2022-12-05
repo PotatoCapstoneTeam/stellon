@@ -33,6 +33,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class MessageController {
   private Map<Long, String> userMap = new HashMap<>();
 
   @MessageMapping("/message")
-  public void sendMessage(@Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
+  public void sendMessage(Principal principal, @Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
 
@@ -108,7 +109,7 @@ public class MessageController {
           }
         }
 
-        userMap.put(user.getId(), headerAccessor.getUser().getName());
+        userMap.put(user.getId(), principal.getName());
         break;
 
       case START: // 잘 됨
