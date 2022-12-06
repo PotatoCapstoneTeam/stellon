@@ -24,11 +24,6 @@ public class UserController {
     return userService.getUserRecordByToken(request);
   }
 
-  @GetMapping("/record")
-  public UserRecordDto getUserRecord(@RequestBody UserRequestDto requestDto) {
-    return userService.getUserRecord(requestDto);
-  }
-
   @GetMapping("/all")
   public List<UserResponseDto> findAllUser() {
     return userService.findAll();
