@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@topgun/game-client": ["libs/game-client/src/index.ts"]
+      "@stellon/game-client": ["libs/game-client/src/index.ts"],
+      "@stellon/game-view": ["libs/game-view/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
