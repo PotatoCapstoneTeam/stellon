@@ -1,5 +1,6 @@
 package org.gamza.server.Config;
 
+import org.gamza.server.Config.Stomp.CustomHandshakeHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,6 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
     stompEndpointRegistry.addEndpoint("/ws-stomp")
       .setAllowedOriginPatterns("http://localhost:4200")
+      .setHandshakeHandler(new CustomHandshakeHandler())
       .withSockJS();
   }
 

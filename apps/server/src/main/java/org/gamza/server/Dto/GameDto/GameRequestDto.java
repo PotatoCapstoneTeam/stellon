@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.gamza.server.Entity.RecordResult;
+import org.gamza.server.Dto.RecordResultDto.ResultRequestDto;
 
 import java.util.List;
 
@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameRequestDto {
-  private String id;
-  private List<RecordResult> users;
+  private String id;  // stageId
+  private List<ResultRequestDto> users;
 }

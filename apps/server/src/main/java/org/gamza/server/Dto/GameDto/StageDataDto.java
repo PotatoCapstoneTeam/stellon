@@ -1,4 +1,4 @@
-package org.gamza.server.Dto.RecordResultDto;
+package org.gamza.server.Dto.GameDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultRequestDto {
-  private Long userId;
-  private int kill;
-  private int death;
+public class StageDataDto {
+  private Long id;  // userId
+  private String token;
 }

@@ -70,7 +70,7 @@ const SignUp = () => {
                   pattern: {
                     value:
                       /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/,
-                    message: '이메일 형식이 올바르지 않습니다',
+                    message: ' 이메일 형식이 올바르지 않습니다',
                   },
                 })}
                 placeholder="이메일을 입력해주세요"
@@ -140,6 +140,7 @@ const SignUp = () => {
             {errors.passwordCheck && errors.passwordCheck.type === "validate" && (
         		<Message>비밀번호가 일치하지않습니다</Message>
         	)}
+         
 
            
           </SignUpBox>
@@ -191,7 +192,7 @@ const SignUpBox = styled.div`
   position: absolute;
   width: 400px;
   align-items: center;
-  left: -100px;
+  left: 50px;
 `;
 
 const EmailBox = styled.div`
@@ -221,9 +222,10 @@ const PwChkBox = styled.div`
 `;
 
 const Input = styled.input`
-  width: 200px;
+  width: 400px;
   height: 32px;
-  margin-left: 0px;
+
+
   border-radius: 10px;
 `;
 
@@ -252,7 +254,6 @@ const LoginBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 130px;
   height: 36px;
   &:hover {
     cursor: pointer;
@@ -300,9 +301,9 @@ const Message = styled.p`
   color: red;
 `;
 const BtnBox = styled.div`
-  position: absolute;
-  display: flex;
+  position: relative;
   flex-direction: column;
-  right: -100px;
-  top: 200px;
+  top : 300px;
+  left : 110px;
+ 
 `;
