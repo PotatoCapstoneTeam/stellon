@@ -49,6 +49,7 @@ public class SecurityConfig {
       .authorizeRequests()
       .antMatchers("/ws-stomp/**").permitAll()
       .antMatchers("/auth/login", "/auth/join", "/auth/reissue").permitAll()
+      .antMatchers("/game/**").permitAll()
       .anyRequest().authenticated()
       .and()
 
@@ -71,6 +72,7 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
 
     configuration.addAllowedOrigin("http://localhost:4200");
+    configuration.addAllowedOrigin("https://www.stellon.io");
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);

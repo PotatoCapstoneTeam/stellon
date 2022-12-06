@@ -1,11 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
-import useLobbyWebSocket from '../hooks/useLobbyWebSocket';
+import useChatWebSocket from '../hooks/useChatWebSocket';
 import { customColor } from '../constants/customColor';
 import Chat from './Chat';
 
 interface IChatRoom {
   state: string;
+  roomId?: string;
+  nickname?: string;
 }
 
 export interface IChat {
@@ -13,29 +15,38 @@ export interface IChat {
   message: string;
 }
 
-const ChatRoom = ({ state }: IChatRoom) => {
+const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { send, lobbyChat } = useLobbyWebSocket();
+  const roomRef = useRef<HTMLDivElement>(null);
 
+  const { send, lobbyChat } = useChatWebSocket(state, roomId as string);
   // 채팅 Submit
   const submitChat = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formRef.current != null) {
+    if (formRef.current != null && formRef.current['chat'].value !== '') {
+      const message = formRef.current['chat'].value;
       const chatting = {
-        roomId: 1,
-        user: { id: 1, nickname: 'test' },
-        message: formRef.current['chat'].value,
+        roomId: roomId ? parseInt(roomId) : 1,
+        user: { nickname: nickname ?? '이름 없음' },
+        message,
       };
       send(chatting);
       formRef.current['chat'].value = '';
     }
   };
 
+  useEffect(() => {
+    if (!roomRef.current) return;
+    roomRef.current.scrollTo(0, roomRef.current.scrollHeight);
+  }, [lobbyChat]);
+
   return (
-    <Room state={state}>
-      {lobbyChat.map((e: IChat, index: number) => (
-        <Chat key={index} {...e} />
-      ))}
+    <Room state={state} ref={roomRef}>
+      {lobbyChat
+        .filter((e) => e.message)
+        .map((e: IChat, index: number) => (
+          <Chat key={index} {...e} />
+        ))}
       <ChattingBox ref={formRef} onSubmit={submitChat}>
         <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
         <ChattingBtn type="submit">Enter</ChattingBtn>

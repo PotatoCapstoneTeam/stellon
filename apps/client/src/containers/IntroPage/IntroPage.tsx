@@ -1,13 +1,12 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios';
-import Space from '../../canvas/Space';
 import { useCookies } from 'react-cookie';
 import { Typography } from '../../components/Typography';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
 import { loginApi } from '../../api/loginApi';
+import Space from '../../canvas/Space';
 
 const IntroPage = () => {
   const navigate = useNavigate();
@@ -20,28 +19,19 @@ const IntroPage = () => {
   const loginHandleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // const data = await loginApi.tryLogin({
-    //   email: formRef.current?.['email'].value,
-    //   password: formRef.current?.['password'].value,
-    // });
-
-    // console.log(data);
-
-    axios
-      .post('https://stellon.shop/auth/login', {
+    try {
+      const res = await loginApi.login({
         email: formRef.current?.['email'].value,
         password: formRef.current?.['password'].value,
-      })
-      .then((res) => {
-        console.log(res.data);
-        setCookie('user_access_token', res.data.response.accessToken); // 쿠키에 access 토큰 저장
-        setCookie('user_refresh_token', res.data.response.refreshToken); // 쿠키에 refresh 토큰 저장
-        navigate('/lobby');
-      })
-      .catch((err) => {
-        console.log(err);
-        alert('회원정보가 없습니다.');
       });
+      console.log(res.data);
+      setCookie('user_access_token', res.data.response.accessToken); // 쿠키에 access 토큰 저장
+      setCookie('user_refresh_token', res.data.response.refreshToken); // 쿠키에 refresh 토큰 저장
+      navigate('/lobby');
+    } catch (err) {
+      console.log(err);
+      alert('회원정보가 없습니다.');
+    }
   };
 
   return (

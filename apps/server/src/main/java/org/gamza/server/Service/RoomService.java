@@ -3,25 +3,26 @@ package org.gamza.server.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
-import org.gamza.server.Dto.GameRoomDto.FindRoomDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
+import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.User;
+import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomStatus;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.AuthenticationException;
-import org.gamza.server.Error.Exception.RoomEnterException;
+import org.gamza.server.Error.Exception.DuplicateException;
+import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.gamza.server.Service.User.UserService;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -51,9 +52,9 @@ public class RoomService {
   }
 
   @Transactional
-  public GameRoom findRoom(FindRoomDto findRoomDto) {
-    return roomRepository.findById(findRoomDto.getId()).orElseThrow(() ->
-      new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."));
+  public GameRoom findRoom(Long id) {
+    return roomRepository.findWithPlayersById(id).orElseThrow(() ->
+      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
   }
 
 
@@ -95,6 +96,11 @@ public class RoomService {
     return roomRepository.save(room);
   }
 
+  @Transactional
+  public void removeRoom(Long id) {
+    roomRepository.deleteById(id);
+  }
+
   // lobby 의 players 조회
   @Transactional
   public List<UserResponseDto> getLobbyUsers() {
@@ -104,22 +110,40 @@ public class RoomService {
   }
 
   @Transactional
+  public List<AddUserDto> getRoomUsers(Long id) {
+    GameRoom room = roomRepository.findById(id).orElse(null);
+    List<User> userList = new ArrayList<>(room.getPlayers().values());
+    return userService.getAddUserDtos(userList);
+  }
+
+  @Transactional
   public void addUserToLobby(HttpServletRequest request) {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    for(int i = 1; i<= 100; i++) {
+    for(int i = 0; i < 100; i++) {
       if(lobby.getPlayers().get(i) == null) {
-        lobby.getPlayers().put(i, findUser);
-        break;
+        try {
+          lobby.getPlayers().put(i, findUser);
+          break;
+        } catch (DataIntegrityViolationException e) {
+          throw new DuplicateException(ErrorCode.DUPLICATE_KEY, "player_key 중복 에러입니다. 다시 요청해주세요.");
+        }
       }
     }
     roomRepository.save(lobby);
   }
 
   @Transactional
+  public void removeUserToRoom(Long roomId, UserInfo userInfo) {
+    GameRoom room = roomRepository.findWithPlayersById(roomId).orElse(null);
+    room.getPlayers().remove(userInfo.getPlayerNumber());
+    roomRepository.save(room);
+  }
+
+  @Transactional
   public void removeUserToLobby(HttpServletRequest request) {
-    GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
+    GameRoom lobby = roomRepository.findWithPlayersByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
     int index = getIndex(lobby.getPlayers(), findUser);
@@ -128,11 +152,16 @@ public class RoomService {
   }
 
   @Transactional
-  public void validateGameRoom(RoomValidDto roomValidDto) {
-    GameRoom findGameRoom = roomRepository.findById(roomValidDto.getRoomId())
-      .orElseThrow(() -> new RoomEnterException(ErrorCode.BAD_REQUEST));
-    if(!passwordEncoder.matches(roomValidDto.getPassword(), findGameRoom.getPassword())) {
-      throw new RoomEnterException(ErrorCode.BAD_REQUEST);
+  public void validateRoomPass(RoomValidDto roomValidDto) {
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId())
+      .orElseThrow();
+    if(!room.getPassword().isBlank()) {
+      if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
+        throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+      }
+    }
+    if(room.getRoomSize() == room.getPlayers().size()) {
+      throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
     }
   }
 

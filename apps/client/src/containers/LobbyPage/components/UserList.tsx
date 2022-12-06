@@ -1,32 +1,16 @@
-import { lobbyApi } from '../../../api/lobbyApi';
-import { useCookies } from 'react-cookie';
 import styled, { css } from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
 import Users from './Users';
-import { useEffect, useState } from 'react';
-interface IUserList {
-  nickname: string;
+import { IUser } from '../LobbyPage';
+
+interface UserList {
+  userList: IUser[];
 }
-const UserList = () => {
-  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']);
-  const [list, setList] = useState<IUserList[]>([]);
-  const watchConnector = async () => {
-    try {
-      const res = await lobbyApi.connectingUser(cookies['user_access_token']);
-      console.log(res.data);
-      setList(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  useEffect(() => {
-    watchConnector();
-  }, [cookies['user_access_token']]);
-
+const UserList = ({ userList }: UserList) => {
   return (
-    <ListBox onClick={() => console.log(list)}>
+    <ListBox onClick={() => console.log(userList)}>
       <Header>
         <Img src="../assets/InfoAirplane.png" />
         <Typography color="black" size="12">
@@ -34,7 +18,7 @@ const UserList = () => {
         </Typography>
       </Header>
       <List>
-        {list.map((e, index) => (
+        {userList.map((e, index) => (
           <Users key={index} list={e.nickname} />
         ))}
       </List>

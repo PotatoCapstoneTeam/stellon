@@ -36,7 +36,7 @@ public class RoomController {
 
   @PostMapping("/validate")
   public ResponseEntity<String> validateRoom(@RequestBody RoomValidDto roomValidDto) {
-    roomService.validateGameRoom(roomValidDto);
+    roomService.validateRoomPass(roomValidDto);
     return ResponseEntity.ok("검증 완료");
   }
 

@@ -1,5 +1,5 @@
 package org.gamza.server.Enum;
 
-public enum ReadyOrNot {
+public enum ReadyStatus {
   READY, NOT_READY, NONE
 }

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRecordDto {
   private String nickname;
-  private int winRecord;
-  private int loseRecord;
+  private int kill;
+  private int death;
 }

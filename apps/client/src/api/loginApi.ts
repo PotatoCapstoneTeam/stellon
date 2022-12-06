@@ -7,11 +7,19 @@ interface ILogin {
 
 export const loginApi = {
   loginCheck: async (token: string) => {
-    await Api.postWithToken('/auth/validate', token);
+    return await Api.postWithToken('/auth/validate', token);
   },
 
   receiveRefreshToken: async (accessToken: string, refreshToken: string) => {
-    await Api.postWithToken('/auth/reissue', accessToken, refreshToken);
+    return await Api.postWithToken('/auth/reissue', accessToken, refreshToken);
+  },
+
+  login: async (data: ILogin) => {
+    return await Api.postWithParams('/auth/login', data);
+  },
+
+  logout: async (token: string) => {
+    return await Api.deleteWithToken('/room/lobby/users', token);
   },
 
   tryLogin: async (data: ILogin) => {

@@ -1,41 +1,51 @@
-import axios from 'axios';
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
 import { Typography } from '../../../components/Typography';
-import { useCookies } from 'react-cookie';
 import { SearchImg } from '../components/GameStart';
+import useLogin from '../../../hooks/useLogin';
+import { useNavigate } from 'react-router-dom';
+import axios from '../../../util/axios';
+import { getCookie } from '../../../util/cookies';
 
 interface ICreateRoomModal {
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
-  const [cookies] = useCookies(['user_access_token', 'user_refresh_token']); // 쿠키 훅
+  const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const [checkBox, setCheckBox] = useState(false);
+  const { logOut, reLogin } = useLogin();
 
-  const onCreateRoom = (e: React.FormEvent) => {
+  const onCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
-    const refreshToken = cookies['user_refresh_token'];
-    const accessToken = cookies['user_access_token'];
-
-    axios
-      .post(
-        'https://stellon.shop/room',
-        {
-          roomName: formRef.current?.['theme'].value,
-          roomSize: formRef.current?.['number'].value, //int
-          password: checkBox ? formRef.current?.['password'].value : '',
-        },
-        {
-          headers: { Authorization: accessToken },
-        }
-      )
-      .then((res) => console.log(res.data))
-      .catch((err) => {
-        console.log(err);
+    try {
+      const res = await axios.post('/room', {
+        roomName: formRef.current?.['theme'].value,
+        roomSize: formRef.current?.['number'].value, //int
+        password: checkBox ? formRef.current?.['password'].value : '',
       });
+
+      // const res = await lobbyApi.makeRoom(cookies['user_access_token'], {
+      //   roomName: formRef.current?.['theme'].value,
+      //   roomSize: formRef.current?.['number'].value, //int
+      //   password: checkBox ? formRef.current?.['password'].value : '',
+      // });
+      console.log(res.data);
+      navigate(`/game_room/${res.data.id}`);
+    } catch (err: any) {
+      console.log(err.response.data.code);
+      if (err.response.data.code === 444) {
+        console.log('토큰 재발급 요청입니다');
+        await reLogin(); // access 토큰 만료됐을 때 토큰 재발급 함수
+        alert('방을 다시 생성해주세요');
+        setModalOpen(false);
+      } else {
+        alert('다시 로그인 하세요');
+        logOut();
+      }
+    }
   };
 
   return (
