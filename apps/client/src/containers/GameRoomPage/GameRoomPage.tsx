@@ -1,11 +1,15 @@
 import axios from '../../util/axios';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import Space from '../../canvas/Space';
 import ChatRoom from '../../components/ChatRoom';
-import useRoomWebSocket from '../../hooks/useRoomWebSocket';
+import useRoomWebSocket, {
+  IPlayer,
+  IWebSocketData,
+} from '../../hooks/useRoomWebSocket';
 import { Map, Title, Info, Client, State } from './components/index';
+import { GameView } from '../../../../../libs/game-view/src/lib/game-view';
+import Space from '../../canvas/Space';
 
 interface IInfo {
   nickname: string;
@@ -14,12 +18,40 @@ interface IInfo {
 }
 
 const GameRoomPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [myInfo, setMyInfo] = useState<IInfo>();
-  const { ready, start, webSocketData } = useRoomWebSocket(
+  const { ready, start, webSocketData, readyToggle } = useRoomWebSocket(
     id as string,
     myInfo
   );
+
+  // 웹 소켓 데이터 가공
+  const [playerList, setPlayerList] = useState<IPlayer[]>([]);
+  const [nowPlayer, setNowPlayer] = useState(0);
+  const [gameRoom, setGameRoom] = useState<IWebSocketData['gameRoom']>();
+  const [gameServerToken, setGameServerToken] = useState<string>(); // 게임 서버에서 발급한 토큰
+
+  useEffect(() => {
+    if (webSocketData.length === 0) return;
+    const wsLastData = webSocketData[webSocketData.length - 1];
+    if (!Object.keys(wsLastData).includes('gameRoom')) return;
+
+    setPlayerList(Object.values(wsLastData.gameRoom.players));
+    setNowPlayer(Object.keys(wsLastData.gameRoom.players).length);
+    setGameRoom(webSocketData[0].gameRoom);
+    if (wsLastData.token) setGameServerToken(wsLastData.token);
+  }, [webSocketData]);
+
+  useEffect(() => {
+    console.log('리스트 값', playerList);
+  }, [playerList]);
+
+  useEffect(() => {
+    console.log('토큰 값', gameServerToken);
+  }, [gameServerToken]);
+
+  /////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
     (async () => {
@@ -34,35 +66,34 @@ const GameRoomPage = () => {
     console.log(webSocketData);
   }, [webSocketData]);
 
-  const nowData = () => {
-    if (webSocketData.length === 0) return 0;
-    if (
-      !Object.keys(webSocketData[webSocketData.length - 1]).includes('gameRoom')
-    ) {
-      return 0;
-    }
-    return Object.keys(webSocketData[webSocketData.length - 1].gameRoom.players)
-      .length;
+  const onEnd = () => {
+    console.log('게임이 끝남');
+    ready();
+    setGameServerToken(undefined);
   };
   return (
     <div>
-      <Space />
-      <Container>
+      {!gameServerToken && <Space />}
+      <Container token={gameServerToken}>
         <BackgroundBox />
         <Header>
-          <Title
-            name={webSocketData[0]?.gameRoom.roomName}
-            id={webSocketData[0]?.gameRoom.id}
-          />
-          <Info entire={webSocketData[0]?.gameRoom.roomSize} now={nowData()} />
+          <Title name={gameRoom?.roomName} id={gameRoom?.id} />
+          <Info entire={gameRoom?.roomSize} now={nowPlayer} />
         </Header>
         <Article>
-          <Client data={webSocketData} />
+          <Client list={playerList} />
           <Map />
           <ChatRoom state="chatRoom" roomId={id} nickname={myInfo?.nickname} />
-          <State ready={ready} start={start} />
+          <State ready={ready} start={start} readyToggle={readyToggle} />
         </Article>
       </Container>
+      {gameServerToken && (
+        <GameView
+          url={'https://stage.stellon.io'}
+          token={gameServerToken}
+          onEnd={onEnd}
+        />
+      )}
     </div>
   );
 };
@@ -86,7 +117,8 @@ const Header = styled.header`
   position: relative;
   border-bottom: 2px solid black;
 `;
-const Container = styled.div`
+const Container = styled.div<{ token: string | undefined }>`
+  opacity: ${({ token }) => (token ? 0 : 1)};
   position: absolute;
   top: 50%;
   left: 50%;

@@ -3,10 +3,9 @@ import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
 import { IStateBtn } from './ReadyBtn';
 
-const ReReady = ({ ready, setReadyToggle }: IStateBtn) => {
+const ReReady = ({ ready }: IStateBtn) => {
   const reReadyMyUser = () => {
     ready();
-    setReadyToggle(false);
   };
 
   return (

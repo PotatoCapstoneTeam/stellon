@@ -1,20 +1,18 @@
-import { ISend } from '../../../hooks/useRoomWebSocket';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
 import { useNavigate } from 'react-router-dom';
 import ReadyBtn from '../../LobbyPage/components/ReadyBtn';
-import { useState } from 'react';
 import ReReady from '../../LobbyPage/components/ReReady';
 
 export interface IState {
   ready: () => void;
   start: () => void;
+  readyToggle: boolean;
 }
 
-export const State = ({ ready, start }: IState) => {
+export const State = ({ ready, start, readyToggle }: IState) => {
   const navigate = useNavigate();
-  const [readyToggle, setReadyToggle] = useState(false);
   const outRoom = () => {
     navigate(-1);
   };
@@ -28,11 +26,7 @@ export const State = ({ ready, start }: IState) => {
           시작
         </Start>
       </StartBox>
-      {!readyToggle ? (
-        <ReadyBtn ready={ready} setReadyToggle={setReadyToggle} />
-      ) : (
-        <ReReady ready={ready} setReadyToggle={setReadyToggle} />
-      )}
+      {!readyToggle ? <ReadyBtn ready={ready} /> : <ReReady ready={ready} />}
       <OutBox onClick={outRoom}>
         <Out src="../assets/logout.png" alt="none"></Out>
       </OutBox>
@@ -41,6 +35,7 @@ export const State = ({ ready, start }: IState) => {
 };
 
 export default State;
+
 const OutBox = styled.div`
   padding: 20px;
   border-radius: 20px;

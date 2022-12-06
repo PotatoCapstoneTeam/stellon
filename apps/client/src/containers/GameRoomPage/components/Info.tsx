@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
 interface IInfo {
-  entire: number;
+  entire?: number;
   now: number;
 }
 

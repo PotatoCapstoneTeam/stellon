@@ -1,27 +1,12 @@
-import { IPlayer, IWebSocketData } from '../../../hooks/useRoomWebSocket';
+import { IPlayer } from '../../../hooks/useRoomWebSocket';
 import styled from 'styled-components';
 import UserCard from './UserCard';
-import { useEffect, useState } from 'react';
 
 interface IClient {
-  data: IWebSocketData[];
+  list: IPlayer[];
 }
 
-export const Client = ({ data }: IClient) => {
-  const [list, setList] = useState<IPlayer[]>([]);
-
-  useEffect(() => {
-    if (data.length === 0) return;
-    if (!Object.keys(data[data.length - 1]).includes('gameRoom'))
-      return console.log('없음');
-
-    setList(Object.values(data[data.length - 1].gameRoom.players));
-  }, [data]);
-
-  useEffect(() => {
-    console.log('리스트 값', list);
-  }, [list]);
-
+export const Client = ({ list }: IClient) => {
   return (
     <UserBox>
       {list &&

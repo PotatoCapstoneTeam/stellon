@@ -1,3 +1,4 @@
+import React from 'react';
 import styled from 'styled-components';
 import { IChat } from './ChatRoom';
 import { Typography } from './Typography';
@@ -10,7 +11,7 @@ const Chat = ({ nickname, message }: IChat) => {
   );
 };
 
-export default Chat;
+export default React.memo(Chat);
 
 const ChatBox = styled(Typography)`
   width: 97%;

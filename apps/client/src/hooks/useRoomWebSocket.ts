@@ -38,6 +38,7 @@ export interface IWebSocketData {
   };
   message: any;
   type: string;
+  token?: string;
   userInfo: {
     playerNumber: number;
     system: string;
@@ -48,6 +49,7 @@ export interface IWebSocketData {
 
 const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const client = useRef<CompatClient>();
+  const [readyToggle, setReadyToggle] = useState(false);
   const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
@@ -66,6 +68,14 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
         });
 
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
+          if (res != null) {
+            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+          } else {
+            console.log('none');
+          }
+        });
+
+        client.current?.subscribe(`/user/sub/room/${roomId}`, (res) => {
           if (res != null) {
             setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
@@ -98,6 +108,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const ready = () => {
     console.log('준비합니다');
     if (roomId && myInfo) {
+      setReadyToggle((prev) => !prev);
       send({
         type: 'READY',
         roomId: Number(roomId),
@@ -117,7 +128,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
-  return { send, ready, start, webSocketData };
+  return { send, ready, start, webSocketData, readyToggle };
 };
 
 export default useRoomWebSocket;

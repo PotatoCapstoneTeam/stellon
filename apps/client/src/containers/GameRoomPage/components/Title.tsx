@@ -2,8 +2,8 @@ import { Typography } from '../../../components/Typography';
 import styled from 'styled-components';
 
 interface ITitle {
-  name: string | undefined;
-  id: number;
+  name?: string;
+  id?: number;
 }
 
 export const Title = ({ name, id }: ITitle) => {

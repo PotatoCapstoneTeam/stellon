@@ -3,7 +3,6 @@ import GameRoom from '../routes/GameRoom';
 import Intro from '../routes/Intro';
 import Lobby from '../routes/Lobby';
 import { CookiesProvider } from 'react-cookie';
-import Space from '../canvas/Space';
 
 export function App() {
   return (

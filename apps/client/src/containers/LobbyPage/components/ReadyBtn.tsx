@@ -4,13 +4,11 @@ import { customColor } from '../../../constants/customColor';
 
 export interface IStateBtn {
   ready: () => void;
-  setReadyToggle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ReadyBtn = ({ ready, setReadyToggle }: IStateBtn) => {
+const ReadyBtn = ({ ready }: IStateBtn) => {
   const readyMyUser = () => {
     ready();
-    setReadyToggle(true);
   };
 
   return (
