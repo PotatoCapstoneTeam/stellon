@@ -47,8 +47,7 @@ export class Bullet extends Entity {
     this.x = +(data['x'] ?? this.x);
     this.y = +(data['y'] ?? this.y);
     this.source =
-      scene.enitityContainer.findPlayer((data['source'] as string) ?? '') ??
-      this.source;
+      scene.playerGroup.find((data['source'] as string) ?? '') ?? this.source;
     this.damage = +(data['damage'] ?? this.damage);
     this.speed = +(data['speed'] ?? this.speed);
     this.angle = +(data['angle'] ?? this.angle);

@@ -16,7 +16,6 @@
     "baseUrl": ".",
     "paths": {
       "@stellon/game-core": ["libs/game-core/src/index.ts"],
-      "@stellon/game-stage": ["libs/game-stage/src/index.ts"],
       "@stellon/game-view": ["libs/game-view/src/index.ts"]
     }
   },

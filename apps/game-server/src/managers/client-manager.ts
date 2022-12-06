@@ -3,15 +3,15 @@ export class ClientState {
   verticalAxis = 0;
   fire = false;
 
-  constructor(public id: string) {}
+  constructor(public id: number) {}
 }
 
 export class ClientManager {
   private clients: {
-    [key: string]: ClientState;
+    [key: number]: ClientState;
   } = {};
 
-  getClient(id: string) {
+  getClient(id: number) {
     if (!this.clients[id]) {
       this.clients[id] = new ClientState(id);
     }

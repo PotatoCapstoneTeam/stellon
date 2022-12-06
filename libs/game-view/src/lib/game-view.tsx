@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { ClientScene } from './scenes/main-scene';
+import { ClientScene } from './scenes/client-scene';
+import { geckos } from '@geckos.io/client';
+import { ClientSocket } from './client-socket';
 
 export interface GameViewProps {
   url: string;
-  id: string;
   token: string;
   onEnd: () => void;
 }
@@ -18,26 +19,31 @@ export const GameView = (props: GameViewProps) => {
       return;
     }
 
-    // const nickname = prompt('닉네임을 입력해주세요!') ?? '';
+    const socket = new ClientSocket(props.url, props.token);
 
-    const game = new Phaser.Game({
-      antialias: false,
-      parent: parent,
-      backgroundColor: '#212123',
-      physics: {
-        default: 'arcade',
-        arcade: {
-          debug: false,
-          gravity: { y: 0 },
+    let game: Phaser.Game;
+
+    socket.connect().then(() => {
+      game = new Phaser.Game({
+        antialias: false,
+        parent: parent,
+        backgroundColor: '#212123',
+        physics: {
+          default: 'arcade',
+          arcade: {
+            debug: false,
+            gravity: { y: 0 },
+          },
         },
-      },
-      scene: [new ClientScene('nickname')],
+        scene: [new ClientScene(socket)],
+      });
     });
 
     return () => {
+      socket.close();
       game.destroy(true);
     };
-  }, []);
+  }, [props.token, props.url]);
 
   return <div ref={parentRef}></div>;
 };

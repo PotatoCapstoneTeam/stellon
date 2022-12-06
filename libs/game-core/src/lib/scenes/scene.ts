@@ -1,11 +1,19 @@
 import { GameObjects } from 'phaser';
-import { EnitityContainer } from '../stages';
+import { Bullet, Group, Player } from '../entities';
 
 export class Scene extends Phaser.Scene {
   private updateList: GameObjects.GameObject[] = [];
 
+  playerGroup!: Group<Player>;
+  bulletGroup!: Group<Bullet>;
+
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
     super(config);
+  }
+
+  create() {
+    this.playerGroup = new Group(this);
+    this.bulletGroup = new Group(this);
   }
 
   override update(time: number, delta: number): void {

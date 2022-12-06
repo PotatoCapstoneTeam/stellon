@@ -1,30 +1,31 @@
-import { Data } from '@geckos.io/server';
 import {
   Bullet,
   CreateEvent,
   DestroyEvent,
   Entity,
   EntityType,
-  Scene,
 } from '@stellon/game-core';
-import cuid = require('cuid');
+import cuid from 'cuid';
+import { ServerScene } from '../scenes/server-scene';
+import { ServerRoom } from '../server-socket';
 
 export class ServerBullet extends Bullet {
+  room: ServerRoom;
+
   constructor(
-    scene: Scene,
+    scene: ServerScene,
     x: number,
     y: number,
     source: Entity,
     damage: number,
     speed: number,
-    angle: number,
-    public room: {
-      emit: (eventName: string, data: Data) => void;
-    }
+    angle: number
   ) {
     super(cuid(), scene, x, y, source, damage, speed, angle);
 
-    room.emit('create', {
+    this.room = scene.room;
+
+    this.room.emit('create', {
       type: EntityType.BULLET,
       data: this.serialize(),
     } as CreateEvent);

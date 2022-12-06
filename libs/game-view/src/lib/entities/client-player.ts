@@ -1,6 +1,6 @@
 import { GameObjects } from 'phaser';
-import { Player, Scene, EntityData } from '@stellon/game-core';
-import { ClientScene } from '../scenes/main-scene';
+import { Player, Scene, EntityData, Team } from '@stellon/game-core';
+import { ClientScene } from '../scenes/client-scene';
 import { State } from '@geckos.io/snapshot-interpolation/lib/types';
 
 export interface IClientEntity {
@@ -11,14 +11,17 @@ export class ClientPlayer extends Player {
   playerLabel: GameObjects.Text;
   hpLabel: GameObjects.Text;
 
-  constructor(scene: Scene, public isLocal: boolean, data: EntityData) {
+  constructor(scene: Scene, data: EntityData) {
+    const team = data['team'] === 'RED_TEAM' ? 'RED_TEAM' : 'BLUE_TEAM';
+
     super(
       data.id,
       scene,
       +(data['x'] ?? 0),
       +(data['y'] ?? 0),
       data['nickname'] + '',
-      isLocal ? 'player' : 'otherPlayer'
+      team,
+      team === 'RED_TEAM' ? 'redPlayer' : 'bluePlayer'
     );
 
     this.scale = 2;

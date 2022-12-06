@@ -3,14 +3,15 @@ import { EntityData, EntityType } from './entities';
 
 export * from './entities';
 export * from './scenes';
-export * from './stages';
 
 export const SERVER_FPS = 30;
+
+export type Team = 'RED_TEAM' | 'BLUE_TEAM';
 
 // Client Event
 
 export type JoinEvent = {
-  nickname: string;
+  //
 };
 
 export type InputEvent = {
@@ -19,11 +20,16 @@ export type InputEvent = {
   fire: boolean;
 };
 
+export type ClientEventMap = {
+  join: JoinEvent;
+  input: InputEvent;
+};
+
 // Server Event
 
 export type WelcomeEvent = {
-  userId: string;
   playerId: string;
+  entities: { type: EntityType; data: EntityData }[];
 };
 
 export type CreateEvent = {
@@ -38,4 +44,11 @@ export type UpdateEvent = {
 export type DestroyEvent = {
   id: string;
   type: EntityType;
+};
+
+export type ServerEventMap = {
+  welcome: WelcomeEvent;
+  create: CreateEvent;
+  update: UpdateEvent;
+  destroy: DestroyEvent;
 };

@@ -33,12 +33,4 @@ export class InputManager {
     this.verticalAxis = +this.keys.up.isDown + -this.keys.down.isDown;
     this.fire = this.keys.fire.isDown;
   }
-
-  emit(channel: ClientChannel) {
-    channel.emit('input', {
-      horizontalAxis: this.horizontalAxis,
-      verticalAxis: this.verticalAxis,
-      fire: this.fire,
-    } as InputEvent);
-  }
 }

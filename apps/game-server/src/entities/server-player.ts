@@ -1,8 +1,8 @@
 import { Data } from '@geckos.io/server';
-import { Player, Scene } from '@stellon/game-core';
+import { Player, Scene, Team } from '@stellon/game-core';
 import { ClientState } from '../managers/client-manager';
 import { ServerBullet } from './server-bullet';
-import { ServerScene } from '../scenes/main-scene';
+import { ServerScene } from '../scenes/server-scene';
 
 export class ServerPlayer extends Player {
   constructor(
@@ -11,12 +11,11 @@ export class ServerPlayer extends Player {
     x: number,
     y: number,
     nickname: string,
+    team: Team,
     public client: ClientState,
-    public room: {
-      emit: (eventName: string, data: Data) => void;
-    }
+    public userId: number
   ) {
-    super(id, scene, x, y, id, nickname);
+    super(id, scene, x, y, nickname, team);
   }
 
   override update(time: number, delta: number): void {
@@ -39,14 +38,13 @@ export class ServerPlayer extends Player {
       const scene = this.scene as ServerScene;
 
       const bullet = new ServerBullet(
-        this.scene as Scene,
+        this.scene as ServerScene,
         this.x,
         this.y,
         this,
         10,
         1000,
-        this.angle,
-        this.room
+        this.angle
       );
 
       scene.bulletGroup.add(bullet);

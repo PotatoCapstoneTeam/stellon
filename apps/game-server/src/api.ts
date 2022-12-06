@@ -1,20 +1,17 @@
-// import { Stage } from '@stellon/game-stage';
+import { Team } from '@stellon/game-core';
 import axios from 'axios';
-import cuid from 'cuid';
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { ServerSocket } from './server-socket';
+import { Stage } from './stage';
 
-const router = express.Router();
-
-type Team = 'RED_TEAM' | 'BLUE_TEAM';
-
-type User = {
+export type User = {
   id: number;
   nickname: string;
   team: Team;
 };
 
-type UserRecord = {
+export type UserRecord = {
   userId: number;
   kill: number;
   death: number;
@@ -34,61 +31,62 @@ type ApiPostResponseBody = {
   }[];
 };
 
-router.post(
-  '/',
-  (
-    req: express.Request<unknown, unknown, ApiPostRequestBody>,
-    res: express.Response<ApiPostResponseBody>
-  ) => {
-    // 데이터 검증 필요 함.
+export const apiRouter = (socket: ServerSocket) => {
+  const router = express.Router();
 
-    if (
-      process.env['API_SECRET'] === undefined ||
-      process.env['JWT_PRIVATE_KEY'] === undefined
-    ) {
-      throw '환경변수가 설정되지 않음';
-    }
+  router.post(
+    '/',
+    (
+      req: express.Request<unknown, unknown, ApiPostRequestBody>,
+      res: express.Response<ApiPostResponseBody>
+    ) => {
+      // 데이터 검증 필요 함.
 
-    if (req.body.secret !== process.env['API_SECRET']) {
-      return res.status(403).send();
-    }
-
-    const userTokens = req.body.users.map((user) => {
-      return {
-        id: user.id,
-        token: jwt.sign(
-          { id: user.id, nickname: user.nickname, team: user.team },
-          process.env['JWT_PRIVATE_KEY']!
-        ),
-      };
-    });
-
-    // const stage = new Stage(req.body.callback);
-
-    const id = cuid();
-
-    setTimeout(async () => {
-      try {
-        await axios.post(req.body.callback, {
-          id: id,
-          users: req.body.users.map((user) => {
-            return {
-              userId: user.id,
-              kill: 10,
-              death: 10,
-            } as UserRecord;
-          }),
-        });
-      } catch (error: any) {
-        console.log('Error!', error.message);
+      if (
+        process.env['API_SECRET'] === undefined ||
+        process.env['JWT_PRIVATE_KEY'] === undefined
+      ) {
+        throw '환경변수가 설정되지 않음';
       }
-    }, 10000);
 
-    res.status(201).json({
-      id: id,
-      users: userTokens,
-    });
-  }
-);
+      if (req.body.secret !== process.env['API_SECRET']) {
+        return res.status(403).send();
+      }
 
-export default router;
+      const stage = new Stage(socket, req.body.users);
+
+      stage.onEnd = (users) => {
+        axios
+          .post(req.body.callback, {
+            id: stage.id,
+            users,
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      };
+
+      const userTokens = req.body.users.map((user) => {
+        return {
+          id: user.id,
+          token: jwt.sign(
+            {
+              id: user.id,
+              nickname: user.nickname,
+              team: user.team,
+              stageId: stage.id,
+            },
+            process.env['JWT_PRIVATE_KEY']!
+          ),
+        };
+      });
+
+      res.status(201).json({
+        id: stage.id,
+        users: userTokens,
+      });
+    }
+  );
+
+  return router;
+};

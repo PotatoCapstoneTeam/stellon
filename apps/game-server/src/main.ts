@@ -1,9 +1,9 @@
-import geckos from '@geckos.io/server';
 import bodyParser from 'body-parser';
 import express from 'express';
 import http from 'http';
-// import path from 'path';
-import api from './api';
+import { ServerSocket } from './server-socket';
+import { Stage } from './stage';
+import { apiRouter } from './api';
 
 const app = express();
 
@@ -11,20 +11,17 @@ app.use(bodyParser.json());
 
 // app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-app.use('/api', api);
-
 const port = process.env['port'] || 3333;
 const server = http.createServer(app);
 
-const io = geckos();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const socket = new ServerSocket(server, (channel) => {
+  const stage = Stage.instances.get(channel.stageId);
 
-io.addServer(server);
-
-io.onConnection((channel) => {
-  channel.on('', () => {
-    //
-  });
+  stage?.scene.connection(channel);
 });
+
+app.use('/api', apiRouter(socket));
 
 server.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);

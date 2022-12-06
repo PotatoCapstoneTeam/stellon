@@ -1,3 +1,4 @@
+import { Team } from '..';
 import { Scene } from '../scenes/scene';
 import { Entity, EntityData } from './entity';
 
@@ -13,6 +14,7 @@ export class Player extends Entity {
     x: number,
     y: number,
     public nickname: string,
+    public team: Team,
     texture = ''
   ) {
     super(id, scene, x, y, texture);
@@ -25,6 +27,7 @@ export class Player extends Entity {
       y: this.y,
       angle: this.angle,
       nickname: this.nickname,
+      team: this.team,
       speed: this.speed,
       angularSpeed: this.angularSpeed,
       hp: this.hp,
@@ -36,6 +39,7 @@ export class Player extends Entity {
     this.y = +(data['y'] ?? this.y);
     this.angle = +(data['angle'] ?? this.angle);
     this.nickname = data['nickname'] + '';
+    this.team = data['team'] === 'RED_TEAM' ? 'RED_TEAM' : 'BLUE_TEAM';
     this.speed = +(data['speed'] ?? this.speed);
     this.angularSpeed = +(data['angularSpeed'] ?? this.angularSpeed);
     this.hp = +(data['hp'] ?? this.hp);
