@@ -8,7 +8,8 @@ export interface GameViewProps {
 }
 
 const Div = styled.div`
-  background-color: black;
+  z-index: 999;
+  background-color: white;
   width: 100%;
   height: 100%;
   color: white;

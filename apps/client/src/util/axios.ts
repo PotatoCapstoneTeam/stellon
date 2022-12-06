@@ -25,6 +25,12 @@ Api.interceptors.response.use(
       return console.log('500 Error 이미 등록된 유저입니다.');
     } else if (error.response.data.error === '존재하지 않는 유저입니다.') {
       return console.log('이미 로비리스트에 삭제하였음.');
+    } else if (error.response.data.status === 409) {
+      return () => {
+        console.log(error);
+        console.log('다시 접속자 목록에 등록합니다.');
+        Api(error.config);
+      };
     }
     console.log(error);
     // relogin
