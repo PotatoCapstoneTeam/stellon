@@ -2,6 +2,7 @@ package org.gamza.server.Entity;
 
 import lombok.Builder;
 import lombok.Data;
+import org.gamza.server.Dto.GameDto.StageRequestDto;
 
 @Data
 @Builder
@@ -16,4 +17,5 @@ public class Message {
   private UserInfo userInfo;
   private String message;
   private GameRoom gameRoom;
+  private String token;
 }
