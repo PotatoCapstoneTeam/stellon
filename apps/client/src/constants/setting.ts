@@ -1,3 +1,3 @@
 export const setting = {
-  baseURL: process.env['MAIN_SERVER_URL'] ?? '',
+  baseURL: process.env['NX_MAIN_SERVER_URL'] ?? '',
 };

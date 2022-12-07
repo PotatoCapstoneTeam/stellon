@@ -20,7 +20,7 @@ const useChatWebSocket = (state: string, roomId: string) => {
     const url = state === 'lobby' ? `/sub/lobby` : `/sub/room/${roomId}`;
     if (!client.current) {
       const socket = new SockJS(
-        `${process.env['MAIN_SERVER_URL'] ?? ''}/ws-stomp`
+        `${process.env['NX_MAIN_SERVER_URL'] ?? ''}/ws-stomp`
       );
       client.current = Stomp.over(() => {
         return socket;
