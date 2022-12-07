@@ -9,6 +9,7 @@ const Api = axios.create({
 
 Api.interceptors.request.use((config) => {
   config.headers = {
+    'Content-Type': `application/json`,
     Authorization: getCookie(`user_access_token`),
     RefreshToken: getCookie('user_refresh_token'),
   };
@@ -25,6 +26,8 @@ Api.interceptors.response.use(
       return console.log('500 Error 이미 등록된 유저입니다.');
     } else if (error.response.data.error === '존재하지 않는 유저입니다.') {
       return console.log('이미 로비리스트에 삭제하였음.');
+    } else if (error.response.data.message === '유효하지 않은 토큰입니다.') {
+      return window.location.replace('/');
     } else if (error.response.data.status === 409) {
       return () => {
         console.log(error);
@@ -33,7 +36,8 @@ Api.interceptors.response.use(
       };
     }
     console.log(error);
-    // relogin
+
+    // 토큰 재발급
     const res = await loginApi.receiveRefreshToken(
       getCookie('user_access_token'),
       getCookie('user_refresh_token')

@@ -26,10 +26,10 @@ export interface IPlayers {
 }
 export interface IWebSocketData {
   gameRoom: {
-    createdDate: string;
+    createdDate: string; //
     id: number;
-    modifiedDate: string;
-    password: string | null;
+    modifiedDate: string; //
+    password: string | null; //
     players: IPlayers;
     roomName: string;
     roomSize: number;
@@ -53,7 +53,9 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
-      const socket = new SockJS('https://stellon.shop/ws-stomp');
+      const socket = new SockJS(
+        `${process.env['NX_MAIN_SERVER_URL'] ?? ''}/ws-stomp`
+      );
       client.current = Stomp.over(() => {
         return socket;
       });
