@@ -89,7 +89,7 @@ const GameRoomPage = () => {
       </Container>
       {gameServerToken && (
         <GameView
-          url={'https://stage.stellon.io'}
+          url={process.env['STAGE_SERVER_URL'] ?? ''}
           token={gameServerToken}
           onEnd={onEnd}
         />
