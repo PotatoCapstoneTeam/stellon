@@ -9,7 +9,6 @@ import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
-import org.gamza.server.Error.Exception.NotValidException;
 import org.gamza.server.Repository.ResultRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +32,6 @@ public class UserService {
   public List<UserResponseDto> findAll() {
     List<User> userList = new ArrayList<>(userRepository.findAll());
     return getUserResponseDtos(userList);
-  }
-
-  @Transactional
-  public User findUserByDto(AddUserDto userDto) {
-    return userRepository.findById(userDto.getId()).get();
   }
 
   @Transactional
@@ -112,5 +104,16 @@ public class UserService {
   @Transactional
   public void removeAll() {
     userRepository.deleteAll();
+  }
+
+  @Transactional
+  public Map<Integer, AddUserDto> playersToDto(Map<Integer, User> players) {
+    Map<Integer, AddUserDto> playersDto = new HashMap<>();
+    for(Integer key : players.keySet()) {
+      User user = players.get(key);
+      AddUserDto userDto = new AddUserDto(user);
+      playersDto.put(key, userDto);
+    }
+    return playersDto;
   }
 }

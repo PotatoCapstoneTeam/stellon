@@ -2,6 +2,7 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.GameDto.GameMessageDto;
 import org.gamza.server.Dto.UserDto.AddUserDto;
 import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
@@ -40,12 +41,14 @@ public class MessageEventListener {
 
       // 방 찾기
       GameRoom room = roomService.findRoom(roomId);
+      // 방 Dto 로 변경
+      GameMessageDto roomDto = roomService.roomMessageDto(room);
 
       // 메시지 생성
       Message message = Message.builder()
         .type(Message.MessageType.EXIT)
         .userInfo(UserInfo.builder().system("system").build())
-        .gameRoom(room)
+        .gameRoom(roomDto)
         .build();
 
       // 유저 정보 수정
@@ -55,7 +58,7 @@ public class MessageEventListener {
       roomService.removeUserToRoom(roomId, userInfo);
 
       message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-      message.setGameRoom(roomService.findRoom(roomId));
+      message.setGameRoom(roomService.roomMessageDto(roomService.findRoom(roomId)));
 
       // 방이 빈 방이면 방 삭제 후 리턴
       if (roomService.getRoomUsers(roomId).isEmpty()) {

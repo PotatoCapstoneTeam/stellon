@@ -2,6 +2,7 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.GameDto.GameMessageDto;
 import org.gamza.server.Dto.GameDto.StageDataDto;
 import org.gamza.server.Dto.GameDto.StageRequestDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
@@ -55,6 +56,7 @@ public class MessageController {
   public void sendMessage(Principal principal, @Payload MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     User user = userService.findByNickname(messageDto.getNickname());
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
+    GameMessageDto roomDto = roomService.roomMessageDto(room);
 
     // players userDto 형태로 가져옴
     List<AddUserDto> players = roomService.getRoomUsers(room.getId());
@@ -71,7 +73,7 @@ public class MessageController {
     Message message = Message.builder()
       .userInfo(system)
       .type(messageDto.getType())
-      .gameRoom(room)
+      .gameRoom(roomDto)
       .build();
 
     if (room.getRoomType() == RoomType.LOBBY_ROOM) {
@@ -171,12 +173,12 @@ public class MessageController {
 
       case CHANGE:
         userService.updateTeamStatus(messageDto.getNickname());
-        message.setGameRoom(roomService.findRoom(room.getId()));
+        message.setGameRoom(roomService.roomMessageDto(roomService.findRoom(room.getId())));
         break;
 
       case READY:
         userService.updateReadyStatus(messageDto.getNickname());
-        message.setGameRoom(roomService.findRoom(room.getId()));
+        message.setGameRoom(roomService.roomMessageDto(roomService.findRoom(room.getId())));
         break;
     }
     operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), message);

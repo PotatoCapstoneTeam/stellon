@@ -3,6 +3,7 @@ package org.gamza.server.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
+import org.gamza.server.Dto.GameDto.GameMessageDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
@@ -163,6 +164,20 @@ public class RoomService {
     if(room.getRoomSize() == room.getPlayers().size()) {
       throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
     }
+  }
+
+  @Transactional
+  public GameMessageDto roomMessageDto(GameRoom room) {
+    Map<Integer, AddUserDto> playersDto = userService.playersToDto(room.getPlayers());
+    GameMessageDto roomDto = GameMessageDto.builder()
+      .id(room.getId())
+      .roomName(room.getRoomName())
+      .roomSize(room.getRoomSize())
+      .roomStatus(room.getRoomStatus())
+      .roomType(room.getRoomType())
+      .players(playersDto)
+      .build();
+    return roomDto;
   }
 
   public static <K, V> K getIndex(Map<K, V> map, V value) {
