@@ -53,7 +53,9 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
-      const socket = new SockJS('https://stellon.shop/ws-stomp');
+      const socket = new SockJS(
+        `${process.env['MAIN_SERVER_URL'] ?? ''}/ws-stomp`
+      );
       client.current = Stomp.over(() => {
         return socket;
       });
