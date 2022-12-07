@@ -9,6 +9,7 @@ const Api = axios.create({
 
 Api.interceptors.request.use((config) => {
   config.headers = {
+    'Content-Type': `application/json`,
     Authorization: getCookie(`user_access_token`),
     RefreshToken: getCookie('user_refresh_token'),
   };

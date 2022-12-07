@@ -21,30 +21,18 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
   const onCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/room', {
-        roomName: formRef.current?.['theme'].value,
-        roomSize: formRef.current?.['number'].value, //int
-        password: checkBox ? formRef.current?.['password'].value : '',
-      });
-
-      // const res = await lobbyApi.makeRoom(cookies['user_access_token'], {
-      //   roomName: formRef.current?.['theme'].value,
-      //   roomSize: formRef.current?.['number'].value, //int
-      //   password: checkBox ? formRef.current?.['password'].value : '',
-      // });
+      const res = await axios.post(
+        '/room',
+        JSON.stringify({
+          roomName: formRef.current?.['theme'].value,
+          roomSize: formRef.current?.['number'].value, //int
+          password: checkBox ? formRef.current?.['password'].value : '',
+        })
+      );
       console.log(res.data);
       navigate(`/game_room/${res.data.id}`);
     } catch (err: any) {
-      console.log(err.response.data.code);
-      if (err.response.data.code === 444) {
-        console.log('토큰 재발급 요청입니다');
-        await reLogin(); // access 토큰 만료됐을 때 토큰 재발급 함수
-        alert('방을 다시 생성해주세요');
-        setModalOpen(false);
-      } else {
-        alert('다시 로그인 하세요');
-        logOut();
-      }
+      alert('방을 다시 생성해주세요');
     }
   };
 
