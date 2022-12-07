@@ -12,6 +12,8 @@ export class ServerScene extends Scene {
   clientManager = new ClientManager();
   si = new SnapshotInterpolation();
 
+  onCreate?: VoidFunction;
+
   constructor(public room: ServerRoom, public users: User[]) {
     super({ key: 'mainScene' });
   }
@@ -53,6 +55,8 @@ export class ServerScene extends Scene {
         bullet.destroy();
       }
     );
+
+    this.onCreate?.();
   }
 
   // 무조건 create 뒤에 실행 됨.
@@ -91,6 +95,14 @@ export class ServerScene extends Scene {
         playerId,
         entities,
       });
+    });
+
+    channel.on('input', (event) => {
+      const client = this.clientManager.getClient(channel.id);
+
+      client.horizontalAxis = event.horizontalAxis;
+      client.verticalAxis = event.verticalAxis;
+      client.fire = event.fire;
     });
   }
 

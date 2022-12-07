@@ -44,11 +44,17 @@ export class ServerSocket {
             process.env['JWT_PRIVATE_KEY']
           ) as JwtPayload;
 
-          return { id: decoded['id'] };
+          return {
+            id: decoded['id'],
+            nickname: decoded['nickname'],
+            team: decoded['team'],
+            stageId: decoded['stageId'],
+          };
         } catch (error) {
           return false;
         }
       },
+      cors: { origin: '*', allowAuthorization: true },
     });
 
     this.io.addServer(server);

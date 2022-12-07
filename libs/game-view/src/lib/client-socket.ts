@@ -8,7 +8,11 @@ export class ClientSocket {
 
   async connect() {
     return new Promise<void>((resolve, reject) => {
-      this.channel = geckos({ url: this.url, authorization: this.token });
+      this.channel = geckos({
+        url: this.url,
+        port: 80,
+        authorization: this.token,
+      });
 
       this.channel.onConnect((error) => {
         if (error) {

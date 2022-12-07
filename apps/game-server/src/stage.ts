@@ -19,10 +19,9 @@ export class Stage {
 
   constructor(socket: ServerSocket, users: User[]) {
     this.scene = new ServerScene(socket.room(this.id), users);
-
-    this.scene.events.on('create', () => {
+    this.scene.onCreate = () => {
       Stage.instances.set(this.id, this);
-    });
+    };
 
     this.game = new Phaser.Game({
       type: Phaser.HEADLESS,
