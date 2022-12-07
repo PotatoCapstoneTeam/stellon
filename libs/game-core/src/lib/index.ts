@@ -46,9 +46,14 @@ export type DestroyEvent = {
   type: EntityType;
 };
 
+export type EndEvent = {
+  victoryTeam: Team;
+};
+
 export type ServerEventMap = {
   welcome: WelcomeEvent;
   create: CreateEvent;
   update: UpdateEvent;
   destroy: DestroyEvent;
+  end: EndEvent;
 };

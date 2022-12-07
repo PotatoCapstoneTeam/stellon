@@ -11,6 +11,7 @@ import { ClientPlayer } from '../entities/client-player';
 import { InputManager } from '../managers/input-manager';
 import { ClientBullet } from '../entities/client-bullet';
 import { ClientSocket } from '../client-socket';
+import { ClientNexus } from '../entities/client-nexus';
 
 export class ClientScene extends Scene {
   si: SnapshotInterpolation;
@@ -26,6 +27,8 @@ export class ClientScene extends Scene {
   }
 
   preload() {
+    this.load.image('redNexus', 'assets/red-nexus.png');
+    this.load.image('blueNexus', 'assets/blue-nexus.png');
     this.load.image('redPlayer', 'assets/red-player.png');
     this.load.image('bluePlayer', 'assets/blue-player.png');
     this.load.image('bullet', 'assets/bullet.png');
@@ -50,6 +53,8 @@ export class ClientScene extends Scene {
           )
         );
         break;
+      case EntityType.NEXUS:
+        this.nexusGroup.add(new ClientNexus(this, data));
     }
   }
 
@@ -119,10 +124,18 @@ export class ClientScene extends Scene {
       'players'
     );
 
+    const snapshot2 = this.si.calcInterpolation('', 'nexuses');
+
     snapshot?.state.forEach((playerData) => {
       const player = this.playerGroup.find(playerData.id);
 
       player?.deserialize(playerData);
+    });
+
+    snapshot2?.state.forEach((nexusData) => {
+      const nexus = this.nexusGroup.find(nexusData.id);
+
+      nexus?.deserialize(nexusData);
     });
   }
 }

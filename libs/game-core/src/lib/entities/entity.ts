@@ -5,6 +5,7 @@ import { Scene } from '../scenes/scene';
 export enum EntityType {
   PLAYER,
   BULLET,
+  NEXUS,
 }
 
 export type EntityData = {
@@ -42,4 +43,25 @@ export abstract class Entity extends Physics.Arcade.Sprite {
   abstract serialize(): EntityData;
 
   abstract deserialize(data: EntityData): void;
+}
+
+export abstract class DamageableEntity extends Entity {
+  hp = 2000;
+  maxHp = 2000;
+
+  onDeath?: (entity: DamageableEntity) => void;
+
+  constructor(id: string, scene: Scene, x: number, y: number, texture = '') {
+    super(id, scene, x, y, texture);
+  }
+
+  hit(damage: number) {
+    this.hp -= damage;
+
+    if (this.hp <= 0) {
+      this.hp = 0;
+
+      this.onDeath?.(this);
+    }
+  }
 }

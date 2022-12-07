@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ClientScene } from './scenes/client-scene';
-import { geckos } from '@geckos.io/client';
 import { ClientSocket } from './client-socket';
+import { Team } from '@stellon/game-core';
 
 export interface GameViewProps {
   url: string;
@@ -25,6 +25,8 @@ export const GameView = (props: GameViewProps) => {
 
     socket.connect().then(() => {
       game = new Phaser.Game({
+        width: 1200,
+        height: 640,
         antialias: false,
         parent: parent,
         backgroundColor: '#212123',
@@ -37,13 +39,18 @@ export const GameView = (props: GameViewProps) => {
         },
         scene: [new ClientScene(socket)],
       });
+
+      socket.on('end', (event) => {
+        alert(`${event.victoryTeam} 승리!`);
+        props.onEnd();
+      });
     });
 
     return () => {
       socket.close();
       game.destroy(true);
     };
-  }, [props.token, props.url]);
+  }, [props, props.token, props.url]);
 
-  return <div ref={parentRef}></div>;
+  return <div ref={parentRef} />;
 };

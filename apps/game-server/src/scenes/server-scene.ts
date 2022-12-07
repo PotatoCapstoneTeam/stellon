@@ -1,21 +1,45 @@
 import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation';
 import { State } from '@geckos.io/snapshot-interpolation/lib/types';
-import { EntityData, EntityType, Scene } from '@stellon/game-core';
+import {
+  DamageableEntity,
+  EntityData,
+  EntityType,
+  Scene,
+  Team,
+} from '@stellon/game-core';
 import cuid from 'cuid';
-import { User } from '../api';
+import { User, UserRecord } from '../api';
 import { ServerBullet } from '../entities/server-bullet';
 import { ServerPlayer } from '../entities/server-player';
 import { ClientManager } from '../managers/client-manager';
 import { ServerRoom, ServerChannel } from '../server-socket';
+import { ServerNexus } from '../entities/server-nexus';
+import { Stage } from '../stage';
 
 export class ServerScene extends Scene {
   clientManager = new ClientManager();
   si = new SnapshotInterpolation();
+  isEnd = false;
 
   onCreate?: VoidFunction;
 
-  constructor(public room: ServerRoom, public users: User[]) {
+  constructor(
+    public room: ServerRoom,
+    public users: User[],
+    public onEnd: (team: Team, users: UserRecord[]) => void
+  ) {
     super({ key: 'mainScene' });
+  }
+
+  onNexusDistory(entity: DamageableEntity) {
+    if (this.isEnd) {
+      return;
+    }
+
+    const nexus = entity as ServerNexus;
+
+    this.isEnd = true;
+    this.onEnd(nexus.team === 'RED_TEAM' ? 'BLUE_TEAM' : 'RED_TEAM', []);
   }
 
   override async create() {
@@ -27,17 +51,30 @@ export class ServerScene extends Scene {
       const player = new ServerPlayer(
         playerId,
         this,
-        200,
-        200,
+        user.team === 'RED_TEAM' ? 150 : 1050,
+        320,
         user.nickname,
         user.team,
         this.clientManager.getClient(user.id),
         user.id
       );
 
+      if (user.team === 'BLUE_TEAM') {
+        player.angle = 180;
+      }
+
       // 그룹을 ServerPlayer.group으로 바꾸고 생성자에 숨기자
       this.playerGroup.add(player);
     });
+
+    const redNexus = new ServerNexus(this, 100, 320, 'RED_TEAM');
+    const blueNexus = new ServerNexus(this, 1100, 320, 'BLUE_TEAM');
+
+    redNexus.onDeath = this.onNexusDistory.bind(this);
+    blueNexus.onDeath = this.onNexusDistory.bind(this);
+
+    this.nexusGroup.add(redNexus);
+    this.nexusGroup.add(blueNexus);
 
     this.physics.add.overlap(
       this.playerGroup,
@@ -46,11 +83,32 @@ export class ServerScene extends Scene {
         const p = player as ServerPlayer;
         const b = bullet as ServerBullet;
 
-        if (p.id === b.source.id) {
+        if (p.status === 'DEATH') {
           return;
         }
 
-        p.hp -= b.damage;
+        if (p.team === (b.source as ServerPlayer).team) {
+          return;
+        }
+
+        p.hit(b.damage);
+
+        bullet.destroy();
+      }
+    );
+
+    this.physics.add.overlap(
+      this.nexusGroup,
+      this.bulletGroup,
+      (nexus, bullet) => {
+        const n = nexus as ServerNexus;
+        const b = bullet as ServerBullet;
+
+        if (n.team === (b.source as ServerPlayer).team) {
+          return;
+        }
+
+        n.hit(b.damage);
 
         bullet.destroy();
       }
@@ -91,6 +149,13 @@ export class ServerScene extends Scene {
         });
       });
 
+      this.nexusGroup.forEach((nexus) => {
+        entities.push({
+          type: EntityType.NEXUS,
+          data: nexus.serialize(),
+        });
+      });
+
       channel.emit('welcome', {
         playerId,
         entities,
@@ -111,10 +176,15 @@ export class ServerScene extends Scene {
 
     const worldState = {
       players: [] as State,
+      nexuses: [] as State,
     };
 
     this.playerGroup.forEach((player) => {
       worldState.players.push(player.serialize());
+    });
+
+    this.nexusGroup.forEach((nexus) => {
+      worldState.nexuses.push(nexus.serialize());
     });
 
     const snapshot = this.si.snapshot.create(worldState);

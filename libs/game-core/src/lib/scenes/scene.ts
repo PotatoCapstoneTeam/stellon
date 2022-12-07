@@ -1,9 +1,10 @@
 import { GameObjects } from 'phaser';
-import { Bullet, Group, Player } from '../entities';
+import { Bullet, Group, Nexus, Player } from '../entities';
 
 export class Scene extends Phaser.Scene {
   private updateList: GameObjects.GameObject[] = [];
 
+  nexusGroup!: Group<Nexus>;
   playerGroup!: Group<Player>;
   bulletGroup!: Group<Bullet>;
 
@@ -12,6 +13,7 @@ export class Scene extends Phaser.Scene {
   }
 
   create() {
+    this.nexusGroup = new Group(this);
     this.playerGroup = new Group(this);
     this.bulletGroup = new Group(this);
   }
