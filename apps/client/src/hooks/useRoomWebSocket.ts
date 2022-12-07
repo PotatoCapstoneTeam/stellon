@@ -54,7 +54,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   useEffect(() => {
     if (!client.current && myInfo) {
       const socket = new SockJS(
-        `${process.env['MAIN_SERVER_URL'] ?? ''}/ws-stomp`
+        `${process.env['NX_MAIN_SERVER_URL'] ?? ''}/ws-stomp`
       );
       client.current = Stomp.over(() => {
         return socket;

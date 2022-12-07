@@ -36,7 +36,7 @@ const SignUp = () => {
 
     try {
       const res = await axios.post(
-        `${process.env['MAIN_SERVER_URL'] ?? ''}/auth/join`,
+        `${process.env['NX_MAIN_SERVER_URL'] ?? ''}/auth/join`,
         {
           email: formRef.current?.['email'].value,
           nickname: formRef.current?.['nickname'].value,
