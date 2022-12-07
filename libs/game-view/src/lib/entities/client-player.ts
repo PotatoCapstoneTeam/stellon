@@ -21,6 +21,7 @@ export class ClientPlayer extends Player {
       +(data['y'] ?? 0),
       data['nickname'] + '',
       team,
+      data['status'] as any,
       team === 'RED_TEAM' ? 'redPlayer' : 'bluePlayer'
     );
 
@@ -63,5 +64,11 @@ export class ClientPlayer extends Player {
 
     this.hpLabel.text = this.hp + '';
     this.hpLabel.setPosition(this.x, this.y);
+
+    if (this.status === 'LIVE') {
+      this.alpha = 1;
+    } else {
+      this.alpha = 0.5;
+    }
   }
 }

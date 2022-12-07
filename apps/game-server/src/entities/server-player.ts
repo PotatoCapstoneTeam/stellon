@@ -14,7 +14,28 @@ export class ServerPlayer extends Player {
     public client: ClientState,
     public userId: number
   ) {
-    super(id, scene, x, y, nickname, team);
+    super(id, scene, x, y, nickname, team, 'LIVE');
+
+    this.onDeath = (entity) => {
+      const player = entity as ServerPlayer;
+
+      player.status = 'DEATH';
+
+      setTimeout(() => {
+        player.status = 'LIVE';
+        player.hp = 200;
+
+        if (player.team === 'RED_TEAM') {
+          player.setX(150);
+          player.setY(320);
+          player.setAngle(0);
+        } else {
+          player.setX(1050);
+          player.setY(320);
+          player.setAngle(180);
+        }
+      }, 3000);
+    };
   }
 
   override update(time: number, delta: number): void {

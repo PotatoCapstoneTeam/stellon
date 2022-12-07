@@ -51,13 +51,17 @@ export class ServerScene extends Scene {
       const player = new ServerPlayer(
         playerId,
         this,
-        200,
-        200,
+        user.team === 'RED_TEAM' ? 150 : 1050,
+        320,
         user.nickname,
         user.team,
         this.clientManager.getClient(user.id),
         user.id
       );
+
+      if (user.team === 'BLUE_TEAM') {
+        player.angle = 180;
+      }
 
       // 그룹을 ServerPlayer.group으로 바꾸고 생성자에 숨기자
       this.playerGroup.add(player);
@@ -79,11 +83,15 @@ export class ServerScene extends Scene {
         const p = player as ServerPlayer;
         const b = bullet as ServerBullet;
 
+        if (p.status === 'DEATH') {
+          return;
+        }
+
         if (p.team === (b.source as ServerPlayer).team) {
           return;
         }
 
-        p.hp -= b.damage;
+        p.hit(b.damage);
 
         bullet.destroy();
       }
