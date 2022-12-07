@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatModel {
-  private GameRoom gameRoom;
+  private Long roomId;
   private User user;
   private String message;
 }

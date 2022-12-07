@@ -9,8 +9,6 @@ import org.gamza.server.Enum.RoomType;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -30,7 +28,7 @@ public class GameRoom extends BaseTimeEntity {
   @Column(nullable = false)
   private String roomName;
 
-  @OneToMany(fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL)
   private Map<Integer, User> players;
 
   @Enumerated(EnumType.STRING)

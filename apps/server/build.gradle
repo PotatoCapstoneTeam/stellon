@@ -5,9 +5,9 @@ buildscript {
 }
 
 plugins {
-	id 'org.springframework.boot'
-	id 'io.spring.dependency-management'
-	id 'java'
+  id 'org.springframework.boot'
+  id 'io.spring.dependency-management'
+  id 'java'
 }
 
 configurations {
@@ -24,7 +24,7 @@ version = '1.0.0-SNAPSHOT'
 sourceCompatibility = "$javaVersion"
 
 repositories {
-	mavenCentral()
+  mavenCentral()
 }
 
 dependencies {

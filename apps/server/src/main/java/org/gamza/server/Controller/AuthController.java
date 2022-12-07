@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/join")
-  public ResponseEntity<String> join(@RequestBody UserJoinDto userJoinDto) {
+  public ResponseEntity<String> join(@Valid @RequestBody UserJoinDto userJoinDto) {
     authService.join(userJoinDto);
     return ResponseEntity.ok("가입 완료");
   }
@@ -26,6 +27,12 @@ public class AuthController {
   @PostMapping("/login")
   public TokenApiResponse login(@RequestBody UserLoginDto userLoginDto) {
     return authService.login(userLoginDto);
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<Boolean> logout(HttpServletRequest request) {
+    authService.logout(request);
+    return ResponseEntity.ok(true);
   }
 
   @PostMapping("/reissue")

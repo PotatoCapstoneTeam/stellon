@@ -3,6 +3,7 @@ package org.gamza.server.Controller;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
+import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
 import org.gamza.server.Dto.LobbyDto.LobbyResponseDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Entity.GameRoom;
@@ -33,6 +34,12 @@ public class RoomController {
     return roomResponseDto;
   }
 
+  @PostMapping("/validate")
+  public ResponseEntity<String> validateRoom(@RequestBody RoomValidDto roomValidDto) {
+    roomService.validateRoomPass(roomValidDto);
+    return ResponseEntity.ok("검증 완료");
+  }
+
   @PostMapping("/lobby")
   public LobbyResponseDto createLobby() {
     GameRoom lobby = roomService.addLobby();
@@ -49,5 +56,11 @@ public class RoomController {
   public ResponseEntity<String> addUserToLobby(HttpServletRequest request) {
     roomService.addUserToLobby(request);
     return ResponseEntity.ok("접속 완료");
+  }
+
+  @DeleteMapping("/lobby/users")
+  public ResponseEntity<String> removeUserToLobby(HttpServletRequest request) {
+    roomService.removeUserToLobby(request);
+    return ResponseEntity.ok("로비 리스트에서 유저 제거 완료");
   }
 }

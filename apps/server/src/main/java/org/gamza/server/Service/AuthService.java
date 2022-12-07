@@ -11,6 +11,8 @@ import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Entity.CustomUserDetails;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Enum.ReadyStatus;
+import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.DuplicateException;
 import org.gamza.server.Error.Exception.LoginFailedException;
@@ -43,16 +45,18 @@ public class AuthService {
       .nickname(userJoinDto.getNickname())
       .password(passwordEncoder.encode(userJoinDto.getPassword()))
       .authority(Authority.ROLE_USER)
+      .teamStatus(TeamStatus.NONE)
+      .readyStatus(ReadyStatus.NONE)
       .build();
     userRepository.save(joinUser);
   }
 
   private void isDuplicateUser(UserJoinDto userJoinDto) {
     if (userRepository.findByEmail(userJoinDto.getEmail()) != null) {
-      throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL);
+      throw new DuplicateException(ErrorCode.DUPLICATE_EMAIL, ErrorCode.DUPLICATE_EMAIL.getMessage());
     }
     if (userRepository.existsByNickname(userJoinDto.getNickname())) {
-      throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
+      throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME, ErrorCode.DUPLICATE_NICKNAME.getMessage());
     }
   }
 
@@ -81,6 +85,18 @@ public class AuthService {
     response.setResponseData("refreshToken", tokenInfo.getRefreshToken());
 
     return response;
+  }
+
+  @Transactional
+  public void logout(HttpServletRequest request) {
+    String accessToken = request.getHeader("Authorization");
+
+    if(accessToken != null && jwtTokenProvider.validateToken(request, accessToken)) {
+      String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+      User findUser = userRepository.findByEmail(email);
+
+      findUser.deleteToken();
+    }
   }
 
   private void validateUser(UserLoginDto userLoginDto) {
