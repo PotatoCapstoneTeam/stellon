@@ -24,7 +24,7 @@ export class ClientPlayer extends Player {
       team === 'RED_TEAM' ? 'redPlayer' : 'bluePlayer'
     );
 
-    this.scale = 2;
+    this.scale = 1.5;
 
     this.playerLabel = new GameObjects.Text(
       scene,

@@ -5,7 +5,7 @@ import { Entity, EntityData } from './entity';
 export class Player extends Entity {
   speed = 10;
   angularSpeed = 10;
-  hp = 1000;
+  hp = 100;
   fireDelay = 1000;
 
   constructor(

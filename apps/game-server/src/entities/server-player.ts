@@ -1,4 +1,3 @@
-import { Data } from '@geckos.io/server';
 import { Player, Scene, Team } from '@stellon/game-core';
 import { ClientState } from '../managers/client-manager';
 import { ServerBullet } from './server-bullet';

@@ -1,5 +1,5 @@
 import '@geckos.io/phaser-on-nodejs';
-import { SERVER_FPS } from '@stellon/game-core';
+import { SERVER_FPS, Team } from '@stellon/game-core';
 import cuid from 'cuid';
 import { Game } from 'phaser';
 import { User, UserRecord } from './api';
@@ -15,10 +15,12 @@ export class Stage {
   game: Game;
   scene: ServerScene;
 
-  onEnd?: (users: UserRecord[]) => void;
-
-  constructor(socket: ServerSocket, users: User[]) {
-    this.scene = new ServerScene(socket.room(this.id), users);
+  constructor(
+    socket: ServerSocket,
+    users: User[],
+    onEnd: (team: Team, users: UserRecord[]) => void
+  ) {
+    this.scene = new ServerScene(socket.room(this.id), users, onEnd);
     this.scene.onCreate = () => {
       Stage.instances.set(this.id, this);
     };
