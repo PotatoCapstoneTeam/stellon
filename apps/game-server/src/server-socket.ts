@@ -1,4 +1,4 @@
-import geckos, { GeckosServer } from '@geckos.io/server';
+import geckos, { GeckosServer, iceServers } from '@geckos.io/server';
 import { ClientEventMap, ServerEventMap, Team } from '@stellon/game-core';
 import http from 'http';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -29,6 +29,7 @@ export class ServerSocket {
 
   constructor(server: http.Server, callback: (channel: ServerChannel) => void) {
     this.io = geckos({
+      iceServers: iceServers,
       authorization: async (auth) => {
         if (!auth) {
           return false;
