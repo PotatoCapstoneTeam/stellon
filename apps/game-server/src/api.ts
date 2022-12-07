@@ -1,5 +1,4 @@
 import { Team } from '@stellon/game-core';
-import axios from 'axios';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { ServerSocket } from './server-socket';
@@ -53,18 +52,18 @@ export const apiRouter = (socket: ServerSocket) => {
         return res.status(403).send();
       }
 
-      const stage = new Stage(socket, req.body.users);
+      const stage = new Stage(socket, req.body.users, (team, users) => {
+        // axios
+        //   .post(req.body.callback, {
+        //     id: stage.id,
+        //     users,
+        //   })
+        //   .catch((error) => {
+        //     console.log(error);
+        //   });
 
-      stage.onEnd = (users) => {
-        axios
-          .post(req.body.callback, {
-            id: stage.id,
-            users,
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      };
+        socket.room(stage.id).emit('end', { victoryTeam: team });
+      });
 
       const userTokens = req.body.users.map((user) => {
         return {
