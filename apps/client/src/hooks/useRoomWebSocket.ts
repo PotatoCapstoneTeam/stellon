@@ -26,10 +26,10 @@ export interface IPlayers {
 }
 export interface IWebSocketData {
   gameRoom: {
-    createdDate: string;
+    createdDate: string; //
     id: number;
-    modifiedDate: string;
-    password: string | null;
+    modifiedDate: string; //
+    password: string | null; //
     players: IPlayers;
     roomName: string;
     roomSize: number;
