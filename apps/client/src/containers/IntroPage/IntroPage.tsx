@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCookies } from 'react-cookie';
@@ -7,6 +7,7 @@ import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
 import { loginApi } from '../../api/loginApi';
 import Space from '../../canvas/Space';
+import axios from '../../util/axios';
 
 const IntroPage = () => {
   const navigate = useNavigate();
@@ -33,6 +34,13 @@ const IntroPage = () => {
       alert('회원정보가 없습니다.');
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const res = await axios.post('/auth/validate');
+      if (res) navigate('/lobby');
+    })();
+  }, []);
 
   return (
     <div>

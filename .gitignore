@@ -69,3 +69,4 @@ replay_pid*
 
 # Environment Files
 .env
+application.yml
