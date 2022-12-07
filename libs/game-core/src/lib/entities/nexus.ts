@@ -28,7 +28,5 @@ export class Nexus extends DamageableEntity {
     this.y = +(data['y'] ?? this.y);
     this.team = data['team'] === 'RED_TEAM' ? 'RED_TEAM' : 'BLUE_TEAM';
     this.hp = +(data['hp'] ?? this.hp);
-
-    console.log(data['hp']);
   }
 }
