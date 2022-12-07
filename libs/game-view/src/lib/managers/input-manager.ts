@@ -20,10 +20,10 @@ export class InputManager {
 
   constructor(public scene: Scene) {
     this.keys = scene.input.keyboard.addKeys({
-      left: KeyCodes.A,
-      right: KeyCodes.D,
-      up: KeyCodes.W,
-      down: KeyCodes.S,
+      left: KeyCodes.LEFT,
+      right: KeyCodes.RIGHT,
+      up: KeyCodes.UP,
+      down: KeyCodes.DOWN,
       fire: KeyCodes.SPACE,
     }) as PlayerKeys;
   }
