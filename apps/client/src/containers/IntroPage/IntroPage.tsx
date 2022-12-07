@@ -8,6 +8,7 @@ import LoginButton from './components/LoginButton';
 import { loginApi } from '../../api/loginApi';
 import Space from '../../canvas/Space';
 import axios from '../../util/axios';
+import { getCookie } from '../../util/cookies';
 
 const IntroPage = () => {
   const navigate = useNavigate();
@@ -36,10 +37,13 @@ const IntroPage = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      const res = await axios.post('/auth/validate');
-      if (res) navigate('/lobby');
-    })();
+    if (
+      getCookie('user_access_token') !== '' &&
+      getCookie('user_access_token') !== 'undefined'
+    ) {
+      console.log(getCookie('user_access_token'));
+      navigate('/lobby');
+    }
   }, []);
 
   return (
