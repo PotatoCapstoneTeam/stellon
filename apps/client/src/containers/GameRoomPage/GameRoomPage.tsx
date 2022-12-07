@@ -8,7 +8,7 @@ import useRoomWebSocket, {
   IWebSocketData,
 } from '../../hooks/useRoomWebSocket';
 import { Map, Title, Info, Client, State } from './components/index';
-import { GameView } from '../../../../../libs/game-view/src/lib/game-view';
+import { GameView } from '@stellon/game-view';
 import Space from '../../canvas/Space';
 
 interface IInfo {
