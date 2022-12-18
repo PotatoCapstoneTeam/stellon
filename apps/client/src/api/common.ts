@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { setting } from '../constants/setting';
+import { axiosPrivate } from '../util/axios';
 
 export const Api = {
   get: async (url: string) => {
@@ -7,13 +8,13 @@ export const Api = {
   },
 
   getWithToken: async (url: string, token: string) => {
-    return await axios.get(setting.baseURL + url, {
+    return await axiosPrivate.get(setting.baseURL + url, {
       headers: { Authorization: token },
     });
   },
 
   postWithToken: async (url: string, token: string, refreshToken?: string) => {
-    return await axios.post(
+    return await axiosPrivate.post(
       setting.baseURL + url,
       {},
       {
@@ -30,13 +31,13 @@ export const Api = {
   },
 
   postWithTokenAndParams: async (url: string, token: string, params: any) => {
-    return await axios.post(setting.baseURL + url, params, {
+    return await axiosPrivate.post(setting.baseURL + url, params, {
       headers: { Authorization: token },
     });
   },
 
   deleteWithToken: async (url: string, token: string) => {
-    return await axios.delete(setting.baseURL + url, {
+    return await axiosPrivate.delete(setting.baseURL + url, {
       headers: { Authorization: token },
     });
   },

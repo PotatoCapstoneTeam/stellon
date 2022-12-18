@@ -1,4 +1,4 @@
-import axios from '../../../util/axios';
+import { axiosPrivate } from '../../../util/axios';
 import { deleteCookie } from '../../../util/cookies';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -9,8 +9,8 @@ const Tool = () => {
   // 로그아웃 api , delete , 토큰 삭제
   const logOut = async () => {
     try {
-      await axios.post('/auth/logout');
-      await axios.delete('/room/lobby/users');
+      await axiosPrivate.post('/auth/logout');
+      await axiosPrivate.delete('/room/lobby/users');
       deleteCookie('user_access_token');
       deleteCookie('user_refresh_token');
       navigate('/');

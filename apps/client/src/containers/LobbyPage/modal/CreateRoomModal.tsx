@@ -5,7 +5,7 @@ import { Typography } from '../../../components/Typography';
 import { SearchImg } from '../components/GameStart';
 import useLogin from '../../../hooks/useLogin';
 import { useNavigate } from 'react-router-dom';
-import axios from '../../../util/axios';
+import { axiosPrivate } from '../../../util/axios';
 import { getCookie } from '../../../util/cookies';
 
 interface ICreateRoomModal {
@@ -21,7 +21,7 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
   const onCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
+      const res = await axiosPrivate.post(
         '/room',
         JSON.stringify({
           roomName: formRef.current?.['theme'].value,
