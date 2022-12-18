@@ -2,7 +2,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import { IInfo } from '../containers/LobbyPage/LobbyPage';
-import axios from '../util/axios';
+import { axiosPrivate } from '../util/axios';
 
 export interface ISend {
   type: 'JOIN' | 'ROOM' | 'START' | 'PLAY' | 'CHANGE' | 'EXIT' | 'READY';
@@ -91,7 +91,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
       client.current?.disconnect(async () => {
         client.current = undefined;
         console.log('룸 웹소켓 끊어짐');
-        !roomId && (await axios.post('/room/lobby/users'));
+        !roomId && (await axiosPrivate.post('/room/lobby/users'));
       });
     };
   }, [myInfo, roomId]);

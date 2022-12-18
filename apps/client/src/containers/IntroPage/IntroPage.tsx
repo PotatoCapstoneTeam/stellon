@@ -1,50 +1,46 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useCookies } from 'react-cookie';
 import { Typography } from '../../components/Typography';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
-import { loginApi } from '../../api/loginApi';
+import { ILogin, loginApi } from '../../api/loginApi';
 import Space from '../../canvas/Space';
-import axios from '../../util/axios';
-import { getCookie } from '../../util/cookies';
+import { useCookie } from '../../hooks/useCookie';
+import { useMutation } from 'react-query';
 
 const IntroPage = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
-  const [cookies, setCookie] = useCookies([
-    'user_access_token',
-    'user_refresh_token',
-  ]); // 쿠키 훅
-
-  const loginHandleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const res = await loginApi.login({
-        email: formRef.current?.['email'].value,
-        password: formRef.current?.['password'].value,
-      });
+  const { access, setCookie } = useCookie();
+  const { mutate } = useMutation((info: ILogin) => loginApi.login(info), {
+    onSuccess: (res) => {
       console.log(res.data);
       setCookie('user_access_token', res.data.response.accessToken); // 쿠키에 access 토큰 저장
       setCookie('user_refresh_token', res.data.response.refreshToken); // 쿠키에 refresh 토큰 저장
       navigate('/lobby');
-    } catch (err) {
+    },  
+    onError: (err) => {
       console.log(err);
       alert('회원정보가 없습니다.');
-    }
+    },
+  });
+
+  const loginHandleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = formRef.current?.['email'].value;
+    const password = formRef.current?.['password'].value;
+    mutate({
+      email,
+      password,
+    });
   };
 
   useEffect(() => {
-    if (
-      getCookie('user_access_token') !== '' &&
-      getCookie('user_access_token') !== 'undefined'
-    ) {
-      console.log(getCookie('user_access_token'));
+    if (access !== '' && access !== 'undefined') {
       navigate('/lobby');
     }
-  }, []);
+  }, [access, navigate]);
 
   return (
     <div>

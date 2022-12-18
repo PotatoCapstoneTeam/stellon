@@ -1,6 +1,6 @@
 import { Api } from './common';
 
-interface ILogin {
+export interface ILogin {
   email: string;
   password: string;
 }

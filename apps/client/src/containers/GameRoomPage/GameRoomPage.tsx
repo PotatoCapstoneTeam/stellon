@@ -1,4 +1,4 @@
-import axios from '../../util/axios';
+import { axiosPrivate } from '../../util/axios';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -55,8 +55,8 @@ const GameRoomPage = () => {
 
   useEffect(() => {
     (async () => {
-      await axios.delete('/room/lobby/users');
-      const myInfo = await axios.get('/user');
+      await axiosPrivate.delete('/room/lobby/users');
+      const myInfo = await axiosPrivate.get('/user');
       setMyInfo(myInfo.data);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
