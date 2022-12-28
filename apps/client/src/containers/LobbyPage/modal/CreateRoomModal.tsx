@@ -1,39 +1,42 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
 import { Typography } from '../../../components/Typography';
 import { SearchImg } from '../components/GameStart';
-import useLogin from '../../../hooks/useLogin';
 import { useNavigate } from 'react-router-dom';
 import { axiosPrivate } from '../../../util/axios';
-import { getCookie } from '../../../util/cookies';
+import { useMutation } from 'react-query';
 
 interface ICreateRoomModal {
   setModalOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+interface IRoomInfo {
+  roomName: string;
+  roomSize: number;
+  password: string;
 }
 
 const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const [checkBox, setCheckBox] = useState(false);
-  const { logOut, reLogin } = useLogin();
 
-  const onCreateRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await axiosPrivate.post(
-        '/room',
-        JSON.stringify({
-          roomName: formRef.current?.['theme'].value,
-          roomSize: formRef.current?.['number'].value, //int
-          password: checkBox ? formRef.current?.['password'].value : '',
-        })
-      );
-      console.log(res.data);
-      navigate(`/game_room/${res.data.id}`);
-    } catch (err: any) {
-      alert('방을 다시 생성해주세요');
+  const makeRoom = useMutation(
+    (info: IRoomInfo) => axiosPrivate.post('/room', info),
+    {
+      onSuccess: (res) => navigate(`/game_room/${res.data.id}`),
+      onError: () => alert('방을 다시 생성 해주세요'),
     }
+  );
+
+  const onCreateRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    makeRoom.mutate({
+      roomName: formRef.current?.['theme'].value,
+      roomSize: formRef.current?.['number'].value, //int
+      password: checkBox ? formRef.current?.['password'].value : '',
+    });
   };
 
   return (

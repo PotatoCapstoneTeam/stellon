@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { loginApi } from '../api/loginApi';
 import { setting } from '../constants/setting';
-import { getCookie, setCookie } from './cookies';
+import { getCookie } from './cookies';
 import { memorizedRefreshToken } from './refreshToken';
 
 axios.defaults.baseURL = setting.baseURL;
@@ -26,7 +25,6 @@ axios.interceptors.response.use(
     return response;
   },
   async (err) => {
-
     if (err.response.data.status === 500) {
       return console.log('500 Error 이미 등록된 유저입니다.');
     } else if (err.response.data.error === '존재하지 않는 유저입니다.') {

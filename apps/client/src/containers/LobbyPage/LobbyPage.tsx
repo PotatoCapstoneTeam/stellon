@@ -50,6 +50,7 @@ const LobbyPage = () => {
   // 게임룸 리스트
   useQuery('gameRoomList', () => axiosPrivate.get('/room'), {
     onSuccess: (res) => setList(res.data),
+    refetchInterval: 1000,
   });
 
   // 접속자 리스트에 자신 추가
@@ -66,6 +67,7 @@ const LobbyPage = () => {
   // 접속자 리스트
   useQuery('lobbyUserList', () => axiosPrivate.get('/room/lobby/users'), {
     onSuccess: (res) => setUserList(res.data),
+    refetchInterval: 1000,
   });
 
   useEffect(() => {
