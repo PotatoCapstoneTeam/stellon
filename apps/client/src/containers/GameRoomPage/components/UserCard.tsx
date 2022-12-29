@@ -1,4 +1,3 @@
-import { IPlayer } from '../../../hooks/useRoomWebSocket';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
