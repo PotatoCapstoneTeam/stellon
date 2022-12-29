@@ -4,27 +4,36 @@ import styled from 'styled-components';
 import { Typography } from '../../components/Typography';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
-import { ILogin, loginApi } from '../../api/loginApi';
 import Space from '../../canvas/Space';
-import { useCookie } from '../../hooks/useCookie';
+import { getCookie, setCookie } from '../../util/cookies';
 import { useMutation } from 'react-query';
+import { axiosPrivate } from '../../util/axios';
+
+interface ILogin {
+  email: string;
+  password: string;
+}
 
 const IntroPage = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
-  const { access, setCookie } = useCookie();
-  const { mutate } = useMutation((info: ILogin) => loginApi.login(info), {
-    onSuccess: (res) => {
-      console.log(res.data);
-      setCookie('user_access_token', res.data.response.accessToken); // 쿠키에 access 토큰 저장
-      setCookie('user_refresh_token', res.data.response.refreshToken); // 쿠키에 refresh 토큰 저장
-      navigate('/lobby');
-    },  
-    onError: (err) => {
-      console.log(err);
-      alert('회원정보가 없습니다.');
-    },
-  });
+  const access = getCookie('user_access_token');
+
+  const { mutate } = useMutation(
+    (info: ILogin) => axiosPrivate.post('/auth/login', info),
+    {
+      onSuccess: (res) => {
+        console.log(res.data);
+        setCookie('user_access_token', res.data.response.accessToken); // 쿠키에 access 토큰 저장
+        setCookie('user_refresh_token', res.data.response.refreshToken); // 쿠키에 refresh 토큰 저장
+        navigate('/lobby');
+      },
+      onError: (err) => {
+        console.log(err);
+        alert('회원정보가 없습니다.');
+      },
+    }
+  );
 
   const loginHandleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

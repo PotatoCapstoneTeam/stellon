@@ -1,4 +1,3 @@
-import React from 'react';
 import LobbyPage from '../containers/LobbyPage/LobbyPage';
 
 const lobby = () => {
