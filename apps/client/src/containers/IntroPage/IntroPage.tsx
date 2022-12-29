@@ -7,7 +7,7 @@ import LoginButton from './components/LoginButton';
 import Space from '../../canvas/Space';
 import { getCookie, setCookie } from '../../util/cookies';
 import { useMutation } from 'react-query';
-import { axiosPrivate } from '../../util/axios';
+import { axiosPublic } from '../../util/axiosPublic';
 
 interface ILogin {
   email: string;
@@ -20,7 +20,7 @@ const IntroPage = () => {
   const access = getCookie('user_access_token');
 
   const { mutate } = useMutation(
-    (info: ILogin) => axiosPrivate.post('/auth/login', info),
+    (info: ILogin) => axiosPublic.post('/auth/login', info),
     {
       onSuccess: (res) => {
         console.log(res.data);
