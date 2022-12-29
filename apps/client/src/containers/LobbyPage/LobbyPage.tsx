@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import Info from './components/Info';
@@ -6,7 +6,6 @@ import GameList from './components/GameList';
 import Chat from './components/Chat';
 import UserList from './components/UserList';
 import Header from './components/Header';
-import CreateRoomModal from './modal/CreateRoomModal';
 import { axiosPrivate } from '../../util/axios';
 import { useLobbyData } from '../../hooks/useLobbyData';
 export interface IInfo {
@@ -19,10 +18,9 @@ export interface IUser {
 }
 
 const LobbyPage = () => {
-  const [modalOpen, setModalOpen] = useState(false);
   const { list, userList, myInfo, loginCheck, enterUserList } = useLobbyData();
 
-  const exitScreen = (e: any) => {
+  const exitScreen = (e: BeforeUnloadEvent) => {
     e.preventDefault();
     // 창을 나갈 때 delete요청
     axiosPrivate.delete('/room/lobby/users');
@@ -45,7 +43,7 @@ const LobbyPage = () => {
     <div>
       <Space />
       <Container>
-        <Header setModalOpen={setModalOpen} />
+        <Header />
         <ContentBox>
           <BackgroundBox />
           <Info {...myInfo!} />
@@ -54,7 +52,6 @@ const LobbyPage = () => {
           <UserList userList={userList || []} />
         </ContentBox>
       </Container>
-      {modalOpen && <CreateRoomModal setModalOpen={setModalOpen} />}
     </div>
   );
 };

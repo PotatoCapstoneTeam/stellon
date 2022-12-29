@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
 import { Typography } from '../../../components/Typography';
@@ -8,7 +8,7 @@ import { axiosPrivate } from '../../../util/axios';
 import { useMutation } from 'react-query';
 
 interface ICreateRoomModal {
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
+  handleCloseModal: () => void;
 }
 
 interface IRoomInfo {
@@ -17,7 +17,7 @@ interface IRoomInfo {
   password: string;
 }
 
-const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
+const CreateRoomModal = ({ handleCloseModal }: ICreateRoomModal) => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const [checkBox, setCheckBox] = useState(false);
@@ -49,11 +49,7 @@ const CreateRoomModal = ({ setModalOpen }: ICreateRoomModal) => {
               방 만들기
             </Typography>
           </ModalTheme>
-          <CloseModal
-            onClick={() => {
-              setModalOpen(false);
-            }}
-          >
+          <CloseModal onClick={() => handleCloseModal()}>
             <CloseImg src="../assets/close.png" alt="none" />
             <Typography color="white" size="16">
               닫기
@@ -129,6 +125,7 @@ const ModalBackGround = styled.div`
   bottom: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
 `;
 const People = styled.select`
   height: 40px;
