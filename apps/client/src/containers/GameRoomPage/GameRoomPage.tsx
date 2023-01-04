@@ -10,17 +10,17 @@ import useRoomWebSocket, {
 import { Map, Title, Info, Client, State } from './components/index';
 import { GameView } from '@stellon/game-view';
 import Space from '../../canvas/Space';
+import { useMutation } from 'react-query';
+import { useGameRoomData } from '../../hooks/useGameRoomData';
+import { IInfo } from '../LobbyPage/LobbyPage';
 
-interface IInfo {
-  nickname: string;
-  winRecord: number;
-  loseRecord: number;
+interface IGameRoomPage {
+  myInfo?: IInfo;
+  deleteUserList: any;
 }
 
-const GameRoomPage = () => {
-  const navigate = useNavigate();
+const GameRoomPage = ({ myInfo, deleteUserList }: IGameRoomPage) => {
   const { id } = useParams();
-  const [myInfo, setMyInfo] = useState<IInfo>();
   const { ready, start, webSocketData, readyToggle } = useRoomWebSocket(
     id as string,
     myInfo
@@ -44,33 +44,15 @@ const GameRoomPage = () => {
   }, [webSocketData]);
 
   useEffect(() => {
-    console.log('리스트 값', playerList);
-  }, [playerList]);
-
-  useEffect(() => {
-    console.log('토큰 값', gameServerToken);
-  }, [gameServerToken]);
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-
-  useEffect(() => {
-    (async () => {
-      await axiosPrivate.delete('/room/lobby/users');
-      const myInfo = await axiosPrivate.get('/user');
-      setMyInfo(myInfo.data);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    console.log(webSocketData);
-  }, [webSocketData]);
+    deleteUserList.mutate();
+  }, [deleteUserList]);
 
   const onEnd = () => {
     console.log('게임이 끝남');
     ready();
     setGameServerToken(undefined);
   };
+
   return (
     <div>
       {!gameServerToken && <Space />}
