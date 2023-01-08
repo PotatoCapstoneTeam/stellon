@@ -45,7 +45,7 @@ const GameRoomPage = ({ myInfo, deleteUserList }: IGameRoomPage) => {
 
   useEffect(() => {
     deleteUserList.mutate();
-  }, []);
+  }, [deleteUserList]);
 
   const onEnd = () => {
     console.log('게임이 끝남');
