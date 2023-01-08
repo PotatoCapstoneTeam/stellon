@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
-import { IInfo } from '../LobbyPage';
+
+export interface IInfo {
+  nickname: string;
+  winRecord: number;
+  loseRecord: number;
+}
 
 const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
   const win = winRecord || 0;

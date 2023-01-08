@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import styled from 'styled-components';
 import Space from '../../canvas/Space';
 import Info from './components/Info';
@@ -6,38 +5,13 @@ import GameList from './components/GameList';
 import Chat from './components/Chat';
 import UserList from './components/UserList';
 import Header from './components/Header';
-import { axiosPrivate } from '../../util/axios';
 import { useLobbyData } from '../../hooks/useLobbyData';
-export interface IInfo {
-  nickname: string;
-  winRecord: number;
-  loseRecord: number;
-}
 export interface IUser {
   nickname: string;
 }
 
 const LobbyPage = () => {
-  const { list, userList, myInfo, loginCheck, enterUserList } = useLobbyData();
-
-  const exitScreen = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    // 창을 나갈 때 delete요청
-    axiosPrivate.delete('/room/lobby/users');
-    e.returnValue = '';
-  };
-
-  useEffect(() => {
-    (async () => {
-      window.addEventListener('unload', exitScreen);
-      loginCheck.mutate();
-      enterUserList.mutate();
-
-      return () => {
-        window.removeEventListener('unload', exitScreen);
-      };
-    })();
-  }, []);
+  const { list, userList, myInfo } = useLobbyData();
 
   return (
     <div>
@@ -46,10 +20,10 @@ const LobbyPage = () => {
         <Header />
         <ContentBox>
           <BackgroundBox />
-          <Info {...myInfo!} />
-          <GameList list={list || []} />
-          <Chat {...myInfo!} />
-          <UserList userList={userList || []} />
+          <Info {...myInfo} />
+          <GameList list={list} />
+          <Chat {...myInfo} />
+          <UserList userList={userList} />
         </ContentBox>
       </Container>
     </div>

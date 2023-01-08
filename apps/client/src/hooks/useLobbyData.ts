@@ -1,15 +1,28 @@
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { IInfo, IUser } from '../containers/LobbyPage/LobbyPage';
+import { IInfo } from '../containers/LobbyPage/components/Info';
+import { IUser } from '../containers/LobbyPage/LobbyPage';
 import { axiosPrivate } from '../util/axios';
+
+const nothing = {
+  nickname: '이름없음',
+  winRecord: 0,
+  loseRecord: 0,
+};
 
 export const useLobbyData = () => {
   const [list, setList] = useState([]);
   const [userList, setUserList] = useState<IUser[]>([]);
-  const [myInfo, setMyInfo] = useState<IInfo>();
+  const [myInfo, setMyInfo] = useState<IInfo>(nothing);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
+  const exitScreen = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    // 창을 나갈 때 delete요청
+    axiosPrivate.delete('/room/lobby/users');
+    e.returnValue = '';
+  };
 
   // 내 정보
   useQuery('myInfo', () => axiosPrivate.get('/user'), {
@@ -32,6 +45,7 @@ export const useLobbyData = () => {
   const loginCheck = useMutation(() => axiosPrivate.post('/auth/validate'), {
     onSuccess: (res) => {
       !res && navigate('/');
+      enterUserList.mutate();
     },
     onError: (err) => console.log(err),
   });
@@ -39,13 +53,19 @@ export const useLobbyData = () => {
   // 접속자 리스트에 자신 추가
   const enterUserList = useMutation(
     () => axiosPrivate.post('/room/lobby/users'),
-    {
-      onSuccess: () => {
-        // enterUserList 성공하면 lobbyUserList api 함수를 실행
-        queryClient.invalidateQueries('lobbyUserList');
-      },
-    }
+    { onSuccess: () => console.log('접속자 리스트에 추가 완료') }
   );
+
+  useEffect(() => {
+    (async () => {
+      window.addEventListener('unload', exitScreen);
+      loginCheck.mutate();
+
+      return () => {
+        window.removeEventListener('unload', exitScreen);
+      };
+    })();
+  }, []);
 
   return { list, userList, myInfo, loginCheck, enterUserList };
 };
