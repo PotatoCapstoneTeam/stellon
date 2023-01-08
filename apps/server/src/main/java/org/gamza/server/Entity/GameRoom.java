@@ -44,4 +44,8 @@ public class GameRoom extends BaseTimeEntity {
 
   @Column
   private String password;
+
+  public void updateStatus(RoomStatus status) {
+    this.roomStatus = status;
+  }
 }

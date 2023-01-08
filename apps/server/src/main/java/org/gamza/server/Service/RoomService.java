@@ -167,6 +167,12 @@ public class RoomService {
   }
 
   @Transactional
+  public void updateRoomStatus(Long id) {
+    GameRoom room = roomRepository.findById(id).orElse(null);
+    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RoomStatus.RUNNING : RoomStatus.OPEN);
+  }
+
+  @Transactional
   public GameMessageDto roomMessageDto(GameRoom room) {
     Map<Integer, AddUserDto> playersDto = userService.playersToDto(room.getPlayers());
     GameMessageDto roomDto = GameMessageDto.builder()
