@@ -4,6 +4,7 @@ import Intro from '../routes/Intro';
 import Lobby from '../routes/Lobby';
 import SignUp from '../routes/SignUp';
 import { CookiesProvider } from 'react-cookie';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 export function App() {
@@ -19,6 +20,7 @@ export function App() {
             <Route path="/game_room/:id" element={<GameRoom />} />
           </Routes>
         </BrowserRouter>
+        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
       </QueryClientProvider>
     </CookiesProvider>
   );

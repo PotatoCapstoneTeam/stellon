@@ -1,6 +1,5 @@
-import { axiosPrivate } from '../../util/axios';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ChatRoom from '../../components/ChatRoom';
 import useRoomWebSocket, {
@@ -10,15 +9,10 @@ import useRoomWebSocket, {
 import { Map, Title, Info, Client, State } from './components/index';
 import { GameView } from '@stellon/game-view';
 import Space from '../../canvas/Space';
-
-interface IInfo {
-  nickname: string;
-  winRecord: number;
-  loseRecord: number;
-}
+import { IInfo } from '../LobbyPage/components/Info';
+import { axiosPrivate } from '../../util/axios';
 
 const GameRoomPage = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
   const [myInfo, setMyInfo] = useState<IInfo>();
   const { ready, start, webSocketData, readyToggle } = useRoomWebSocket(
@@ -44,16 +38,6 @@ const GameRoomPage = () => {
   }, [webSocketData]);
 
   useEffect(() => {
-    console.log('리스트 값', playerList);
-  }, [playerList]);
-
-  useEffect(() => {
-    console.log('토큰 값', gameServerToken);
-  }, [gameServerToken]);
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-
-  useEffect(() => {
     (async () => {
       await axiosPrivate.delete('/room/lobby/users');
       const myInfo = await axiosPrivate.get('/user');
@@ -61,10 +45,6 @@ const GameRoomPage = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    console.log(webSocketData);
-  }, [webSocketData]);
 
   const onEnd = () => {
     console.log('게임이 끝남');

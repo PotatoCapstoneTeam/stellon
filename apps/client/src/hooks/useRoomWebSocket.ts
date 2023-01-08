@@ -1,7 +1,7 @@
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
-import { IInfo } from '../containers/LobbyPage/LobbyPage';
+import { IInfo } from '../containers/LobbyPage/components/Info';
 import { axiosPrivate } from '../util/axios';
 
 export interface ISend {

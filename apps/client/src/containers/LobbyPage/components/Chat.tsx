@@ -1,7 +1,7 @@
 import ChatRoom from '../../../components/ChatRoom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
-import { IInfo } from '../LobbyPage';
+import { IInfo } from './Info';
 
 const Chat = (data: IInfo) => {
   return (
