@@ -5,7 +5,7 @@ import { IRoom } from './GameList';
 
 const Room = ({ id, map, players, roomName, roomSize, roomStatus }: IRoom) => {
   const navigate = useNavigate();
-  const moveGameRoom = async () => {
+  const moveGameRoom = () => {
     navigate(`/game_room/${id}`);
   };
 

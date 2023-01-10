@@ -17,7 +17,7 @@ const LobbyPage = () => {
     <div>
       <Space />
       <Container>
-        <Header />
+        <Header list={list} />
         <ContentBox>
           <BackgroundBox />
           <Info {...myInfo} />
