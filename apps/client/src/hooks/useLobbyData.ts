@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
+import { IRoom } from '../containers/LobbyPage/components/GameList';
 import { IInfo } from '../containers/LobbyPage/components/Info';
 import { IUser } from '../containers/LobbyPage/LobbyPage';
 import { axiosPrivate } from '../util/axios';
@@ -12,7 +13,7 @@ const nothing = {
 };
 
 export const useLobbyData = () => {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<IRoom[]>([]);
   const [userList, setUserList] = useState<IUser[]>([]);
   const [myInfo, setMyInfo] = useState<IInfo>(nothing);
   const navigate = useNavigate();

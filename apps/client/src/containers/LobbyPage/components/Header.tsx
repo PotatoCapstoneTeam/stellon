@@ -2,15 +2,16 @@ import styled from 'styled-components';
 import Tool from './Tool';
 import MakeRoom from './MakeRoom';
 import GameStart from './GameStart';
+import { IRoom } from './GameList';
 
+const Header = ({ list }: { list: IRoom[] }) => {
 
-const Header = () => {
   return (
     <Container>
       <Tool />
       <Menu>
-        <MakeRoom  />
-        <GameStart />
+        <MakeRoom />
+        <GameStart list={list} />
       </Menu>
     </Container>
   );
