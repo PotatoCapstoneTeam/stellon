@@ -17,6 +17,7 @@ export class Stage {
 
   constructor(
     socket: ServerSocket,
+    public roomId: number,
     users: User[],
     onEnd: (team: Team, users: UserRecord[]) => void
   ) {

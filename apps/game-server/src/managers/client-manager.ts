@@ -3,6 +3,9 @@ export class ClientState {
   verticalAxis = 0;
   fire = false;
 
+  kill = 0;
+  death = 0;
+
   constructor(public id: number) {}
 }
 

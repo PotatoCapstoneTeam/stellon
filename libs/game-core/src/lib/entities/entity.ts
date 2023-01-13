@@ -49,19 +49,19 @@ export abstract class DamageableEntity extends Entity {
   hp = 2000;
   maxHp = 2000;
 
-  onDeath?: (entity: DamageableEntity) => void;
+  onDeath?: (entity: DamageableEntity, killer: Entity) => void;
 
   constructor(id: string, scene: Scene, x: number, y: number, texture = '') {
     super(id, scene, x, y, texture);
   }
 
-  hit(damage: number) {
+  hit(damage: number, hitter: Entity) {
     this.hp -= damage;
 
     if (this.hp <= 0) {
       this.hp = 0;
 
-      this.onDeath?.(this);
+      this.onDeath?.(this, hitter);
     }
   }
 }
