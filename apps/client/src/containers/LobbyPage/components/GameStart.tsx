@@ -8,10 +8,14 @@ const GameStart = ({ list }: { list: IRoom[] }) => {
   const newList = list.map((i) => i.id);
 
   const randomPickRoom = () => {
-    const randIndex = Math.floor(Math.random() * newList.length);
-    navigate(`/game_room/${newList[randIndex]}`);
+    if (newList.length === 0) {
+      alert('방이 없습니다.');
+    } else {
+      const randIndex = Math.floor(Math.random() * newList.length);
+      navigate(`/game_room/${newList[randIndex]}`);
+    }
   };
-  
+
   return (
     <GameStartBtn onClick={randomPickRoom}>
       <SearchImg src="../assets/direction.png" alt="none" />
