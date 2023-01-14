@@ -48,4 +48,10 @@ public class GameRoom extends BaseTimeEntity {
   public void updateStatus(RoomStatus status) {
     this.roomStatus = status;
   }
+  public boolean isPasswordRoom() {
+    if(this.password == null) {
+      return false;
+    }
+    return true;
+  }
 }
