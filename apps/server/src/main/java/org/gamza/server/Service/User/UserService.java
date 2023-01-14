@@ -5,6 +5,7 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
+import org.gamza.server.Enum.PlaneType;
 import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
@@ -58,16 +59,21 @@ public class UserService {
     String token = request.getHeader("Authorization");
 
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    List<RecordResult> recordResult = resultRepository.findByUserId(findUser.getId());
+    return getRecordByUser(findUser);
+  }
 
-    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
-    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
+  @Transactional
+  public UserRecordDto getUserRecordByNickname(UserRequestDto userRequestDto) {
+    User findUser = userRepository.findByNickname(userRequestDto.getNickname());
+    return getRecordByUser(findUser);
+  }
 
-    return UserRecordDto.builder()
-      .nickname(findUser.getNickname())
-      .kill(kill)
-      .death(death)
-      .build();
+  @Transactional
+  public void updatePlane(HttpServletRequest request, PlaneType type) {
+    String token = request.getHeader("Authorization");
+
+    User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
+    findUser.updatePlane(type);
   }
 
   @Transactional
@@ -115,5 +121,18 @@ public class UserService {
       playersDto.put(key, userDto);
     }
     return playersDto;
+  }
+
+  private UserRecordDto getRecordByUser(User findUser) {
+    List<RecordResult> recordResult = resultRepository.findAllByUser(findUser);
+
+    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
+    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
+
+    return UserRecordDto.builder()
+      .nickname(findUser.getNickname())
+      .kill(kill)
+      .death(death)
+      .build();
   }
 }
