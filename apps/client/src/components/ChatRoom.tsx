@@ -1,55 +1,55 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
+import useChatWebSocket from '../hooks/useChatWebSocket';
 import { customColor } from '../constants/customColor';
-import { Typography } from './Typography';
+import Chat from './Chat';
 
 interface IChatRoom {
   state: string;
+  roomId?: string;
+  nickname?: string;
 }
 
-const ChatRoom = ({ state }: IChatRoom) => {
-  const [chat, setChat] = useState('');
+export interface IChat {
+  nickname: string;
+  message: string;
+}
+
+const ChatRoom = ({ state, roomId, nickname }: IChatRoom) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const roomRef = useRef<HTMLDivElement>(null);
+
+  const { send, lobbyChat } = useChatWebSocket(state, roomId as string);
+  // 채팅 Submit
+  const submitChat = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formRef.current != null && formRef.current['chat'].value !== '') {
+      const message = formRef.current['chat'].value;
+      const chatting = {
+        roomId: roomId ? parseInt(roomId) : 1,
+        user: { nickname: nickname ?? '이름 없음' },
+        message,
+      };
+      send(chatting);
+      formRef.current['chat'].value = '';
+    }
+  };
+
+  useEffect(() => {
+    if (!roomRef.current) return;
+    roomRef.current.scrollTo(0, roomRef.current.scrollHeight);
+  }, [lobbyChat]);
 
   return (
-    <Room state={state}>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        안호빈 : 나도
-      </Chat>
-      <Chat size="12" color="black">
-        김효성 : 잘래
-      </Chat>
-      <Chat size="12" color="black">
-        박현호 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        박청조 : 재밌다
-      </Chat>
-      <Chat size="12" color="black">
-        손흥민 : 배고파
-      </Chat>
-      <Chat size="12" color="black">
-        끝말잇기빌런 : 밥줘
-      </Chat>
-      <Chat size="12" color="black">
-        임송재 : 졸려
-      </Chat>
-      <ChattingBox>
-        <Chatting
-          type="text"
-          placeholder="채팅을 입력하세요"
-          onChange={(e) => {
-            setChat(e.target.value);
-            console.log(chat);
-          }}
-          value={chat}
-        />
-        <ChattingBtn>Enter</ChattingBtn>
+    <Room state={state} ref={roomRef}>
+      {lobbyChat
+        .filter((e) => e.message)
+        .map((e: IChat, index: number) => (
+          <Chat key={index} {...e} />
+        ))}
+      <ChattingBox ref={formRef} onSubmit={submitChat}>
+        <Chatting type="text" name="chat" placeholder="채팅을 입력하세요" />
+        <ChattingBtn type="submit">Enter</ChattingBtn>
       </ChattingBox>
     </Room>
   );
@@ -71,18 +71,12 @@ const ChattingBtn = styled.button`
     color: black;
   }
 `;
-const ChattingBox = styled.div`
+const ChattingBox = styled.form`
   width: 97%;
   height: 28px;
   border-radius: 15px;
   background-color: rgba(127, 127, 127, 1);
   margin: 8px auto;
-`;
-const Chat = styled(Typography)`
-  width: 97%;
-  padding: 8px 6px;
-  border-bottom: 0.8px solid black;
-  margin: 0 auto;
 `;
 
 const Chatting = styled.input`
