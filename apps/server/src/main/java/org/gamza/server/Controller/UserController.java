@@ -26,7 +26,7 @@ public class UserController {
   }
 
   @GetMapping("/data")
-  public UserRecordDto getUserRecordByNickname(@RequestBody UserRequestDto nickname) {
+  public UserRecordDto getUserRecordByNickname(@RequestParam(name = "nickname") String nickname) {
     return userService.getUserRecordByNickname(nickname);
   }
 

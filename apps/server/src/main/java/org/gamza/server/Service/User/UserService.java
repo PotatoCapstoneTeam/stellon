@@ -63,8 +63,8 @@ public class UserService {
   }
 
   @Transactional
-  public UserRecordDto getUserRecordByNickname(UserRequestDto userRequestDto) {
-    User findUser = userRepository.findByNickname(userRequestDto.getNickname());
+  public UserRecordDto getUserRecordByNickname(String nickname) {
+    User findUser = userRepository.findByNickname(nickname);
     return getRecordByUser(findUser);
   }
 
