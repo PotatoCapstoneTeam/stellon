@@ -19,7 +19,7 @@ const UserList = ({ userList }: UserList) => {
       </Header>
       <List>
         {userList.map((e, index) => (
-          <Users key={index} list={e.nickname} />
+          <Users key={index} nickname={e.nickname} />
         ))}
       </List>
     </ListBox>

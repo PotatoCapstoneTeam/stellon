@@ -13,6 +13,8 @@ const nothing = {
 };
 
 export const useLobbyData = () => {
+  const [order, setOrder] = useState(false);
+  const [sort, setSort] = useState('id');
   const [list, setList] = useState<IRoom[]>([]);
   const [userList, setUserList] = useState<IUser[]>([]);
   const [myInfo, setMyInfo] = useState<IInfo>(nothing);
@@ -31,10 +33,15 @@ export const useLobbyData = () => {
   });
 
   // 게임룸 리스트
-  useQuery('gameRoomList', () => axiosPrivate.get('/room'), {
-    onSuccess: (res) => setList(res.data),
-    refetchInterval: 1000,
-  });
+  useQuery(
+    'gameRoomList',
+    () =>
+      axiosPrivate.get(`/room?sort=${sort}&order=${!order ? 'desc' : 'asc'}`), // password는 order파라미터 없어야함
+    {
+      onSuccess: (res) => setList(res.data),
+      refetchInterval: 1000,
+    }
+  );
 
   // 접속자 리스트
   useQuery('lobbyUserList', () => axiosPrivate.get('/room/lobby/users'), {
@@ -68,5 +75,15 @@ export const useLobbyData = () => {
     })();
   }, []);
 
-  return { list, userList, myInfo, loginCheck, enterUserList };
+  return {
+    sort,
+    order,
+    setOrder,
+    setSort,
+    list,
+    userList,
+    myInfo,
+    loginCheck,
+    enterUserList,
+  };
 };
