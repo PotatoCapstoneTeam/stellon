@@ -4,19 +4,24 @@ import { Typography } from '../../../components/Typography';
 import WatchUserInfoModal from '../modal/WatchUserInfoModal';
 
 interface IUser {
-  list: string;
+  nickname: string;
 }
 
-const Users = ({ list }: IUser) => {
+const Users = ({ nickname }: IUser) => {
   const { isOpen, handleModal, handleCloseModal } = useModal();
 
   return (
     <User>
       <UserName color="black" size="12" fontWeight="900">
-        {list}
+        {nickname}
       </UserName>
       <UserInfoBtn onClick={() => handleModal()}>정보</UserInfoBtn>
-      {isOpen && <WatchUserInfoModal handleCloseModal={handleCloseModal} />}
+      {isOpen && (
+        <WatchUserInfoModal
+          nickname={nickname}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </User>
   );
 };

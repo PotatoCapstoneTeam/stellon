@@ -1,12 +1,36 @@
 import { Typography } from '../../../components/Typography';
 import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
+import { useQuery } from 'react-query';
+import { axiosPrivate } from '../../../util/axios';
+import { useState } from 'react';
 
 interface ICreateRoomModal {
   handleCloseModal: () => void;
+  nickname: string;
 }
-const WatchUserInfoModal = ({ handleCloseModal }: ICreateRoomModal) => {
+interface IInfoData {
+  death: number;
+  kill: number;
+  nickname: string;
+}
+const WatchUserInfoModal = ({
+  handleCloseModal,
+  nickname,
+}: ICreateRoomModal) => {
   // 여기에서 유저정보 API 받고 적용하기 !
+
+  const [infoData, setInfoData] = useState<IInfoData>();
+
+  useQuery(
+    'infoModalData',
+    () => axiosPrivate.get(`/user/data?nickname=${nickname}`),
+    {
+      onSuccess: (res) => setInfoData(res.data),
+      onError: (err) => console.log(err),
+    }
+  );
+
   return (
     <ModalBackground>
       <ModalBox>
@@ -32,7 +56,7 @@ const WatchUserInfoModal = ({ handleCloseModal }: ICreateRoomModal) => {
           </ImgBox>
           <NickName>
             <Typography color="black" size="16" fontWeight="500">
-              손흥민
+              {infoData?.nickname}
             </Typography>
           </NickName>
           <Record>
