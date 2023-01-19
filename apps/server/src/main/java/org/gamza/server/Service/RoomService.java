@@ -169,12 +169,13 @@ public class RoomService {
 
   @Transactional
   public void validateRoomPass(RoomValidDto roomValidDto) {
-    GameRoom room = roomRepository.findById(roomValidDto.getRoomId())
-      .orElseThrow();
-    if(!room.getPassword().isBlank()) {
-      if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
-        throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
-      }
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId()).orElseThrow();
+
+    if(room.getPassword() == null) {
+      return;
+    }
+    if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
+      throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
     }
     if(room.getRoomSize() == room.getPlayers().size()) {
       throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
