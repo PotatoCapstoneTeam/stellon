@@ -89,8 +89,6 @@ public class MessageService {
         headerAccessor.getSessionAttributes().put("userInfo", userInfo);
         headerAccessor.getSessionAttributes().put("roomId", room.getId());
         message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
-
-        roomRepository.save(room);
         break;
       }
       if (!room.getPlayers().containsKey(i)) {
@@ -101,11 +99,10 @@ public class MessageService {
         headerAccessor.getSessionAttributes().put("userInfo", userInfo);
         headerAccessor.getSessionAttributes().put("roomId", room.getId());
         message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
-
-        roomRepository.save(room);
         break;
       }
     }
+    message.setGameRoom(roomService.roomMessageDto(room));
     userMap.put(user.getId(), principal.getName());
     return message;
   }
@@ -113,6 +110,8 @@ public class MessageService {
   @Transactional
   public Message checkStart(MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     Message message = getMessage(messageDto);
+    message.setMessage("");
+
 //    UserInfo userInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
     List<AddUserDto> players = roomService.getRoomUsers(message.getGameRoom().getId());
 
@@ -120,7 +119,6 @@ public class MessageService {
 //      message.setMessage("방장만 시작할 수 있습니다.");
 //      return message;
 //    }
-
     // 레드팀 블루팀 인원이 같아야 됨
     if (players.size() % 2 == 1) {
       message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
