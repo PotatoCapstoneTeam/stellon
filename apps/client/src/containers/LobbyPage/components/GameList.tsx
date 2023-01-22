@@ -18,6 +18,7 @@ export interface IRoom {
   roomName: string;
   roomSize: number;
   roomStatus: string;
+  secret: string;
 }
 
 const GameList = ({ list, sort, setSort, setOrder }: IGameList) => {

@@ -25,6 +25,7 @@ axios.interceptors.response.use(
     return response;
   },
   async (err) => {
+    // 무한 루프 방지 코드
     if (err.response.data.status === 500) {
       return console.log('500 Error 이미 등록된 유저입니다.');
     } else if (err.response.data.error === '존재하지 않는 유저입니다.') {
@@ -33,10 +34,11 @@ axios.interceptors.response.use(
       return window.location.replace('/');
     } else if (err.response.data.status === 409) {
       return () => {
-        console.log(err);
         console.log('다시 접속자 목록에 등록합니다.');
         axios(err.config);
       };
+    } else if (err.response.data.error === '비밀번호가 일치하지 않습니다.') {
+      return alert('비밀번호가 일치하지 않습니다.');
     } else {
       console.log(err);
 
