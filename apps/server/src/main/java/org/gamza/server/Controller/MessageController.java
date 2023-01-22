@@ -37,7 +37,7 @@ public class MessageController {
       case START:
         message = messageService.checkStart(messageDto, headerAccessor);
 
-        if(!message.getMessage().isEmpty()) break;
+        if(message.getMessage() != "") break;
 
         ResponseEntity<StageRequestDto> response = messageService.startService(messageDto);
 
