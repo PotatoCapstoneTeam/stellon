@@ -22,8 +22,9 @@ public class RoomController {
   private final RoomService roomService;
 
   @GetMapping("")
-  public List<RoomResponseDto> rooms() {
-    return roomService.findGameRooms();
+  public List<RoomResponseDto> findGameRooms(@RequestParam(name = "sort", defaultValue = "id") String sort,
+                                            @RequestParam(name = "order", defaultValue = "desc") String order) {
+    return roomService.findGameRooms(sort, order);
   }
 
   @PostMapping("")

@@ -22,7 +22,6 @@ public class GameService {
 
   @Transactional
   public void gameResultSave(GameRequestDto gameRequestDto) {
-
     for (ResultRequestDto requestDto : gameRequestDto.getUsers()) {
       User user = userRepository.findById(requestDto.getUserId()).orElseThrow();
       RecordResult recordResult = RecordResult.builder()

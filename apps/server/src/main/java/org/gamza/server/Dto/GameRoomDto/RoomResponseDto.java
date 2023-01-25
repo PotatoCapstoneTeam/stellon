@@ -14,11 +14,13 @@ public class RoomResponseDto {
   private int players;
   private RoomStatus roomStatus;
   private int roomSize;
+  private boolean isSecret;
   private String map;
 
   public RoomResponseDto(GameRoom gameRoom) {
     this.id = gameRoom.getId();
     this.roomName = gameRoom.getRoomName();
+    this.isSecret = gameRoom.isPasswordRoom();
     this.players = gameRoom.getPlayers().size();
     this.roomStatus = gameRoom.getRoomStatus();
     this.roomSize = gameRoom.getRoomSize();
