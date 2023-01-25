@@ -18,13 +18,14 @@ export interface IRoom {
   roomName: string;
   roomSize: number;
   roomStatus: string;
+  secret: string;
 }
 
 const GameList = ({ list, sort, setSort, setOrder }: IGameList) => {
   return (
     <GameListBox>
       <GameListHeader>
-        <Entire />
+        <Entire count={list.length} />
         <Search sort={sort} setSort={setSort} setOrder={setOrder} />
       </GameListHeader>
       <List>
@@ -72,7 +73,7 @@ const GameListBox = styled.div`
   width: 80%;
   border-radius: 0 10px 0 0;
   height: 60%;
-  z-index: 99;
+  z-index: 2;
 `;
 
 const GameListHeader = styled.div`

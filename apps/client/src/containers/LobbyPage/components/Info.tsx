@@ -48,7 +48,7 @@ const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
 export default Info;
 
 const InfoBox = styled.div`
-  z-index: 99;
+  z-index: 2;
   border-radius: 10px 0 0 0;
   width: 20%;
   height: 60%;
