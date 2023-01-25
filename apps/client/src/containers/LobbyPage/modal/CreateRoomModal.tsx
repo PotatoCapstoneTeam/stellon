@@ -186,6 +186,9 @@ const CloseModal = styled.div`
   &:hover {
     cursor: pointer;
   }
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 const ModalTheme = styled.div`
   border-radius: 20px 20px 0 0;

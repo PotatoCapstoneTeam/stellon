@@ -39,6 +39,8 @@ axios.interceptors.response.use(
       };
     } else if (err.response.data.error === '비밀번호가 일치하지 않습니다.') {
       return alert('비밀번호가 일치하지 않습니다.');
+    } else if (err.response.data.error === '가득 찬 방입니다.') {
+      return alert('가득 찬 방입니다.');
     } else {
       console.log(err);
 

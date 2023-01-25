@@ -26,6 +26,7 @@ const PassWordModal = ({ handleCloseModal, id }: ICreateRoomModal) => {
           navigate(`/game_room/${id}`);
         }
       },
+      onError: (err) => console.log(err),
     }
   );
   const confirmPassword = (e: React.FormEvent) => {
@@ -121,6 +122,9 @@ const CloseModal = styled.div`
   height: 32px;
   &:hover {
     cursor: pointer;
+  }
+  &:active {
+    transform: scale(0.98);
   }
 `;
 const ModalTheme = styled.div`

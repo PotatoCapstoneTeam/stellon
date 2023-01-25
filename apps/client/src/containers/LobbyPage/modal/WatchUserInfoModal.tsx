@@ -132,6 +132,9 @@ const CloseModal = styled.div`
   &:hover {
     cursor: pointer;
   }
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 const ModalTheme = styled.div`
   display: flex;
@@ -170,7 +173,7 @@ const ModalBox = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 100;
+  z-index: 99;
   width: 600px;
 `;
 const ModalBackground = styled.div`
@@ -180,5 +183,5 @@ const ModalBackground = styled.div`
   bottom: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.8);
-  z-index: 9999;
+  z-index: 99;
 `;
