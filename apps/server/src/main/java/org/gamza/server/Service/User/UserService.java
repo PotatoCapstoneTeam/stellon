@@ -128,11 +128,15 @@ public class UserService {
 
     int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
     int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
+    int win = recordResult.stream().map(r -> r.getWin()).mapToInt(Integer::intValue).sum();
+    int lose = recordResult.stream().map(r -> r.getLose()).mapToInt(Integer::intValue).sum();
 
     return UserRecordDto.builder()
       .nickname(findUser.getNickname())
       .kill(kill)
       .death(death)
+      .win(win)
+      .lose(lose)
       .build();
   }
 }

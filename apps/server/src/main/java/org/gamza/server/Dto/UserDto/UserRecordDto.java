@@ -13,4 +13,6 @@ public class UserRecordDto {
   private String nickname;
   private int kill;
   private int death;
+  private int win;
+  private int lose;
 }

@@ -26,6 +26,12 @@ public class RecordResult extends BaseTimeEntity {
   @Column(name = "death_point")
   private int death;
 
+  @Column(name = "win_point")
+  private int win;
+
+  @Column(name = "lose_point")
+  private int lose;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "users")
   private User user;
