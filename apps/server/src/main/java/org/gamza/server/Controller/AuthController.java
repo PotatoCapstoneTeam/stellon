@@ -5,6 +5,7 @@ import org.gamza.server.Dto.TokenDto.TokenApiResponse;
 import org.gamza.server.Dto.UserDto.UserJoinDto;
 import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Service.AuthService;
+import org.gamza.server.Service.GameService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +18,12 @@ import javax.validation.Valid;
 public class AuthController {
 
   private final AuthService authService;
+  private final GameService gameService;
 
   @PostMapping("/join")
   public ResponseEntity<String> join(@Valid @RequestBody UserJoinDto userJoinDto) {
     authService.join(userJoinDto);
+    gameService.initRecord(userJoinDto.getNickname());
     return ResponseEntity.ok("가입 완료");
   }
 
