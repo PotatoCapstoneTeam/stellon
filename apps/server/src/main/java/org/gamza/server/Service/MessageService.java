@@ -168,7 +168,7 @@ public class MessageService {
 
       usersJsonArray.add(userJsonObject);
     }
-
+    jsonObject.put("roomId", messageDto.getRoomId());
     jsonObject.put("users", usersJsonArray);
     HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), httpHeaders);
 
