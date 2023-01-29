@@ -6,8 +6,6 @@ import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.PlaneType;
-import org.gamza.server.Enum.ReadyStatus;
-import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
 import org.gamza.server.Repository.ResultRepository;
@@ -19,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.gamza.server.Enum.TeamStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -79,20 +79,19 @@ public class UserService {
   @Transactional
   public void updateReadyStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateReadyStatus(user.getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+    user.updateReadyStatus();
   }
 
   @Transactional
   public void updateTeamStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateTeamStatus(user.getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+    user.updateTeamStatus(user.getTeamStatus() == RED_TEAM ? BLUE_TEAM : RED_TEAM);
   }
 
   @Transactional
   public void initStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateTeamStatus(TeamStatus.NONE);
-    user.updateReadyStatus(ReadyStatus.NONE);
+    user.initStatus();
   }
 
   @Transactional
