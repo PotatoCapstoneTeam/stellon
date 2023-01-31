@@ -117,7 +117,7 @@ const Scrollbar = css`
 const ChatRoomCss = css`
   width: 836px;
   height: 168px;
-  z-index: 99;
+  z-index: 2;
 `;
 const lobbyCss = css`
   width: 900px;
