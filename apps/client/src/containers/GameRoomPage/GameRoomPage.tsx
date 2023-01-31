@@ -15,7 +15,7 @@ import { axiosPrivate } from '../../util/axios';
 const GameRoomPage = () => {
   const { id } = useParams();
   const [myInfo, setMyInfo] = useState<IInfo>();
-  const { ready, start, webSocketData, readyToggle } = useRoomWebSocket(
+  const { ready, start, webSocketData, readyToggle, change } = useRoomWebSocket(
     id as string,
     myInfo
   );
@@ -64,7 +64,12 @@ const GameRoomPage = () => {
           <Client list={playerList} />
           <Map />
           <ChatRoom state="chatRoom" roomId={id} nickname={myInfo?.nickname} />
-          <State ready={ready} start={start} readyToggle={readyToggle} />
+          <State
+            ready={ready}
+            start={start}
+            change={change}
+            readyToggle={readyToggle}
+          />
         </Article>
       </Container>
       {gameServerToken && (

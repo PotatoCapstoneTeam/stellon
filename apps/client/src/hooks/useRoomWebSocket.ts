@@ -119,6 +119,17 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
+  const change = () => {
+    console.log('팀을 변경합니다.');
+    if (roomId && myInfo) {
+      send({
+        type: 'CHANGE',
+        roomId: Number(roomId),
+        nickname: myInfo.nickname,
+      });
+    }
+  };
+
   const start = () => {
     console.log('시작합니다');
     if (roomId && myInfo) {
@@ -130,7 +141,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
-  return { send, ready, start, webSocketData, readyToggle };
+  return { send, ready, start, webSocketData, readyToggle, change };
 };
 
 export default useRoomWebSocket;
