@@ -10,10 +10,7 @@ import org.gamza.server.Entity.GameRoom;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Entity.UserInfo;
-import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.RoomType;
-import org.gamza.server.Enum.TeamStatus;
-import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Repository.RoomRepository;
@@ -34,6 +31,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.gamza.server.Entity.Message.MessageType.*;
+import static org.gamza.server.Enum.TeamStatus.*;
 
 @Slf4j
 @Service
@@ -67,10 +67,7 @@ public class MessageService {
     GameRoom room = roomService.findRoom(messageDto.getRoomId());
     User user = userService.findByNickname(messageDto.getNickname());
 
-    UserInfo userInfo = UserInfo.builder()
-      .user(user)
-      .userStatus(UserStatus.ROLE_USER)
-      .build();
+    UserInfo userInfo = UserInfo.builder().build();
 
     List<AddUserDto> players = roomService.getRoomUsers(message.getGameRoom().getId());
 
@@ -80,22 +77,22 @@ public class MessageService {
 
     // 최대 8명 까지 할당 번호 검사하여 없으면 할당
     for (int i = 0; i < message.getGameRoom().getRoomSize(); i++) {
-      if (players.isEmpty()) { // 방이 처음 만들어졌을 시 방장 유저 설정
-        userInfo.setUserStatus(UserStatus.ROLE_MANAGER);
-        userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
-        userInfo.getUser().updateTeamStatus(TeamStatus.RED_TEAM);
+      if (players.isEmpty()) {
+        user.updateUserStatus();
+        user.updateTeamStatus(RED_TEAM);
         room.getPlayers().put(i, user);
         userInfo.setPlayerNumber(0);
+        userInfo.setUser(user);
         headerAccessor.getSessionAttributes().put("userInfo", userInfo);
         headerAccessor.getSessionAttributes().put("roomId", room.getId());
-        message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
+        message.setMessage(user.getNickname() + "님이 입장하셨습니다.");
         break;
       }
       if (!room.getPlayers().containsKey(i)) {
-        userInfo.getUser().updateTeamStatus(i % 2 == 0 ? TeamStatus.RED_TEAM : TeamStatus.BLUE_TEAM);
-        userInfo.getUser().updateReadyStatus(ReadyStatus.NOT_READY);
+        userInfo.getUser().updateTeamStatus(i % 2 == 0 ? RED_TEAM : BLUE_TEAM);
         room.getPlayers().put(i, user);
         userInfo.setPlayerNumber(i);
+        userInfo.setUser(user);
         headerAccessor.getSessionAttributes().put("userInfo", userInfo);
         headerAccessor.getSessionAttributes().put("roomId", room.getId());
         message.setMessage(userInfo.getUser().getNickname() + "님이 입장하셨습니다.");
@@ -111,26 +108,38 @@ public class MessageService {
   public Message checkStart(MessageRequestDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
     Message message = getMessage(messageDto);
     message.setMessage("");
-
-//    UserInfo userInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
+    int redTeam = 0;
+    int blueTeam = 0;
+    UserInfo userInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
     List<AddUserDto> players = roomService.getRoomUsers(message.getGameRoom().getId());
 
-//    if(userInfo.getUserStatus() != UserStatus.ROLE_MANAGER) {
-//      message.setMessage("방장만 시작할 수 있습니다.");
-//      return message;
-//    }
-    // 레드팀 블루팀 인원이 같아야 됨
+    if(!userInfo.getUser().isManager()) {
+      message.setMessage("방장만 시작할 수 있습니다.");
+      return message;
+    }
+
     if (players.size() % 2 == 1) {
       message.setMessage("인원 수가 맞지 않아 시작할 수 없습니다.");
       return message;
     }
 
     for (AddUserDto player : players) {
-      if (player.getReadyStatus() == ReadyStatus.NOT_READY) {
+      if (!player.isReady()) {
         message.setMessage("모두가 READY 상태여야 시작할 수 있습니다.");
         break;
       }
+      if(player.getTeamStatus() == RED_TEAM) {
+        redTeam += 1;
+      }
+      if(player.getTeamStatus() == BLUE_TEAM) {
+        blueTeam += 1;
+      }
     }
+
+    if(redTeam != blueTeam && message.getMessage() == "") {
+      message.setMessage("양 팀의 인원이 같아야 시작할 수 있습니다.");
+    }
+
     return message;
   }
 
@@ -206,59 +215,55 @@ public class MessageService {
   public Message disconnect(UserInfo userInfo, Long roomId) {
     // 유저 찾기
     User user = userService.findByNickname(userInfo.getUser().getNickname());
-    // 방 찾기
-    GameRoom room = roomService.findRoom(roomId);
-    // 방 Dto 로 변경
-    GameMessageDto roomDto = roomService.roomMessageDto(room);
-
-    // 메시지 생성
-    Message message = Message.builder()
-      .type(Message.MessageType.EXIT)
-      .userInfo(UserInfo.builder().system("system").build())
-      .gameRoom(roomDto)
-      .build();
-
-    // 유저 정보 수정
-    userService.initStatus(user.getNickname());
 
     // 방에서 해당 유저 삭제
     roomService.removeUserToRoom(roomId, userInfo);
-
     userMap.remove(user.getId());
-    message.setMessage(userInfo.getUser().getNickname() + "님이 퇴장하셨습니다.");
-    message.setGameRoom(roomService.roomMessageDto(roomService.findRoom(roomId)));
+
+    // 나간 유저가 방장이면 방장 새로 선출
+    if(user.isManager()) {
+      selectNewHost(roomId);
+    }
+
+    // 나간 유저 정보 수정
+    userService.initStatus(user.getNickname());
+
+    // 방 찾기
+    GameRoom room = roomService.findRoom(roomId);
+
+    // 방 Dto 로 변경
+    GameMessageDto roomDto = roomService.roomMessageDto(room);
+
+    Message message = Message.builder()
+      .type(EXIT)
+      .userInfo(UserInfo.builder()
+        .system("system")
+        .build())
+      .gameRoom(roomDto)
+      .build();
+
+    message.setMessage(user.getNickname() + "님이 퇴장하셨습니다.");
 
     // 방이 빈 방이면 방 삭제 후 리턴
     if (roomService.getRoomUsers(roomId).isEmpty()) {
       roomService.removeRoom(roomId);
       message.setMessage("empty");
     }
+
     return message;
   }
 
-//  @Transactional
-//  public Message selectNewHost(Long roomId) {
-//    GameRoom room = roomService.findRoom(roomId);
-//    Message message = Message.builder().build();
-//    for (int i = 0; i <= room.getRoomSize(); i++) {
-//      if (room.getPlayers().containsKey(i)) {
-//        log.info("방장 선발");
-//        User findUser = room.getPlayers().get(i);
-//        UserInfo hostInfo = UserInfo.builder()
-//          .user(findUser)
-//          .userStatus(UserStatus.ROLE_MANAGER)
-//          .build();
-//        Message newHostMsg = Message.builder()
-//          .type(Message.MessageType.ROOM)
-//          .gameRoom(roomService.roomMessageDto(room))
-//          .userInfo(hostInfo)
-//          .message(hostInfo.getUser().getNickname() + "님이 방장이 되셨습니다.").build();
-//        message = newHostMsg;
-//        break;
-//      }
-//    }
-//    return message;
-//  }
+  @Transactional
+  public void selectNewHost(Long roomId) {
+    GameRoom room = roomService.findRoom(roomId);
+    for (int i = 0; i <= room.getRoomSize(); i++) {
+      if (room.getPlayers().containsKey(i)) {
+        User findUser = room.getPlayers().get(i);
+        findUser.updateUserStatus();
+        break;
+      }
+    }
+  }
 
   private Message getMessage(MessageRequestDto messageDto) {
     GameRoom room = roomService.findRoom(messageDto.getRoomId());

@@ -3,7 +3,6 @@ package org.gamza.server.Controller;
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Dto.UserDto.UserRecordDto;
-import org.gamza.server.Dto.UserDto.UserRequestDto;
 import org.gamza.server.Dto.UserDto.UserResponseDto;
 import org.gamza.server.Enum.PlaneType;
 import org.gamza.server.Service.User.UserService;
