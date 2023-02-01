@@ -16,10 +16,15 @@ export class ServerPlayer extends Player {
   ) {
     super(id, scene, x, y, nickname, team, 'LIVE');
 
-    this.onDeath = (entity) => {
+    this.onDeath = (entity, killer) => {
       const player = entity as ServerPlayer;
 
       player.status = 'DEATH';
+      client.death++;
+
+      if (killer instanceof ServerPlayer) {
+        killer.client.kill++;
+      }
 
       setTimeout(() => {
         player.status = 'LIVE';
@@ -43,6 +48,10 @@ export class ServerPlayer extends Player {
 
     this.setVelocity(0, 0);
     this.setAngularVelocity(0);
+
+    if (this.status === 'DEATH') {
+      return;
+    }
 
     this.setAngularVelocity(
       this.client.horizontalAxis * this.angularSpeed * delta

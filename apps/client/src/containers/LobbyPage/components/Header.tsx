@@ -1,20 +1,17 @@
-import React from 'react';
 import styled from 'styled-components';
 import Tool from './Tool';
 import MakeRoom from './MakeRoom';
 import GameStart from './GameStart';
+import { IRoom } from './GameList';
 
-interface IHeader {
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
+const Header = ({ list }: { list: IRoom[] }) => {
 
-const Header = ({ setModalOpen }: IHeader) => {
   return (
     <Container>
       <Tool />
       <Menu>
-        <MakeRoom setModalOpen={setModalOpen} />
-        <GameStart />
+        <MakeRoom />
+        <GameStart list={list} />
       </Menu>
     </Container>
   );

@@ -1,23 +1,21 @@
-import React from 'react';
+import { useModal } from '../../../hooks/useModal';
 import styled, { css } from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { SearchImg } from './GameStart';
+import CreateRoomModal from '../modal/CreateRoomModal';
 
-interface IMakeRoom {
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-const MakeRoom = ({ setModalOpen }: IMakeRoom) => {
+const MakeRoom = () => {
+  const { isOpen, handleModal, handleCloseModal } = useModal();
   return (
-    <MakeRoomBtn
-      onClick={() => {
-        setModalOpen(true);
-      }}
-    >
-      <SearchImg src="../assets/home.png" alt="none" />
-      <Typography color="white" size="16">
-        방 만들기
-      </Typography>
-    </MakeRoomBtn>
+    <>
+      <MakeRoomBtn onClick={() => handleModal()}>
+        <SearchImg src="../assets/home.png" alt="none" />
+        <Typography color="white" size="16">
+          방 만들기
+        </Typography>
+      </MakeRoomBtn>
+      {isOpen && <CreateRoomModal handleCloseModal={handleCloseModal} />}
+    </>
   );
 };
 

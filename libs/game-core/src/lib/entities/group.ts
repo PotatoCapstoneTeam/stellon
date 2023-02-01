@@ -1,6 +1,6 @@
 import { Entity } from './entity';
-import { Scene } from '@stellon/game-core';
 import { Physics } from 'phaser';
+import { Scene } from '../scenes';
 
 export class Group<T extends Entity> extends Physics.Arcade.Group {
   private map = new Map<string, T>();

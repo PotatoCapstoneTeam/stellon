@@ -1,7 +1,7 @@
 import ChatRoom from '../../../components/ChatRoom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
-import { IInfo } from '../LobbyPage';
+import { IInfo } from './Info';
 
 const Chat = (data: IInfo) => {
   return (
@@ -25,7 +25,7 @@ const ChatBox = styled.div`
   width: 78%;
   border-radius: 0 0 0 10px;
   height: 40%;
-  z-index: 99;
+  z-index: 2;
 `;
 const LiveChat = styled(Typography)`
   margin-right: 40px;

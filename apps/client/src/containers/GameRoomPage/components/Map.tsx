@@ -23,7 +23,7 @@ const MapName = styled(Typography)`
   margin-top: 12px;
 `;
 const Box = styled.div`
-  z-index: 99;
+  z-index: 2;
   width: 312px;
   margin-top: 20px;
   display: flex;

@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { customColor } from '../../../constants/customColor';
-import { IInfo } from '../LobbyPage';
+
+export interface IInfo {
+  nickname: string;
+  winRecord: number;
+  loseRecord: number;
+}
 
 const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
   const win = winRecord || 0;
@@ -43,7 +48,7 @@ const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
 export default Info;
 
 const InfoBox = styled.div`
-  z-index: 99;
+  z-index: 2;
   border-radius: 10px 0 0 0;
   width: 20%;
   height: 60%;

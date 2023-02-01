@@ -14,7 +14,6 @@ import { ServerPlayer } from '../entities/server-player';
 import { ClientManager } from '../managers/client-manager';
 import { ServerRoom, ServerChannel } from '../server-socket';
 import { ServerNexus } from '../entities/server-nexus';
-import { Stage } from '../stage';
 
 export class ServerScene extends Scene {
   clientManager = new ClientManager();
@@ -39,7 +38,23 @@ export class ServerScene extends Scene {
     const nexus = entity as ServerNexus;
 
     this.isEnd = true;
-    this.onEnd(nexus.team === 'RED_TEAM' ? 'BLUE_TEAM' : 'RED_TEAM', []);
+
+    const userRecords: UserRecord[] = [];
+
+    this.playerGroup.forEach((player) => {
+      const client = (player as ServerPlayer).client;
+
+      userRecords.push({
+        userId: client.id,
+        kill: client.kill,
+        death: client.death,
+      });
+    });
+
+    this.onEnd(
+      nexus.team === 'RED_TEAM' ? 'BLUE_TEAM' : 'RED_TEAM',
+      userRecords
+    );
   }
 
   override async create() {
@@ -91,7 +106,7 @@ export class ServerScene extends Scene {
           return;
         }
 
-        p.hit(b.damage);
+        p.hit(b.damage, b.source);
 
         bullet.destroy();
       }
@@ -108,7 +123,7 @@ export class ServerScene extends Scene {
           return;
         }
 
-        n.hit(b.damage);
+        n.hit(b.damage, b.source);
 
         bullet.destroy();
       }

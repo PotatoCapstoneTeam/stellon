@@ -19,7 +19,7 @@ const UserList = ({ userList }: UserList) => {
       </Header>
       <List>
         {userList.map((e, index) => (
-          <Users key={index} list={e.nickname} />
+          <Users key={index} nickname={e.nickname} />
         ))}
       </List>
     </ListBox>
@@ -49,7 +49,7 @@ const ListBox = styled.div`
   height: 40%;
   display: flex;
   flex-direction: column;
-  z-index: 99;
+  z-index: 2;
 `;
 const Img = styled.img`
   width: 12px;

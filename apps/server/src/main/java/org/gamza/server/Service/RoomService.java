@@ -3,6 +3,7 @@ package org.gamza.server.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
+import org.gamza.server.Dto.GameDto.GameMessageDto;
 import org.gamza.server.Dto.GameRoomDto.RoomCreateDto;
 import org.gamza.server.Dto.GameRoomDto.RoomResponseDto;
 import org.gamza.server.Dto.GameRoomDto.RoomValidDto;
@@ -43,11 +44,26 @@ public class RoomService {
 
   // 게임 대기방 목록 전체 조회
   @Transactional
-  public List<RoomResponseDto> findGameRooms() {
+  public List<RoomResponseDto> findGameRooms(String sort, String order) {
     List<GameRoom> list = new ArrayList<>(roomRepository.findGameRoomsByRoomType(RoomType.WAITING_ROOM));
     List<RoomResponseDto> roomList;
-    roomList = list.stream().map(RoomResponseDto::new).collect(Collectors.toList());
-    Collections.reverse(roomList);
+    Comparator<GameRoom> roomComparator;
+    if(sort.equals("id") && order.equals("asc")) {
+      roomComparator = Comparator.comparing(GameRoom::getId, Comparator.naturalOrder());
+    } else if(sort.equals("name") && order.equals("asc")) {
+      roomComparator = Comparator.comparing(GameRoom::getRoomName, Comparator.naturalOrder());
+    } else if(sort.equals("name") && order.equals("desc")) {
+      roomComparator = Comparator.comparing(GameRoom::getRoomName, Comparator.reverseOrder());
+    } else if(sort.equals("size") && order.equals("asc")) {
+      roomComparator = Comparator.comparing(GameRoom::getRoomSize, Comparator.naturalOrder());
+    } else if(sort.equals("size") && order.equals("desc")) {
+      roomComparator = Comparator.comparing(GameRoom::getRoomSize, Comparator.reverseOrder());
+    } else if(sort.equals("password")) {
+      roomComparator = Comparator.comparing(GameRoom::isPasswordRoom, Comparator.reverseOrder());
+    } else {
+      roomComparator = Comparator.comparing(GameRoom::getId, Comparator.reverseOrder());
+    }
+    roomList = list.stream().sorted(roomComparator).map(RoomResponseDto::new).collect(Collectors.toList());
     return roomList;
   }
 
@@ -153,16 +169,37 @@ public class RoomService {
 
   @Transactional
   public void validateRoomPass(RoomValidDto roomValidDto) {
-    GameRoom room = roomRepository.findById(roomValidDto.getRoomId())
-      .orElseThrow();
-    if(!room.getPassword().isBlank()) {
-      if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
-        throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
-      }
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId()).orElseThrow();
+
+    if(room.getPassword() == null) {
+      return;
+    }
+    if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
+      throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
     }
     if(room.getRoomSize() == room.getPlayers().size()) {
       throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
     }
+  }
+
+  @Transactional
+  public void updateRoomStatus(Long id) {
+    GameRoom room = roomRepository.findById(id).orElse(null);
+    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RoomStatus.RUNNING : RoomStatus.OPEN);
+  }
+
+  @Transactional
+  public GameMessageDto roomMessageDto(GameRoom room) {
+    Map<Integer, AddUserDto> playersDto = userService.playersToDto(room.getPlayers());
+    GameMessageDto roomDto = GameMessageDto.builder()
+      .id(room.getId())
+      .roomName(room.getRoomName())
+      .roomSize(room.getRoomSize())
+      .roomStatus(room.getRoomStatus())
+      .roomType(room.getRoomType())
+      .players(playersDto)
+      .build();
+    return roomDto;
   }
 
   public static <K, V> K getIndex(Map<K, V> map, V value) {

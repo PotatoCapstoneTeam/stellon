@@ -1,18 +1,33 @@
-import { IPlayer } from '../../../hooks/useRoomWebSocket';
+import { useModal } from '../../../hooks/useModal';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
+import WatchUserInfoModal from '../../LobbyPage/modal/WatchUserInfoModal';
 
 interface IUserCard {
   state: any;
-  nickname: any;
-  // 레디상태, 닉네임, 비행기 색깔와 기종, 유저의 정보 필요
+  nickname: string;
+  team: string;
+  // 레디상태, 닉네임, 비행기 색깔와 기종, 유저의 정보, 방장인지 아닌지 필요
 }
 
-export const UserCard = ({ state, nickname }: IUserCard) => {
+export const UserCard = ({ state, nickname, team }: IUserCard) => {
+  const { isOpen, handleCloseModal, handleModal } = useModal();
+
   return (
     <Container>
       <MySpaceShip>
-        <SpaceShipImg src="../assets/UserCard/redSpaceShip_2.png" alt="none" />
+        {team === 'RED_TEAM' ? (
+          <SpaceShipImg
+            src="../assets/UserCard/redSpaceShip_1.png"
+            alt="none"
+          />
+        ) : (
+          <SpaceShipImg
+            src="../assets/UserCard/blueSpaceShip_1.png"
+            alt="none"
+          />
+        )}
+
         {state === 'READY' && (
           <Ready color="yellow" size="40" fontWeight="900">
             READY
@@ -24,7 +39,16 @@ export const UserCard = ({ state, nickname }: IUserCard) => {
         <NickName color="white" size="16">
           {nickname}
         </NickName>
-        <InfoImg src="../assets/UserCard/info.png" />
+        <InfoImg
+          src="../assets/UserCard/info.png"
+          onClick={() => handleModal()}
+        />
+        {isOpen && (
+          <WatchUserInfoModal
+            nickname={nickname}
+            handleCloseModal={handleCloseModal}
+          />
+        )}
       </Footer>
     </Container>
   );

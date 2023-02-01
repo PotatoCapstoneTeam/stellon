@@ -2,7 +2,7 @@ package org.gamza.server.Entity;
 
 import lombok.Builder;
 import lombok.Data;
-import org.gamza.server.Dto.GameDto.StageRequestDto;
+import org.gamza.server.Dto.GameDto.GameMessageDto;
 
 @Data
 @Builder
@@ -16,6 +16,6 @@ public class Message {
   private MessageType type;   // 메시지 타입
   private UserInfo userInfo;
   private String message;
-  private GameRoom gameRoom;
+  private GameMessageDto gameRoom;
   private String token;
 }

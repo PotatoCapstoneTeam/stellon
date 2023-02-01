@@ -1,15 +1,23 @@
 import { Typography } from '../../../components/Typography';
 import styled, { css } from 'styled-components';
-import useLogin from '../../../hooks/useLogin';
+import { IRoom } from './GameList';
+import { useNavigate } from 'react-router-dom';
 
-const GameStart = () => {
-  const { logOut } = useLogin();
+const GameStart = ({ list }: { list: IRoom[] }) => {
+  const navigate = useNavigate();
+  const newList = list.map((i) => i.id);
+
+  const randomPickRoom = () => {
+    if (newList.length === 0) {
+      alert('방이 없습니다.');
+    } else {
+      const randIndex = Math.floor(Math.random() * newList.length);
+      navigate(`/game_room/${newList[randIndex]}`);
+    }
+  };
+
   return (
-    <GameStartBtn
-      onClick={() => {
-        logOut();
-      }}
-    >
+    <GameStartBtn onClick={randomPickRoom}>
       <SearchImg src="../assets/direction.png" alt="none" />
       <Typography color="white" size="16">
         빠른 시작
