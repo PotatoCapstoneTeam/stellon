@@ -89,7 +89,7 @@ public class MessageService {
         break;
       }
       if (!room.getPlayers().containsKey(i)) {
-        userInfo.getUser().updateTeamStatus(i % 2 == 0 ? RED_TEAM : BLUE_TEAM);
+        user.updateTeamStatus(i % 2 == 0 ? RED_TEAM : BLUE_TEAM);
         room.getPlayers().put(i, user);
         userInfo.setPlayerNumber(i);
         userInfo.setUser(user);
