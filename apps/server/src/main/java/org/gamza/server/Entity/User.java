@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.gamza.server.Enum.Authority;
-import org.gamza.server.Enum.PlaneType;
-import org.gamza.server.Enum.ReadyStatus;
-import org.gamza.server.Enum.TeamStatus;
+import org.gamza.server.Enum.*;
 
 import javax.persistence.*;
 
@@ -42,8 +39,10 @@ public class User extends BaseTimeEntity {
   private TeamStatus teamStatus;
 
   @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private ReadyStatus readyStatus;
+  private boolean isReady;
+
+  @Column(nullable = false)
+  private boolean isManager;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -68,7 +67,16 @@ public class User extends BaseTimeEntity {
     this.teamStatus = teamStatus;
   }
 
-  public void updateReadyStatus(ReadyStatus readyStatus) {
-    this.readyStatus = readyStatus;
+  public void updateReadyStatus() {
+    this.isReady = !isReady;
+  }
+  public void updateUserStatus() {
+    this.isManager = !isManager;
+  }
+
+  public void initStatus() {
+    this.isManager = false;
+    this.isReady = false;
+    this.teamStatus = TeamStatus.NONE;
   }
 }

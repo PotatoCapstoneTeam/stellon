@@ -13,6 +13,8 @@ interface IInfoData {
   death: number;
   kill: number;
   nickname: string;
+  lose: number;
+  win: number;
 }
 const WatchUserInfoModal = ({
   handleCloseModal,
@@ -21,6 +23,9 @@ const WatchUserInfoModal = ({
   // 여기에서 유저정보 API 받고 적용하기 !
 
   const [infoData, setInfoData] = useState<IInfoData>();
+  const win = infoData ? infoData.win : 0;
+  const lose = infoData ? infoData.lose : 0;
+  const percentage = (win * 100) / (lose + win) || 0;
 
   useQuery(
     'infoModalData',
@@ -61,13 +66,13 @@ const WatchUserInfoModal = ({
           </NickName>
           <Record>
             <Typography color="black" size="12" fontWeight="500">
-              300전/ 1승 299패
+              {win + lose}전 / {win}승 {lose}패
             </Typography>
           </Record>
           <PercentageBox>
-            <WinBox width={20 as number}>
+            <WinBox width={percentage}>
               <Typography color="white" size="16">
-                {20}%
+                {percentage}%
               </Typography>
             </WinBox>
           </PercentageBox>

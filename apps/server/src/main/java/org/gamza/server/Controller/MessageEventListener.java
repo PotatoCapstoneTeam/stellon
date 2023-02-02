@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.UserInfo;
-import org.gamza.server.Enum.UserStatus;
 import org.gamza.server.Service.MessageService;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -29,13 +28,13 @@ public class MessageEventListener {
     Message message = Message.builder().build();
 
     if(!userInfo.getUser().getNickname().isEmpty() && !roomId.toString().isEmpty()) {
+      // 유저 나가기 처리
       message = messageService.disconnect(userInfo, roomId);
 
-//      // 나간 애가 방장이면 방장 새로 선출
-//      if(!message.getMessage().equals("empty") && userInfo.getUserStatus().equals(UserStatus.ROLE_MANAGER)) {
-//        messageService.selectNewHost(roomId);
-//      }
-
+      // 방이 터졌으면 리턴
+      if(!message.getMessage().equals("empty")) {
+        return;
+      }
     }
     operations.convertAndSend("/sub/room/" + roomId, message);
   }

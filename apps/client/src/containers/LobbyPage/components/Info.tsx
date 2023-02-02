@@ -4,13 +4,13 @@ import { customColor } from '../../../constants/customColor';
 
 export interface IInfo {
   nickname: string;
-  winRecord: number;
-  loseRecord: number;
+  kill: number;
+  death: number;
+  win: number;
+  lose: number;
 }
 
-const Info = ({ winRecord, loseRecord, nickname }: IInfo) => {
-  const win = winRecord || 0;
-  const lose = loseRecord || 0;
+const Info = ({ nickname, kill, death, win, lose }: IInfo) => {
   const percentage = (win * 100) / (lose + win) || 0;
 
   return (

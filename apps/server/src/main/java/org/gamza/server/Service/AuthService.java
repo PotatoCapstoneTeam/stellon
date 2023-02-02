@@ -48,7 +48,8 @@ public class AuthService {
       .authority(Authority.ROLE_USER)
       .planeType(PlaneType.A)
       .teamStatus(TeamStatus.NONE)
-      .readyStatus(ReadyStatus.NONE)
+      .isReady(false)
+      .isManager(false)
       .build();
     userRepository.save(joinUser);
   }
