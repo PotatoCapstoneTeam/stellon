@@ -8,8 +8,10 @@ import { axiosPrivate } from '../util/axios';
 
 const nothing = {
   nickname: '이름없음',
-  winRecord: 0,
-  loseRecord: 0,
+  win: 0,
+  lose: 0,
+  kill: 0,
+  death: 0,
 };
 
 export const useLobbyData = () => {
@@ -39,14 +41,16 @@ export const useLobbyData = () => {
       axiosPrivate.get(`/room?sort=${sort}&order=${!order ? 'desc' : 'asc'}`), // password는 order파라미터 없어야함
     {
       onSuccess: (res) => setList(res.data),
-      refetchInterval: 1000,
+      // refetchInterval: 1000,
+      // 최종 배포 시에는 적용!! 백엔드쪽에서 에러코드를 볼 수 없다고 함..
     }
   );
 
   // 접속자 리스트
   useQuery('lobbyUserList', () => axiosPrivate.get('/room/lobby/users'), {
     onSuccess: (res) => setUserList(res.data),
-    refetchInterval: 1000,
+    // refetchInterval: 1000,
+    // 최종 배포 시에는 적용!! 백엔드쪽에서 에러코드를 볼 수 없다고 함..
   });
 
   // 로그인(토큰) 체크

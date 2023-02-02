@@ -12,9 +12,10 @@ export const Client = ({ list }: IClient) => {
       {list &&
         list.map((e: IPlayer, i: number) => (
           <UserCard
-            state={e['readyStatus']}
+            ready={e['ready']}
             nickname={e['nickname']}
             team={e['teamStatus']}
+            manager={e['manager']}
             key={i}
           />
         ))}
