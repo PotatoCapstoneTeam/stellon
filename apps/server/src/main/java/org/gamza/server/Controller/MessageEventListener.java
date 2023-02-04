@@ -2,6 +2,7 @@ package org.gamza.server.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Entity.Message;
 import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Service.MessageService;
@@ -25,17 +26,21 @@ public class MessageEventListener {
     // 헤더에 저장했던 유저인포와 방 id 가져오기
     UserInfo userInfo = (UserInfo) accessor.getSessionAttributes().get("userInfo");
     Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
-    Message message = Message.builder().build();
+    Message message;
 
-    if(!userInfo.getUser().getNickname().isEmpty() && !roomId.toString().isEmpty()) {
+    log.info("============= userInfo: ", userInfo.toString());
+    log.info("============= roomId: ", roomId.toString());
+
+    if (!userInfo.toString().equals("") && !roomId.toString().equals("")) {
       // 유저 나가기 처리
       message = messageService.disconnect(userInfo, roomId);
 
       // 방이 터졌으면 리턴
-      if(!message.getMessage().equals("empty")) {
+      if (message.getMessage().equals("empty")) {
         return;
       }
+
+      operations.convertAndSend("/sub/room/" + roomId, message);
     }
-    operations.convertAndSend("/sub/room/" + roomId, message);
   }
 }
