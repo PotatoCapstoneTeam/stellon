@@ -28,10 +28,7 @@ public class MessageEventListener {
     Long roomId = (Long) accessor.getSessionAttributes().get("roomId");
     Message message;
 
-    log.info("============= userInfo: ", userInfo.toString());
-    log.info("============= roomId: ", roomId.toString());
-
-    if (!userInfo.toString().equals("") && !roomId.toString().equals("")) {
+    if (userInfo != null && roomId != null) {
       // 유저 나가기 처리
       message = messageService.disconnect(userInfo, roomId);
 
