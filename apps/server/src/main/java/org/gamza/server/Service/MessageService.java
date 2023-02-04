@@ -216,20 +216,15 @@ public class MessageService {
     // 유저 찾기
     User user = userService.findByNickname(userInfo.getUser().getNickname());
 
-    // 방에서 해당 유저 삭제
-    roomService.removeUserToRoom(roomId, userInfo);
+    boolean manager = user.isManager();
+
+    // 방에서 해당 유저 삭제 및 유저 정보 수정
+    GameRoom room = roomService.removeUserToRoom(roomId, userInfo);
     userMap.remove(user.getId());
 
-    // 나간 유저가 방장이면 방장 새로 선출
-    if(user.isManager()) {
-      selectNewHost(roomId);
+    if(manager) {
+      selectNewHost(room);
     }
-
-    // 나간 유저 정보 수정
-    userService.initStatus(user.getNickname());
-
-    // 방 찾기
-    GameRoom room = roomService.findRoom(roomId);
 
     // 방 Dto 로 변경
     GameMessageDto roomDto = roomService.roomMessageDto(room);
@@ -245,7 +240,7 @@ public class MessageService {
     message.setMessage(user.getNickname() + "님이 퇴장하셨습니다.");
 
     // 방이 빈 방이면 방 삭제 후 리턴
-    if (roomService.getRoomUsers(roomId).isEmpty()) {
+    if (roomDto.getPlayers().isEmpty()) {
       roomService.removeRoom(roomId);
       message.setMessage("empty");
     }
@@ -254,8 +249,7 @@ public class MessageService {
   }
 
   @Transactional
-  public void selectNewHost(Long roomId) {
-    GameRoom room = roomService.findRoom(roomId);
+  public void selectNewHost(GameRoom room) {
     for (int i = 0; i <= room.getRoomSize(); i++) {
       if (room.getPlayers().containsKey(i)) {
         User findUser = room.getPlayers().get(i);
