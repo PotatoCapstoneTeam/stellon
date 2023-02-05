@@ -33,7 +33,7 @@ https://www.stellon.io
 - AWS
   - AWS EC2
   - AWS S3
-  - AWS RDS
+  - AWS RDS (MySQL)
   
 ## Stellon 프로젝트 개요도
 
