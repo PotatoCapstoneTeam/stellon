@@ -58,19 +58,19 @@ export const apiRouter = (socket: ServerSocket) => {
         socket,
         req.body.roomId,
         req.body.users,
-        (team, users) => {
-          axios
-            .post(req.body.callback, {
+        async (team, users) => {
+          try {
+            await axios.post(req.body.callback, {
               id: stage.id,
               roomId: stage.roomId,
               victoryTeam: team,
               users,
-            })
-            .catch((error) => {
-              console.log(error);
             });
 
-          socket.room(stage.id).emit('end', { victoryTeam: team });
+            socket.room(stage.id).emit('end', { victoryTeam: team });
+          } catch (error) {
+            console.log(error);
+          }
         }
       );
 
