@@ -4,20 +4,25 @@ import { customColor } from '../../../constants/customColor';
 import { useNavigate } from 'react-router-dom';
 import ReadyBtn from '../../LobbyPage/components/ReadyBtn';
 import ReReady from '../../LobbyPage/components/ReReady';
+import { MdOutlineChangeCircle } from 'react-icons/md';
 
 export interface IState {
   ready: () => void;
   start: () => void;
+  change: () => void;
   readyToggle: boolean;
 }
 
-export const State = ({ ready, start, readyToggle }: IState) => {
+export const State = ({ ready, start, readyToggle, change }: IState) => {
   const navigate = useNavigate();
   const outRoom = () => {
     navigate(-1);
   };
   const startGame = () => {
     start();
+  };
+  const changeTeam = () => {
+    change();
   };
   return (
     <StateBox>
@@ -26,6 +31,9 @@ export const State = ({ ready, start, readyToggle }: IState) => {
           시작
         </Start>
       </StartBox>
+      <ChangeBox onClick={changeTeam}>
+        <Change />
+      </ChangeBox>
       {!readyToggle ? <ReadyBtn ready={ready} /> : <ReReady ready={ready} />}
       <OutBox onClick={outRoom}>
         <Out src="../assets/logout.png" alt="none"></Out>
@@ -35,7 +43,18 @@ export const State = ({ ready, start, readyToggle }: IState) => {
 };
 
 export default State;
-
+const ChangeBox = styled.div`
+  padding: 20px;
+  border-radius: 20px;
+  background-color: ${customColor.white};
+  &:hover {
+    cursor: pointer;
+  }
+`;
+const Change = styled(MdOutlineChangeCircle)`
+  width: 24px;
+  height: 24px;
+`;
 const OutBox = styled.div`
   padding: 20px;
   border-radius: 20px;
@@ -45,7 +64,7 @@ const OutBox = styled.div`
   }
 `;
 const StateBox = styled.div`
-  z-index: 99;
+  z-index: 2;
   display: flex;
   align-items: end;
   width: 312px;

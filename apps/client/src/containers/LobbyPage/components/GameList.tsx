@@ -6,6 +6,9 @@ import Search from './Search';
 
 interface IGameList {
   list: IRoom[];
+  setSort: React.Dispatch<React.SetStateAction<string>>;
+  setOrder: React.Dispatch<React.SetStateAction<boolean>>;
+  sort: string;
 }
 
 export interface IRoom {
@@ -15,15 +18,15 @@ export interface IRoom {
   roomName: string;
   roomSize: number;
   roomStatus: string;
+  secret: string;
 }
 
-const GameList = ({ list }: IGameList) => {
-
+const GameList = ({ list, sort, setSort, setOrder }: IGameList) => {
   return (
     <GameListBox>
       <GameListHeader>
-        <Entire />
-        <Search />
+        <Entire count={list.length} />
+        <Search sort={sort} setSort={setSort} setOrder={setOrder} />
       </GameListHeader>
       <List>
         {list.map((e, i) => (
@@ -70,7 +73,7 @@ const GameListBox = styled.div`
   width: 80%;
   border-radius: 0 10px 0 0;
   height: 60%;
-  z-index: 99;
+  z-index: 2;
 `;
 
 const GameListHeader = styled.div`

@@ -11,7 +11,7 @@ export interface IUser {
 }
 
 const LobbyPage = () => {
-  const { list, userList, myInfo } = useLobbyData();
+  const { list, userList, myInfo, sort, setSort, setOrder } = useLobbyData();
 
   return (
     <div>
@@ -21,7 +21,12 @@ const LobbyPage = () => {
         <ContentBox>
           <BackgroundBox />
           <Info {...myInfo} />
-          <GameList list={list} />
+          <GameList
+            list={list}
+            sort={sort}
+            setSort={setSort}
+            setOrder={setOrder}
+          />
           <Chat {...myInfo} />
           <UserList userList={userList} />
         </ContentBox>

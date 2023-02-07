@@ -2,28 +2,43 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 import { IRoom } from './GameList';
+import { useModal } from '../../../hooks/useModal';
+import PassWordModal from '../modal/PassWordModal';
 
-const Room = ({ id, map, players, roomName, roomSize, roomStatus }: IRoom) => {
+
+const Room = ({
+  id,
+  map,
+  players,
+  roomName,
+  roomSize,
+  roomStatus,
+  secret,
+}: IRoom) => {
   const navigate = useNavigate();
+  const { isOpen, handleOpenModal, handleCloseModal, handleModal } = useModal();
   const moveGameRoom = () => {
-    navigate(`/game_room/${id}`);
+    !secret ? navigate(`/game_room/${id}`) : handleOpenModal();
   };
 
   return (
-    <Container onClick={moveGameRoom}>
-      <RoomName color="black" size="16">
-        {roomName}
-      </RoomName>
-      <People>
-        <PeopleImg src="../assets/people.svg" alt="none" />
-        <Typography color="blue" size="16">
-          {players}/{roomSize}
-        </Typography>
-      </People>
-      <GameMap color="gray" size="12" fontWeight="500">
-        {map}
-      </GameMap>
-    </Container>
+    <>
+      <Container onClick={moveGameRoom}>
+        <RoomName color="black" size="16">
+          {roomName}
+        </RoomName>
+        <People>
+          <PeopleImg src="../assets/people.svg" alt="none" />
+          <Typography color="blue" size="16">
+            {players}/{roomSize}
+          </Typography>
+        </People>
+        <GameMap color="gray" size="12" fontWeight="500">
+          {map}
+        </GameMap>
+      </Container>
+      {isOpen && <PassWordModal handleCloseModal={handleCloseModal} id={id} />}
+    </>
   );
 };
 

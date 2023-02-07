@@ -11,14 +11,10 @@ export interface ISend {
 }
 
 export interface IPlayer {
-  authority: string;
-  email: string;
   id: number;
-  modifiedDate: string;
   nickname: string;
-  password: string;
-  readyStatus: string;
-  refreshToken: string;
+  manager: boolean;
+  ready: boolean;
   teamStatus: string;
 }
 export interface IPlayers {
@@ -26,10 +22,10 @@ export interface IPlayers {
 }
 export interface IWebSocketData {
   gameRoom: {
-    createdDate: string; //
+    createdDate: string;
     id: number;
-    modifiedDate: string; //
-    password: string | null; //
+    modifiedDate: string;
+    password: string | null;
     players: IPlayers;
     roomName: string;
     roomSize: number;
@@ -119,6 +115,17 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
+  const change = () => {
+    console.log('팀을 변경합니다.');
+    if (roomId && myInfo) {
+      send({
+        type: 'CHANGE',
+        roomId: Number(roomId),
+        nickname: myInfo.nickname,
+      });
+    }
+  };
+
   const start = () => {
     console.log('시작합니다');
     if (roomId && myInfo) {
@@ -130,7 +137,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
     }
   };
 
-  return { send, ready, start, webSocketData, readyToggle };
+  return { send, ready, start, webSocketData, readyToggle, change };
 };
 
 export default useRoomWebSocket;

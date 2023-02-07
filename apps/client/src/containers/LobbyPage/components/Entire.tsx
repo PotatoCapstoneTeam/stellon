@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
 
-const Entire = () => {
+const Entire = (props: { count: number }) => {
   return (
     <EntireList>
       <EntireImg src="../assets/GameList.png" alt="none" />
       <Typography color="black" size="16">
-        방 목록(46개)
+        방 목록 ( {props.count} )
       </Typography>
     </EntireList>
   );

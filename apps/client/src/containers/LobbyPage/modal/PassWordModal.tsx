@@ -1,41 +1,39 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
 import { Typography } from '../../../components/Typography';
 import { SearchImg } from '../components/GameStart';
-import { useNavigate } from 'react-router-dom';
-import { axiosPrivate } from '../../../util/axios';
 import { useMutation } from 'react-query';
+import { axiosPrivate } from '../../../util/axios';
+import { useNavigate } from 'react-router-dom';
 
 interface ICreateRoomModal {
   handleCloseModal: () => void;
+  id: number;
 }
-
-interface IRoomInfo {
-  roomName: string;
-  roomSize: number;
+interface IInfo {
+  roomId: number;
   password: string;
 }
-
-const CreateRoomModal = ({ handleCloseModal }: ICreateRoomModal) => {
+const PassWordModal = ({ handleCloseModal, id }: ICreateRoomModal) => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
-  const [checkBox, setCheckBox] = useState(false);
-
-  const makeRoom = useMutation(
-    (info: IRoomInfo) => axiosPrivate.post('/room', info),
+  const confirm = useMutation(
+    (info: IInfo) => axiosPrivate.post('/room/validate', info),
     {
-      onSuccess: (res) => navigate(`/game_room/${res.data.id}`),
-      onError: () => alert('방을 다시 생성 해주세요'),
+      onSuccess: (res) => {
+        if (res?.status === 200) {
+          navigate(`/game_room/${id}`);
+        }
+      },
+      onError: (err) => console.log(err),
     }
   );
-
-  const onCreateRoom = (e: React.FormEvent) => {
+  const confirmPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    makeRoom.mutate({
-      roomName: formRef.current?.['theme'].value,
-      roomSize: formRef.current?.['number'].value, //int
-      password: checkBox ? formRef.current?.['password'].value : '',
+    confirm.mutate({
+      roomId: id,
+      password: formRef.current?.['password'].value,
     });
   };
 
@@ -46,7 +44,7 @@ const CreateRoomModal = ({ handleCloseModal }: ICreateRoomModal) => {
           <ModalTheme>
             <SearchImg src="../assets/list.png" alt="none" />
             <Typography color="white" size="16">
-              방 만들기
+              비번 입력
             </Typography>
           </ModalTheme>
           <CloseModal onClick={() => handleCloseModal()}>
@@ -56,45 +54,17 @@ const CreateRoomModal = ({ handleCloseModal }: ICreateRoomModal) => {
             </Typography>
           </CloseModal>
         </ModalHeader>
-        <ModalForm onSubmit={onCreateRoom} ref={formRef}>
+        <ModalForm onSubmit={confirmPassword} ref={formRef}>
           <Theme>
-            <Typography color="blue" size="16" fontWeight="800">
-              방 제목
-            </Typography>
-            <InputTheme type="text" name="theme" placeholder="Theme" />
-          </Theme>
-          <PeopleBox>
-            <Typography color="blue" size="16" fontWeight="800">
-              인원
-            </Typography>
-            <SetPeople>
-              <People name="number">
-                <option value={2}>2</option>
-                <option value={4}>4</option>
-                <option value={6}>6</option>
-                <option value={8}>8</option>
-              </People>
-            </SetPeople>
-          </PeopleBox>
-          <PassWord>
-            <CheckBox
-              type="checkbox"
-              name="checkbox"
-              onChange={(e) => {
-                e.target.checked ? setCheckBox(true) : setCheckBox(false);
-              }}
-            />
             <Typography color="blue" size="16" fontWeight="800">
               비밀번호
             </Typography>
-            <InputPassword
+            <InputTheme
               type="password"
               name="password"
-              placeholder="Password"
-              disabled={!checkBox}
-              check={checkBox}
+              placeholder="password"
             />
-          </PassWord>
+          </Theme>
           <CreateRoom
             type="image"
             src="../assets/createRoomBtn.png"
@@ -106,7 +76,7 @@ const CreateRoomModal = ({ handleCloseModal }: ICreateRoomModal) => {
   );
 };
 
-export default CreateRoomModal;
+export default PassWordModal;
 
 const CreateRoom = styled.input`
   border: none;
@@ -125,30 +95,7 @@ const ModalBackGround = styled.div`
   bottom: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.8);
-  z-index: 9999;
-`;
-const People = styled.select`
-  height: 40px;
-  width: 60px;
-  font-size: 16px;
-  border-radius: 15px;
-  border: 2px solid ${customColor.blue};
-  text-align: center;
-`;
-const SetPeople = styled.div`
-  margin-left: 12px;
-`;
-const CheckBox = styled.input`
-  margin-right: 4px;
-`;
-const InputPassword = styled.input<{ check: boolean }>`
-  width: 90px;
-  border-radius: 15px;
-  height: 40px;
-  border: 2px solid ${customColor.blue};
-  padding-left: 8px;
-  margin-left: 12px;
-  background-color: ${({ check }) => !check && customColor.gray};
+  z-index: 99;
 `;
 const InputTheme = styled.input`
   padding-left: 8px;
@@ -164,16 +111,6 @@ const Theme = styled.div`
   height: 40px;
   align-items: center;
   margin-right: 12px;
-`;
-const PassWord = styled.div`
-  display: flex;
-  height: 40px;
-  align-items: center;
-`;
-const PeopleBox = styled.div`
-  display: flex;
-  height: 40px;
-  align-items: center;
 `;
 const CloseModal = styled.div`
   border-radius: 20px 20px 0 0;
@@ -229,7 +166,7 @@ const ModalBox = styled.div`
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 100;
+  z-index: 99;
   width: 600px;
   height: 200px;
 `;

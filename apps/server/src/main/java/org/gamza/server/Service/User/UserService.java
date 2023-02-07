@@ -5,11 +5,9 @@ import org.gamza.server.Config.JWT.JwtTokenProvider;
 import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
-import org.gamza.server.Enum.ReadyStatus;
-import org.gamza.server.Enum.TeamStatus;
+import org.gamza.server.Enum.PlaneType;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.LoginFailedException;
-import org.gamza.server.Error.Exception.NotValidException;
 import org.gamza.server.Repository.ResultRepository;
 import org.gamza.server.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.gamza.server.Enum.TeamStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +33,6 @@ public class UserService {
   public List<UserResponseDto> findAll() {
     List<User> userList = new ArrayList<>(userRepository.findAll());
     return getUserResponseDtos(userList);
-  }
-
-  @Transactional
-  public User findUserByDto(AddUserDto userDto) {
-    return userRepository.findById(userDto.getId()).get();
   }
 
   @Transactional
@@ -66,35 +59,39 @@ public class UserService {
     String token = request.getHeader("Authorization");
 
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    List<RecordResult> recordResult = resultRepository.findByUserId(findUser.getId());
+    return getRecordByUser(findUser);
+  }
 
-    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
-    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
+  @Transactional
+  public UserRecordDto getUserRecordByNickname(String nickname) {
+    User findUser = userRepository.findByNickname(nickname);
+    return getRecordByUser(findUser);
+  }
 
-    return UserRecordDto.builder()
-      .nickname(findUser.getNickname())
-      .kill(kill)
-      .death(death)
-      .build();
+  @Transactional
+  public void updatePlane(HttpServletRequest request, PlaneType type) {
+    String token = request.getHeader("Authorization");
+
+    User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
+    findUser.updatePlane(type);
   }
 
   @Transactional
   public void updateReadyStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateReadyStatus(user.getReadyStatus() == ReadyStatus.NOT_READY ? ReadyStatus.READY : ReadyStatus.NOT_READY);
+    user.updateReadyStatus();
   }
 
   @Transactional
   public void updateTeamStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateTeamStatus(user.getTeamStatus() == TeamStatus.RED_TEAM ? TeamStatus.BLUE_TEAM : TeamStatus.RED_TEAM);
+    user.updateTeamStatus(user.getTeamStatus() == RED_TEAM ? BLUE_TEAM : RED_TEAM);
   }
 
   @Transactional
   public void initStatus(String nickname) {
     User user = userRepository.findByNickname(nickname);
-    user.updateTeamStatus(TeamStatus.NONE);
-    user.updateReadyStatus(ReadyStatus.NONE);
+    user.initStatus();
   }
 
   @Transactional
@@ -112,5 +109,33 @@ public class UserService {
   @Transactional
   public void removeAll() {
     userRepository.deleteAll();
+  }
+
+  @Transactional
+  public Map<Integer, AddUserDto> playersToDto(Map<Integer, User> players) {
+    Map<Integer, AddUserDto> playersDto = new HashMap<>();
+    for(Integer key : players.keySet()) {
+      User user = players.get(key);
+      AddUserDto userDto = new AddUserDto(user);
+      playersDto.put(key, userDto);
+    }
+    return playersDto;
+  }
+
+  private UserRecordDto getRecordByUser(User findUser) {
+    List<RecordResult> recordResult = resultRepository.findAllByUser(findUser);
+
+    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
+    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
+    int win = recordResult.stream().map(r -> r.getWin()).mapToInt(Integer::intValue).sum();
+    int lose = recordResult.stream().map(r -> r.getLose()).mapToInt(Integer::intValue).sum();
+
+    return UserRecordDto.builder()
+      .nickname(findUser.getNickname())
+      .kill(kill)
+      .death(death)
+      .win(win)
+      .lose(lose)
+      .build();
   }
 }

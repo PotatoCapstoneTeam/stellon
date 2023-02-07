@@ -11,6 +11,7 @@ import org.gamza.server.Dto.UserDto.UserLoginDto;
 import org.gamza.server.Entity.CustomUserDetails;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Enum.Authority;
+import org.gamza.server.Enum.PlaneType;
 import org.gamza.server.Enum.ReadyStatus;
 import org.gamza.server.Enum.TeamStatus;
 import org.gamza.server.Error.ErrorCode;
@@ -45,8 +46,10 @@ public class AuthService {
       .nickname(userJoinDto.getNickname())
       .password(passwordEncoder.encode(userJoinDto.getPassword()))
       .authority(Authority.ROLE_USER)
+      .planeType(PlaneType.A)
       .teamStatus(TeamStatus.NONE)
-      .readyStatus(ReadyStatus.NONE)
+      .isReady(false)
+      .isManager(false)
       .build();
     userRepository.save(joinUser);
   }

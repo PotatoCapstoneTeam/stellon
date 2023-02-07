@@ -12,7 +12,7 @@ export const Info = ({ entire, now }: IInfo) => {
       <People>
         <PeopleImg src="../assets/GameRoomPeople.png"></PeopleImg>
         <NumberOfPeople size="16" color="black" fontWeight="900">
-          {entire} / {now}
+          {now} / {entire}
         </NumberOfPeople>
       </People>
       <Tools>
