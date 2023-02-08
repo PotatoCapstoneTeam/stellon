@@ -70,7 +70,7 @@ public class RoomService {
   @Transactional
   public GameRoom findRoom(Long id) {
     return roomRepository.findWithPlayersById(id).orElseThrow(() ->
-      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
+      new RoomException(ErrorCode.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
 
