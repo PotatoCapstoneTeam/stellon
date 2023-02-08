@@ -13,7 +13,6 @@ import org.gamza.server.Entity.UserInfo;
 import org.gamza.server.Enum.RoomType;
 import org.gamza.server.Error.ErrorCode;
 import org.gamza.server.Error.Exception.RoomException;
-import org.gamza.server.Repository.RoomRepository;
 import org.gamza.server.Service.User.UserService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,7 +47,6 @@ public class MessageService {
   private String stageUrl;
   private final RoomService roomService;
   private final UserService userService;
-  private final RoomRepository roomRepository;
   private Map<Long, String> userMap = new HashMap<>();
 
   @Transactional
