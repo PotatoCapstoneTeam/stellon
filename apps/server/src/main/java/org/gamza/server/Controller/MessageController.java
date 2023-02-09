@@ -6,6 +6,7 @@ import org.gamza.server.Dto.GameDto.StageDataDto;
 import org.gamza.server.Dto.GameDto.StageRequestDto;
 import org.gamza.server.Dto.MessageDto.MessageRequestDto;
 import org.gamza.server.Entity.Message;
+import org.gamza.server.Error.Exception.RoomException;
 import org.gamza.server.Service.MessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -27,7 +28,11 @@ public class MessageController {
 
     Message message = Message.builder().build();
 
-    messageService.checkRoomType(messageDto);
+    try {
+      messageService.checkRoomType(messageDto);
+    } catch (RoomException ex) {
+      operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), ex);
+    }
 
     switch (messageDto.getType()) {
       case JOIN:
