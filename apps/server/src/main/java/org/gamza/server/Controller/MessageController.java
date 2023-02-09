@@ -36,8 +36,12 @@ public class MessageController {
 
     switch (messageDto.getType()) {
       case JOIN:
-        message = messageService.joinService(principal, messageDto, headerAccessor);
-        break;
+        try {
+          message = messageService.joinService(principal, messageDto, headerAccessor);
+          break;
+        } catch (RoomException ex) {
+          operations.convertAndSend("/sub/room/" + messageDto.getRoomId(), ex);
+        }
 
       case START:
         message = messageService.checkStart(messageDto, headerAccessor);
