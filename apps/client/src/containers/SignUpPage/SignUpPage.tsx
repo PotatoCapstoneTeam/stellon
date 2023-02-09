@@ -3,8 +3,8 @@ import Space from '../../canvas/Space';
 import { Typography } from '../../components/Typography';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { axiosPublic } from '../../util/axiosPublic';
 
 interface IFormInput {
   email: string;
@@ -35,7 +35,7 @@ const SignUp = () => {
     events?.preventDefault();
 
     try {
-      const res = await axios.post(
+      const res = await axiosPublic.post(
         `${process.env['NX_MAIN_SERVER_URL'] ?? ''}/auth/join`,
         {
           email: formRef.current?.['email'].value,

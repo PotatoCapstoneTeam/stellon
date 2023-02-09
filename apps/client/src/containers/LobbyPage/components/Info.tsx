@@ -60,14 +60,14 @@ const WinBox = styled.div<{ width: number }>`
   text-align: center;
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
+  margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
   border-radius: 25px 0 0 25px;
 `;
 const PercentageBox = styled.div`
   border-radius: 25px;
   background-color: rgba(127, 127, 127, 1);
-  margin: 0 auto;
+  margin: 12px auto 0;
   width: 200px;
-  margin-top: 12px;
 `;
 
 const Record = styled.div`

@@ -6,7 +6,7 @@ export const Map = () => {
     <Box>
       <MapImg src="../assets/map.png" alt="none"></MapImg>
       <MapName color="black" size="16" fontWeight="900">
-        파이썬
+        업데이트 중 입니다 . . . 
       </MapName>
     </Box>
   );
