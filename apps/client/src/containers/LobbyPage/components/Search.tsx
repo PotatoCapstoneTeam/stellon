@@ -46,12 +46,12 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
           {sortType}
         </Typography>
       </RangeBtn>
-      <RefreshBtn onClick={() => window.location.reload()}>
+      {/* <RefreshBtn onClick={() => window.location.reload()}>
         <RefreshImg src="../assets/refresh.png" alt="none" />
         <Typography color="black" size="16">
           새로고침
         </Typography>
-      </RefreshBtn>
+      </RefreshBtn> */}
     </SearchGameList>
   );
 };

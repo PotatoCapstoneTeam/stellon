@@ -28,8 +28,8 @@ const Tool = () => {
   return (
     <Tools>
       <LogOutBtn onClick={() => logOut.mutate()} />
-      <SettingBtn src="../assets/setting.png" alt="none"></SettingBtn>
-      <HelperBtn src="../assets/help.png" alt="none"></HelperBtn>
+      {/* <SettingBtn src="../assets/setting.png" alt="none"></SettingBtn>
+      <HelperBtn src="../assets/help.png" alt="none"></HelperBtn> */}
     </Tools>
   );
 };

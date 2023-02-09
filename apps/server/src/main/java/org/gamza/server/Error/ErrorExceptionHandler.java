@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Error.Exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 public class ErrorExceptionHandler {
 
   @ExceptionHandler(AuthenticationException.class)
@@ -45,5 +47,12 @@ public class ErrorExceptionHandler {
     log.error("handleNotValidException", ex);
     ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST.getCode(), ErrorCode.BAD_REQUEST.getMessage());
     return new ResponseEntity<>(response, ErrorCode.BAD_REQUEST.getStatus());
+  }
+
+  @MessageExceptionHandler(RoomException.class)
+  public ResponseEntity<ErrorResponse> messageHandleRoomException(RoomException ex) {
+    log.error("stomp RoomException", ex);
+    ErrorResponse response = new ErrorResponse(ex.getErrorCode().getCode(), ex.getMessage());
+    return new ResponseEntity<>(response, ErrorCode.NOT_FOUND.getStatus());
   }
 }

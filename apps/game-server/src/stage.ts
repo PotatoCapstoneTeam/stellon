@@ -1,4 +1,3 @@
-import '@geckos.io/phaser-on-nodejs';
 import { SERVER_FPS, Team } from '@stellon/game-core';
 import cuid from 'cuid';
 import { Game } from 'phaser';

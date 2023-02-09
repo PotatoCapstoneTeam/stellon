@@ -70,7 +70,7 @@ public class RoomService {
   @Transactional
   public GameRoom findRoom(Long id) {
     return roomRepository.findWithPlayersById(id).orElseThrow(() ->
-      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
+      new RoomException(ErrorCode.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
 
@@ -151,10 +151,11 @@ public class RoomService {
   }
 
   @Transactional
-  public void removeUserToRoom(Long roomId, UserInfo userInfo) {
+  public GameRoom removeUserToRoom(Long roomId, UserInfo userInfo) {
     GameRoom room = roomRepository.findWithPlayersById(roomId).orElse(null);
     room.getPlayers().remove(userInfo.getPlayerNumber());
-    roomRepository.save(room);
+    userService.initStatus(userInfo.getUser().getNickname());
+    return room;
   }
 
   @Transactional
@@ -164,7 +165,6 @@ public class RoomService {
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
     int index = getIndex(lobby.getPlayers(), findUser);
     lobby.getPlayers().remove(index);
-    roomRepository.save(lobby);
   }
 
   @Transactional
