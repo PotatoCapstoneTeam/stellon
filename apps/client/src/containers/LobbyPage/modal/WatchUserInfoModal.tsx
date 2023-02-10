@@ -79,7 +79,9 @@ const WatchUserInfoModal = ({
           <Typography color="black" size="24" fontWeight="500">
             최근 전적
           </Typography>
-          <RecentRecordBox></RecentRecordBox>
+          <RecentRecordBox>
+            업데이트 중 입니다...
+          </RecentRecordBox>
         </ModalContent>
       </ModalBox>
     </ModalBackground>

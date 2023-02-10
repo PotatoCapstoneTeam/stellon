@@ -1,5 +1,6 @@
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { IInfo } from '../containers/LobbyPage/components/Info';
 import { axiosPrivate } from '../util/axios';
@@ -46,6 +47,7 @@ export interface IWebSocketData {
 const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const client = useRef<CompatClient>();
   const [readyToggle, setReadyToggle] = useState(false);
+  const navigate = useNavigate();
   const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
@@ -67,6 +69,12 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
 
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
+            console.log(JSON.parse(res.body).errorCode);
+            if (
+              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
+            ) {
+              navigate('/lobby');
+            }
             setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
             console.log('none');
