@@ -2,6 +2,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useState, useEffect, useRef } from 'react';
 import { IChat } from '../components/ChatRoom';
+import { useNavigate } from 'react-router-dom';
 
 interface IUser {
   nickname: string;
@@ -14,6 +15,7 @@ interface IMessage {
 
 const useChatWebSocket = (state: string, roomId: string) => {
   const [lobbyChat, setLobbyChat] = useState<IChat[]>([]);
+  const navigate = useNavigate();
   const client = useRef<CompatClient>();
 
   useEffect(() => {
@@ -32,6 +34,11 @@ const useChatWebSocket = (state: string, roomId: string) => {
         client.current?.subscribe(url, (res) => {
           if (res != null) {
             console.log(JSON.parse(res.body));
+            if (
+              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
+            ) {
+              navigate('/lobby');
+            }
             setLobbyChat((prev: IChat[]) => {
               const chat = [...prev, JSON.parse(res.body)];
               console.log(chat);

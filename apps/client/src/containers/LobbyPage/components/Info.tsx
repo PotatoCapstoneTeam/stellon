@@ -61,7 +61,7 @@ const WinBox = styled.div<{ width: number }>`
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
   margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
-  border-radius: 25px 0 0 25px;
+  border-radius: 25px;
 `;
 const PercentageBox = styled.div`
   border-radius: 25px;
