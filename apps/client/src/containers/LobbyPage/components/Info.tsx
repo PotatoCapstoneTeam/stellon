@@ -48,7 +48,7 @@ const Info = ({ nickname, kill, death, win, lose }: IInfo) => {
 export default Info;
 
 const InfoBox = styled.div`
-  z-index: 2;
+  z-index: 1;
   border-radius: 10px 0 0 0;
   width: 20%;
   height: 60%;
