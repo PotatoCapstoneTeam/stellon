@@ -73,7 +73,7 @@ const GameListBox = styled.div`
   width: 80%;
   border-radius: 0 10px 0 0;
   height: 60%;
-  z-index: 2;
+  z-index: 1;
 `;
 
 const GameListHeader = styled.div`
