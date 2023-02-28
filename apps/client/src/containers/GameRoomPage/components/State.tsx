@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ReadyBtn from '../../LobbyPage/components/ReadyBtn';
 import ReReady from '../../LobbyPage/components/ReReady';
 import { MdOutlineChangeCircle } from 'react-icons/md';
+import _ from 'lodash';
 
 export interface IState {
   ready: () => void;
@@ -18,9 +19,9 @@ export const State = ({ ready, start, readyToggle, change }: IState) => {
   const outRoom = () => {
     navigate(-1);
   };
-  const startGame = () => {
-    start();
-  };
+
+  const startGame = _.debounce(start, 2000);
+
   const changeTeam = () => {
     change();
   };
