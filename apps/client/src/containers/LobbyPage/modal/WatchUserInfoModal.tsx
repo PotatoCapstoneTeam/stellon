@@ -25,7 +25,7 @@ const WatchUserInfoModal = ({
   const [infoData, setInfoData] = useState<IInfoData>();
   const win = infoData ? infoData.win : 0;
   const lose = infoData ? infoData.lose : 0;
-  const percentage = (win * 100) / (lose + win) || 0;
+  const percentage = Math.floor((win * 100) / (lose + win)) || 0;
 
   useQuery(
     'infoModalData',
@@ -79,9 +79,7 @@ const WatchUserInfoModal = ({
           <Typography color="black" size="24" fontWeight="500">
             최근 전적
           </Typography>
-          <RecentRecordBox>
-            업데이트 중 입니다...
-          </RecentRecordBox>
+          <RecentRecordBox>업데이트 중 입니다...</RecentRecordBox>
         </ModalContent>
       </ModalBox>
     </ModalBackground>
@@ -107,11 +105,11 @@ const WinBox = styled.div<{ width: number }>`
   text-align: center;
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
-  border-radius: 25px;
+  border-radius: 6px;
   margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
 `;
 const PercentageBox = styled.div`
-  border-radius: 25px;
+  border-radius: 6px;
   background-color: rgba(127, 127, 127, 1);
   width: 200px;
   margin: 12px 0;
