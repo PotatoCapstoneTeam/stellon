@@ -35,16 +35,16 @@ const useChatWebSocket = (state: string, roomId: string) => {
           if (res != null) {
             console.log(JSON.parse(res.body));
             if (
-              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
+              JSON.parse(res.body).errorCode === 'BAD_REQUEST' ||
+              JSON.parse(res.body).errorCode === 'NOT_FOUND'
             ) {
               navigate('/lobby');
-            } else {
-              setLobbyChat((prev: IChat[]) => {
-                const chat = [...prev, JSON.parse(res.body)];
-                console.log(chat);
-                return chat;
-              });
             }
+            setLobbyChat((prev: IChat[]) => {
+              const chat = [...prev, JSON.parse(res.body)];
+              console.log(chat);
+              return chat;
+            });
           } else {
             console.log('none');
           }

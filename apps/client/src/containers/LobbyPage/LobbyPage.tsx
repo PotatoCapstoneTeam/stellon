@@ -11,7 +11,8 @@ export interface IUser {
 }
 
 const LobbyPage = () => {
-  const { list, userList, myInfo, sort, setSort, setOrder } = useLobbyData();
+  const { list, userList, myInfo, sort, setSort, setOrder, gameRoomRefetch } =
+    useLobbyData();
 
   return (
     <div>
@@ -26,6 +27,7 @@ const LobbyPage = () => {
             sort={sort}
             setSort={setSort}
             setOrder={setOrder}
+            gameRoomRefetch={gameRoomRefetch}
           />
           <Chat {...myInfo} />
           <UserList userList={userList} />
