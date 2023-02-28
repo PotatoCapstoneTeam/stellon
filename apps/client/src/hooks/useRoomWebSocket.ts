@@ -70,12 +70,11 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
             console.log(JSON.parse(res.body).errorCode);
-            if (
-              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
-            ) {
+            if (JSON.parse(res.body).errorCode === 'BAD_REQUEST') {
               navigate('/lobby');
+            } else {
+              setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
             }
-            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
             console.log('none');
           }
@@ -83,7 +82,11 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
 
         client.current?.subscribe(`/user/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            if (JSON.parse(res.body).errorCode === 'BAD_REQUEST') {
+              navigate('/lobby');
+            } else {
+              setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            }
           } else {
             console.log('none');
           }

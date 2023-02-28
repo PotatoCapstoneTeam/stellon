@@ -6,9 +6,10 @@ interface ISearch {
   setSort: React.Dispatch<React.SetStateAction<string>>;
   setOrder: React.Dispatch<React.SetStateAction<boolean>>;
   sort: string;
+  gameRoomRefetch: () => Promise<void>;
 }
 
-const Search = ({ setSort, sort, setOrder }: ISearch) => {
+const Search = ({ setSort, sort, setOrder, gameRoomRefetch }: ISearch) => {
   const [sortType, setSortType] = useState('시간순');
   const changeSortType = () => {
     if (sort === 'id') {
@@ -29,6 +30,10 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
     }
   };
 
+  const refetchRoomList = () => {
+    gameRoomRefetch();
+  };
+
   return (
     <SearchGameList>
       <OrderBtn
@@ -46,12 +51,12 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
           {sortType}
         </Typography>
       </RangeBtn>
-      {/* <RefreshBtn onClick={() => window.location.reload()}>
+      <RefreshBtn onClick={refetchRoomList}>
         <RefreshImg src="../assets/refresh.png" alt="none" />
         <Typography color="black" size="16">
           새로고침
         </Typography>
-      </RefreshBtn> */}
+      </RefreshBtn>
     </SearchGameList>
   );
 };

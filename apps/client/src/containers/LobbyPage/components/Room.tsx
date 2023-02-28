@@ -4,7 +4,7 @@ import { Typography } from '../../../components/Typography';
 import { IRoom } from './GameList';
 import { useModal } from '../../../hooks/useModal';
 import PassWordModal from '../modal/PassWordModal';
-
+import { customColor } from '../../../constants/customColor';
 
 const Room = ({
   id,
@@ -16,14 +16,15 @@ const Room = ({
   secret,
 }: IRoom) => {
   const navigate = useNavigate();
-  const { isOpen, handleOpenModal, handleCloseModal, handleModal } = useModal();
+  const { isOpen, handleOpenModal, handleCloseModal } = useModal();
   const moveGameRoom = () => {
+    // 꽉 찼을 때 오류 여기에 작성
     !secret ? navigate(`/game_room/${id}`) : handleOpenModal();
   };
 
   return (
     <>
-      <Container onClick={moveGameRoom}>
+      <Container onClick={moveGameRoom} status={roomStatus}>
         <RoomName color="black" size="16">
           {roomName}
         </RoomName>
@@ -61,7 +62,7 @@ const GameMap = styled(Typography)`
 const RoomName = styled(Typography)`
   width: 100%;
 `;
-const Container = styled.div`
+const Container = styled.div<{ status: string }>`
   display: flex;
   flex-wrap: wrap;
   width: 412px;
@@ -74,4 +75,6 @@ const Container = styled.div`
   &:hover {
     cursor: pointer;
   }
+  background-color: ${({ status }) =>
+    status === 'RUNNING' ? customColor.darkWhite : customColor.white};
 `;

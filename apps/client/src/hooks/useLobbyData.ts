@@ -35,14 +35,12 @@ export const useLobbyData = () => {
   });
 
   // 게임룸 리스트
-  useQuery(
+  const { refetch: gameRoomRefetch } = useQuery(
     'gameRoomList',
     () =>
       axiosPrivate.get(`/room?sort=${sort}&order=${!order ? 'desc' : 'asc'}`), // password는 order파라미터 없어야함
     {
       onSuccess: (res) => setList(res.data),
-      refetchInterval: 1000,
-      // 최종 배포 시에는 적용!! 백엔드쪽에서 에러코드를 볼 수 없다고 함..
     }
   );
 
@@ -89,5 +87,6 @@ export const useLobbyData = () => {
     myInfo,
     loginCheck,
     enterUserList,
+    gameRoomRefetch,
   };
 };
