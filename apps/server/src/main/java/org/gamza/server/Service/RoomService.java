@@ -31,6 +31,8 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.gamza.server.Enum.RoomStatus.RUNNING;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -172,7 +174,8 @@ public class RoomService {
     GameRoom room = roomRepository.findById(roomId).orElseThrow(() ->
       new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
 
-    if (room.getPlayers().isEmpty() || room.getPlayers().size() == room.getRoomSize()) {
+    if (room.getPlayers().isEmpty() || room.getPlayers().size() == room.getRoomSize() ||
+      room.getRoomStatus() == RUNNING) {
       return false;
     }
     return true;
@@ -191,7 +194,7 @@ public class RoomService {
   @Transactional
   public void updateRoomStatus(Long id) {
     GameRoom room = roomRepository.findById(id).orElse(null);
-    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RoomStatus.RUNNING : RoomStatus.OPEN);
+    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RUNNING : RoomStatus.OPEN);
   }
 
   @Transactional
