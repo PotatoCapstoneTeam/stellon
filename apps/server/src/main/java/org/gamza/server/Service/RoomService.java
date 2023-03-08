@@ -174,8 +174,7 @@ public class RoomService {
     GameRoom room = roomRepository.findById(roomId).orElseThrow(() ->
       new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
 
-    if (room.getPlayers().isEmpty() || room.getPlayers().size() == room.getRoomSize() ||
-      room.getRoomStatus() == RUNNING) {
+    if (room.getPlayers().size() == room.getRoomSize() || room.getRoomStatus() == RUNNING) {
       return false;
     }
     return true;
