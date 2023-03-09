@@ -69,12 +69,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
 
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            console.log(JSON.parse(res.body).errorCode);
-            if (JSON.parse(res.body).errorCode === 'BAD_REQUEST') {
-              navigate('/lobby');
-            } else {
-              setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
-            }
+            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
             console.log('none');
           }

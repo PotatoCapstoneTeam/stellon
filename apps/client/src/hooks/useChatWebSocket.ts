@@ -34,12 +34,6 @@ const useChatWebSocket = (state: string, roomId: string) => {
         client.current?.subscribe(url, (res) => {
           if (res != null) {
             console.log(JSON.parse(res.body));
-            if (
-              JSON.parse(res.body).errorCode === 'BAD_REQUEST' ||
-              JSON.parse(res.body).errorCode === 'NOT_FOUND'
-            ) {
-              navigate('/lobby');
-            }
             setLobbyChat((prev: IChat[]) => {
               const chat = [...prev, JSON.parse(res.body)];
               console.log(chat);

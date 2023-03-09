@@ -41,6 +41,11 @@ axios.interceptors.response.use(
       return alert('비밀번호가 일치하지 않습니다.');
     } else if (err.response.data.error === '가득 찬 방입니다.') {
       return alert('가득 찬 방입니다.');
+    } else if (err.response.data.error === '존재하지 않는 방입니다.') {
+      return () => {
+        window.location.replace('/lobby');
+        alert('존재하지 않는 방입니다.');
+      };
     } else {
       console.log(err);
 
