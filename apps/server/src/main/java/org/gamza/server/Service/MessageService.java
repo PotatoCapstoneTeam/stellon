@@ -109,9 +109,11 @@ public class MessageService {
     int redTeam = 0;
     int blueTeam = 0;
     UserInfo userInfo = (UserInfo) headerAccessor.getSessionAttributes().get("userInfo");
+    User startUser = userService.findByNickname(userInfo.getUser().getNickname());
+
     List<AddUserDto> players = roomService.getRoomUsers(message.getGameRoom().getId());
 
-    if(!userInfo.getUser().isManager()) {
+    if(startUser.isManager()) {
       message.setMessage("방장만 시작할 수 있습니다.");
       return message;
     }
