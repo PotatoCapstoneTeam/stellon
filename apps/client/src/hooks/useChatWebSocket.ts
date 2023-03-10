@@ -19,6 +19,7 @@ const useChatWebSocket = (state: string, roomId: string) => {
   const client = useRef<CompatClient>();
 
   useEffect(() => {
+    // 로비 채팅 또는 게임룸 채팅 구독
     const url = state === 'lobby' ? `/sub/lobby` : `/sub/room/${roomId}`;
     if (!client.current) {
       const socket = new SockJS(
