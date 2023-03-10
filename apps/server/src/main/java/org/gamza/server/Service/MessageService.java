@@ -113,7 +113,7 @@ public class MessageService {
 
     List<AddUserDto> players = roomService.getRoomUsers(message.getGameRoom().getId());
 
-    if(startUser.isManager()) {
+    if(!startUser.isManager()) {
       message.setMessage("방장만 시작할 수 있습니다.");
       return message;
     }
