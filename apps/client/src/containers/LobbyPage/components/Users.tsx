@@ -50,6 +50,9 @@ const UserInfoBtn = styled.button`
   &:hover {
     color: black;
   }
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const UserName = styled(Typography)`
