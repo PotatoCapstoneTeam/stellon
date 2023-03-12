@@ -10,7 +10,7 @@ const ReReady = ({ ready }: IStateBtn) => {
 
   return (
     <Container onClick={reReadyMyUser}>
-      <ResetReady color="black" size="12" fontWeight="900">
+      <ResetReady color="black" size="24" fontWeight="900">
         준비 해제
       </ResetReady>
     </Container>
@@ -19,17 +19,21 @@ const ReReady = ({ ready }: IStateBtn) => {
 
 export default ReReady;
 
-const Container = styled.div``;
+const Container = styled.div`
+  &:active {
+    transform: scale(0.95);
+  }
+`;
 
 const ResetReady = styled(Typography)`
+  width: 230px;
+  height: 70px;
   display: flex;
   align-items: center;
   background-color: ${customColor.white};
-  padding: 5px 15px;
-  padding: 20px 88px;
+  padding: 20px 0;
+  justify-content: center;
   border-radius: 20px;
-  height: 70px;
-  width: 230px;
   &:hover {
     cursor: pointer;
   }

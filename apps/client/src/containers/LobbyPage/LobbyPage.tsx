@@ -5,6 +5,7 @@ import GameList from './components/GameList';
 import Chat from './components/Chat';
 import UserList from './components/UserList';
 import Header from './components/Header';
+import AudioPlayer from 'react-audio-player';
 import { useLobbyData } from '../../hooks/useLobbyData';
 export interface IUser {
   nickname: string;
@@ -16,6 +17,13 @@ const LobbyPage = () => {
 
   return (
     <div>
+      <AudioPlayer
+        src="../assets/audio/music.mp3"
+        autoPlay={true}
+        onPlay={() => console.log('onPlay')}
+        onPause={() => console.log('onPause')}
+        onError={(err) => console.log('onError', err)}
+      />
       <Space />
       <Container>
         <Header list={list} />

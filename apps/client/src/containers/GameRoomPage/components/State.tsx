@@ -44,17 +44,46 @@ export const State = ({ ready, start, readyToggle, change }: IState) => {
 };
 
 export default State;
+const Change = styled(MdOutlineChangeCircle)`
+  width: 24px;
+  height: 24px;
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+`;
 const ChangeBox = styled.div`
   padding: 20px;
   border-radius: 20px;
   background-color: ${customColor.white};
   &:hover {
     cursor: pointer;
+    ${Change} {
+      animation: rotate 2s linear infinite;
+    }
   }
 `;
-const Change = styled(MdOutlineChangeCircle)`
+const Out = styled.img`
   width: 24px;
   height: 24px;
+  transition: transform 0.2s ease-in-out;
+
+  @keyframes moveLeftAndRight {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-5%);
+    }
+    100% {
+      transform: translateX(11%);
+    }
+  }
 `;
 const OutBox = styled.div`
   padding: 20px;
@@ -62,6 +91,9 @@ const OutBox = styled.div`
   background-color: ${customColor.white};
   &:hover {
     cursor: pointer;
+    ${Out} {
+      animation: moveLeftAndRight 2s ease-in-out infinite;
+    }
   }
 `;
 const StateBox = styled.div`
@@ -72,7 +104,11 @@ const StateBox = styled.div`
   justify-content: space-between;
   flex-wrap: wrap;
 `;
-const StartBox = styled.div``;
+const StartBox = styled.div`
+  &:active {
+    transform: scale(0.95);
+  }
+`;
 const Start = styled(Typography)`
   align-items: center;
   justify-content: center;
@@ -85,9 +121,4 @@ const Start = styled(Typography)`
   &:hover {
     cursor: pointer;
   }
-`;
-
-const Out = styled.img`
-  width: 24px;
-  height: 24px;
 `;

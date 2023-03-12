@@ -70,6 +70,7 @@ const ChattingBtn = styled.button`
   &:hover {
     color: black;
   }
+  
 `;
 const ChattingBox = styled.form`
   width: 97%;
