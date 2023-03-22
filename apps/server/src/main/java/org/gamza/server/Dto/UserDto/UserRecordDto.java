@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.gamza.server.Dto.RecordDto.RecentRecordDto;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -11,8 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRecordDto {
   private String nickname;
-  private int kill;
-  private int death;
   private int win;
   private int lose;
+  private List<RecentRecordDto> recordDtos; // 최근 전적 데이터
 }

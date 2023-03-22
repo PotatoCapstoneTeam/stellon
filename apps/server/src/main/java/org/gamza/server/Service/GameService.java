@@ -3,7 +3,7 @@ package org.gamza.server.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gamza.server.Dto.GameDto.GameRequestDto;
-import org.gamza.server.Dto.RecordResultDto.ResultRequestDto;
+import org.gamza.server.Dto.RecordDto.ResultRequestDto;
 import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
 import org.gamza.server.Repository.ResultRepository;
@@ -34,6 +34,7 @@ public class GameService {
 
   @Transactional
   public void gameResultSave(GameRequestDto gameRequestDto) {
+    int gameMember = gameRequestDto.getUsers().size();
     for (ResultRequestDto requestDto : gameRequestDto.getUsers()) {
       User user = userRepository.findById(requestDto.getUserId()).orElseThrow();
       RecordResult recordResult;
@@ -41,19 +42,25 @@ public class GameService {
         recordResult = RecordResult.builder()
           .kill(requestDto.getKill())
           .death(requestDto.getDeath())
+          .playerDamage(requestDto.getDamageDealtToPlayer())
+          .nexusDamage(requestDto.getDamageDealtToNexus())
           .win(1)
           .lose(0)
           .user(user)
           .stageId(gameRequestDto.getId())
+          .gameMember(gameMember)
           .build();
       } else {
         recordResult = RecordResult.builder()
           .kill(requestDto.getKill())
           .death(requestDto.getDeath())
+          .playerDamage(requestDto.getDamageDealtToPlayer())
+          .nexusDamage(requestDto.getDamageDealtToNexus())
           .win(0)
           .lose(1)
           .user(user)
           .stageId(gameRequestDto.getId())
+          .gameMember(gameMember)
           .build();
       }
       resultRepository.save(recordResult);

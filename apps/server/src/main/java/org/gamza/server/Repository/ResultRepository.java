@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ResultRepository extends JpaRepository<RecordResult, Long> {
   List<RecordResult> findAllByUser(User user);
+  List<RecordResult> findTop5ByUserOrderByIdDesc(User user);
 }

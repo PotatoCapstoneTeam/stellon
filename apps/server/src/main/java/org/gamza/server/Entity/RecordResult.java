@@ -26,6 +26,12 @@ public class RecordResult extends BaseTimeEntity {
   @Column(name = "death_point")
   private int death;
 
+  @Column(name = "player_damage")
+  private int playerDamage;
+
+  @Column(name = "nexus_damage")
+  private int nexusDamage;
+
   @Column(name = "win_point")
   private int win;
 
@@ -38,4 +44,7 @@ public class RecordResult extends BaseTimeEntity {
 
   @Column(name = "stage_id")
   private String stageId;
+
+  @Column(name = "game_member")
+  private int gameMember;
 }
