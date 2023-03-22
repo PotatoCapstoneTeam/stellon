@@ -50,6 +50,8 @@ export class ServerScene extends Scene {
         userId: client.id,
         kill: client.kill,
         death: client.death,
+        damageDealtToPlayer: client.damageDealtToPlayer,
+        damageDealtToNexus: client.damageDealtToNexus,
       });
     });
 
@@ -85,9 +87,9 @@ export class ServerScene extends Scene {
     });
 
     const redNexus = new ServerNexus(this, 100, 320, 'RED_TEAM');
-    const redTurret = new ServerTurret(this, 100, 320, 'RED_TEAM');
+    // const redTurret = new ServerTurret(this, 100, 320, 'RED_TEAM');
     const blueNexus = new ServerNexus(this, 1100, 320, 'BLUE_TEAM');
-    const blueTurret = new ServerTurret(this, 1100, 320, 'BLUE_TEAM');
+    // const blueTurret = new ServerTurret(this, 1100, 320, 'BLUE_TEAM');
 
     redNexus.onDeath = this.onNexusDistory.bind(this);
     blueNexus.onDeath = this.onNexusDistory.bind(this);
@@ -106,11 +108,15 @@ export class ServerScene extends Scene {
           return;
         }
 
-        if (p.team === (b.source as ServerPlayer).team) {
+        if (!(b.source instanceof ServerPlayer)) {
           return;
         }
 
-        p.hit(b.damage, b.source);
+        if (p.team === b.source.team) {
+          return;
+        }
+
+        b.source.client.damageDealtToPlayer += p.hit(b.damage, b.source);
 
         bullet.destroy();
       }
@@ -123,11 +129,15 @@ export class ServerScene extends Scene {
         const n = nexus as ServerNexus;
         const b = bullet as ServerBullet;
 
-        if (n.team === (b.source as ServerPlayer).team) {
+        if (!(b.source instanceof ServerPlayer)) {
           return;
         }
 
-        n.hit(b.damage, b.source);
+        if (n.team === b.source.team) {
+          return;
+        }
+
+        b.source.client.damageDealtToNexus += n.hit(b.damage, b.source);
 
         bullet.destroy();
       }

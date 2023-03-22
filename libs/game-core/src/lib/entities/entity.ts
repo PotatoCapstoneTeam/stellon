@@ -55,13 +55,17 @@ export abstract class DamageableEntity extends Entity {
     super(id, scene, x, y, texture);
   }
 
-  hit(damage: number, hitter: Entity) {
-    this.hp -= damage;
+  hit(damage: number, hitter: Entity): number {
+    if (this.hp - damage <= 0) {
+      const realDamage = damage - this.hp;
 
-    if (this.hp <= 0) {
       this.hp = 0;
-
       this.onDeath?.(this, hitter);
+
+      return realDamage;
+    } else {
+      this.hp -= damage;
+      return damage;
     }
   }
 }

@@ -18,6 +18,8 @@ export type UserRecord = {
   userId: number;
   kill: number;
   death: number;
+  damageDealtToPlayer: number;
+  damageDealtToNexus: number;
 };
 
 export type Score = {
