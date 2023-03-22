@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { setting } from '../constants/setting';
-import { getCookie } from './cookies';
 import { memorizedRefreshToken } from './refreshToken';
+import { getSessionStorageItem } from './sessionStorage';
 
 axios.defaults.baseURL = setting.baseURL;
 
@@ -9,8 +9,8 @@ axios.interceptors.request.use(
   (config) => {
     config.headers = {
       'Content-Type': `application/json`,
-      Authorization: getCookie(`user_access_token`),
-      RefreshToken: getCookie('user_refresh_token'),
+      Authorization: getSessionStorageItem(`user_access_token`),
+      RefreshToken: getSessionStorageItem('user_refresh_token'),
     };
 
     return config;
@@ -41,6 +41,11 @@ axios.interceptors.response.use(
       return alert('비밀번호가 일치하지 않습니다.');
     } else if (err.response.data.error === '가득 찬 방입니다.') {
       return alert('가득 찬 방입니다.');
+    } else if (err.response.data.error === '존재하지 않는 방입니다.') {
+      return () => {
+        window.location.replace('/lobby');
+        alert('존재하지 않는 방입니다.');
+      };
     } else {
       console.log(err);
 

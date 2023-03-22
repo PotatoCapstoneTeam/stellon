@@ -27,6 +27,12 @@ public class RoomController {
     return roomService.findGameRooms(sort, order);
   }
 
+  @GetMapping("/validate/{roomId}")
+  public ResponseEntity<Boolean> isValidateRoom(@PathVariable Long roomId) {
+    Boolean isValid = roomService.validateRoom(roomId);
+    return ResponseEntity.ok(isValid);
+  }
+
   @PostMapping("")
   public RoomResponseDto createRoom(@RequestBody RoomCreateDto createDto) {
     GameRoom room = roomService.addRoom(createDto);
@@ -35,8 +41,8 @@ public class RoomController {
     return roomResponseDto;
   }
 
-  @PostMapping("/validate")
-  public ResponseEntity<String> validateRoom(@RequestBody RoomValidDto roomValidDto) {
+  @PostMapping("/validate/password")
+  public ResponseEntity<String> validateRoomPass(@RequestBody RoomValidDto roomValidDto) {
     roomService.validateRoomPass(roomValidDto);
     return ResponseEntity.ok("검증 완료");
   }

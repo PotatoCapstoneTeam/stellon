@@ -11,7 +11,7 @@ export interface IInfo {
 }
 
 const Info = ({ nickname, kill, death, win, lose }: IInfo) => {
-  const percentage = (win * 100) / (lose + win) || 0;
+  const percentage = Math.floor((win * 100) / (lose + win)) || 0;
 
   return (
     <InfoBox>
@@ -48,7 +48,7 @@ const Info = ({ nickname, kill, death, win, lose }: IInfo) => {
 export default Info;
 
 const InfoBox = styled.div`
-  z-index: 2;
+  z-index: 1;
   border-radius: 10px 0 0 0;
   width: 20%;
   height: 60%;
@@ -60,14 +60,14 @@ const WinBox = styled.div<{ width: number }>`
   text-align: center;
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
-  border-radius: 25px 0 0 25px;
+  margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
+  border-radius: 6px;
 `;
 const PercentageBox = styled.div`
-  border-radius: 25px;
+  border-radius: 6px;
   background-color: rgba(127, 127, 127, 1);
-  margin: 0 auto;
+  margin: 12px auto 0;
   width: 200px;
-  margin-top: 12px;
 `;
 
 const Record = styled.div`

@@ -116,8 +116,22 @@ const CreateRoom = styled.input`
   transform: translate(-50%, -28%);
   &:hover {
     cursor: pointer;
+    animation: moveRightLeft 2s infinite;
+  }
+
+  @keyframes moveRightLeft {
+    0% {
+      transform: translate(-50%, -28%);
+    }
+    50% {
+      transform: translate(50%, -28%);
+    }
+    100% {
+      transform: translate(-50%, -28%);
+    }
   }
 `;
+
 const ModalBackGround = styled.div`
   position: fixed;
   top: 0;
@@ -187,7 +201,7 @@ const CloseModal = styled.div`
     cursor: pointer;
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 `;
 const ModalTheme = styled.div`

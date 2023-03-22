@@ -21,7 +21,11 @@ const ReadyBtn = ({ ready }: IStateBtn) => {
 };
 
 export default ReadyBtn;
-const Container = styled.div``;
+const Container = styled.div`
+  &:active {
+    transform: scale(0.95);
+  }
+`;
 const Ready = styled(Typography)`
   background-color: ${customColor.white};
   padding: 20px 88px;

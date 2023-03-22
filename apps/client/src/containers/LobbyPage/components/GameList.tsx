@@ -9,6 +9,7 @@ interface IGameList {
   setSort: React.Dispatch<React.SetStateAction<string>>;
   setOrder: React.Dispatch<React.SetStateAction<boolean>>;
   sort: string;
+  gameRoomRefetch: any;
 }
 
 export interface IRoom {
@@ -21,12 +22,23 @@ export interface IRoom {
   secret: string;
 }
 
-const GameList = ({ list, sort, setSort, setOrder }: IGameList) => {
+const GameList = ({
+  list,
+  sort,
+  setSort,
+  setOrder,
+  gameRoomRefetch,
+}: IGameList) => {
   return (
     <GameListBox>
       <GameListHeader>
         <Entire count={list.length} />
-        <Search sort={sort} setSort={setSort} setOrder={setOrder} />
+        <Search
+          sort={sort}
+          setSort={setSort}
+          setOrder={setOrder}
+          gameRoomRefetch={gameRoomRefetch}
+        />
       </GameListHeader>
       <List>
         {list.map((e, i) => (
@@ -73,7 +85,7 @@ const GameListBox = styled.div`
   width: 80%;
   border-radius: 0 10px 0 0;
   height: 60%;
-  z-index: 2;
+  z-index: 1;
 `;
 
 const GameListHeader = styled.div`

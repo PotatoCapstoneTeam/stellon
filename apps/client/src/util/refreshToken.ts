@@ -1,10 +1,10 @@
 import { axiosPublic } from './axiosPublic';
-import { getCookie, setCookie } from './cookies';
 import mem from 'mem';
+import { getSessionStorageItem, setSessionStorageItem } from './sessionStorage';
 
 const refreshTokenFn = async () => {
-  const access = getCookie('user_access_token');
-  const refresh = getCookie('user_refresh_token');
+  const access = getSessionStorageItem('user_access_token');
+  const refresh = getSessionStorageItem('user_refresh_token');
   try {
     const res = await axiosPublic.post(
       '/auth/reissue',
@@ -17,8 +17,8 @@ const refreshTokenFn = async () => {
       }
     );
 
-    setCookie('user_access_token', res.data.response.accessToken);
-    setCookie('user_refresh_token', res.data.response.refreshToken);
+    setSessionStorageItem('user_access_token', res.data.response.accessToken);
+    setSessionStorageItem('user_refresh_token', res.data.response.refreshToken);
     console.log('토큰 재발급 성공');
     console.log(res);
     return res;

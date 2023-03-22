@@ -31,6 +31,8 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.gamza.server.Enum.RoomStatus.RUNNING;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -48,17 +50,17 @@ public class RoomService {
     List<GameRoom> list = new ArrayList<>(roomRepository.findGameRoomsByRoomType(RoomType.WAITING_ROOM));
     List<RoomResponseDto> roomList;
     Comparator<GameRoom> roomComparator;
-    if(sort.equals("id") && order.equals("asc")) {
+    if (sort.equals("id") && order.equals("asc")) {
       roomComparator = Comparator.comparing(GameRoom::getId, Comparator.naturalOrder());
-    } else if(sort.equals("name") && order.equals("asc")) {
+    } else if (sort.equals("name") && order.equals("asc")) {
       roomComparator = Comparator.comparing(GameRoom::getRoomName, Comparator.naturalOrder());
-    } else if(sort.equals("name") && order.equals("desc")) {
+    } else if (sort.equals("name") && order.equals("desc")) {
       roomComparator = Comparator.comparing(GameRoom::getRoomName, Comparator.reverseOrder());
-    } else if(sort.equals("size") && order.equals("asc")) {
+    } else if (sort.equals("size") && order.equals("asc")) {
       roomComparator = Comparator.comparing(GameRoom::getRoomSize, Comparator.naturalOrder());
-    } else if(sort.equals("size") && order.equals("desc")) {
+    } else if (sort.equals("size") && order.equals("desc")) {
       roomComparator = Comparator.comparing(GameRoom::getRoomSize, Comparator.reverseOrder());
-    } else if(sort.equals("password")) {
+    } else if (sort.equals("password")) {
       roomComparator = Comparator.comparing(GameRoom::isPasswordRoom, Comparator.reverseOrder());
     } else {
       roomComparator = Comparator.comparing(GameRoom::getId, Comparator.reverseOrder());
@@ -70,7 +72,7 @@ public class RoomService {
   @Transactional
   public GameRoom findRoom(Long id) {
     return roomRepository.findWithPlayersById(id).orElseThrow(() ->
-      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
+      new RoomException(ErrorCode.NOT_FOUND, "존재하지 않는 방입니다."));
   }
 
 
@@ -137,8 +139,8 @@ public class RoomService {
     GameRoom lobby = roomRepository.findGameRoomByRoomType(RoomType.LOBBY_ROOM);
     String token = request.getHeader("Authorization");
     User findUser = userRepository.findByEmail(jwtTokenProvider.parseClaims(token).getSubject());
-    for(int i = 0; i < 100; i++) {
-      if(lobby.getPlayers().get(i) == null) {
+    for (int i = 0; i < 100; i++) {
+      if (lobby.getPlayers().get(i) == null) {
         try {
           lobby.getPlayers().put(i, findUser);
           break;
@@ -168,24 +170,30 @@ public class RoomService {
   }
 
   @Transactional
-  public void validateRoomPass(RoomValidDto roomValidDto) {
-    GameRoom room = roomRepository.findById(roomValidDto.getRoomId()).orElseThrow();
+  public Boolean validateRoom(Long roomId) {
+    GameRoom room = roomRepository.findById(roomId).orElseThrow(() ->
+      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
 
-    if(room.getPassword() == null) {
-      return;
+    if (room.getPlayers().size() == room.getRoomSize() || room.getRoomStatus() == RUNNING) {
+      return false;
     }
-    if(!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
+    return true;
+  }
+
+  @Transactional
+  public void validateRoomPass(RoomValidDto roomValidDto) {
+    GameRoom room = roomRepository.findById(roomValidDto.getRoomId()).orElseThrow(() ->
+      new RoomException(ErrorCode.BAD_REQUEST, "존재하지 않는 방입니다."));
+
+    if (!passwordEncoder.matches(roomValidDto.getPassword(), room.getPassword())) {
       throw new RoomException(ErrorCode.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
-    }
-    if(room.getRoomSize() == room.getPlayers().size()) {
-      throw new RoomException(ErrorCode.BAD_REQUEST, "가득 찬 방입니다.");
     }
   }
 
   @Transactional
   public void updateRoomStatus(Long id) {
     GameRoom room = roomRepository.findById(id).orElse(null);
-    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RoomStatus.RUNNING : RoomStatus.OPEN);
+    room.updateStatus(room.getRoomStatus() == RoomStatus.OPEN ? RUNNING : RoomStatus.OPEN);
   }
 
   @Transactional

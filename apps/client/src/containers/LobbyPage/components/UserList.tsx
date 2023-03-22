@@ -49,7 +49,7 @@ const ListBox = styled.div`
   height: 40%;
   display: flex;
   flex-direction: column;
-  z-index: 2;
+  z-index: 1;
 `;
 const Img = styled.img`
   width: 12px;

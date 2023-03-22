@@ -6,9 +6,10 @@ interface ISearch {
   setSort: React.Dispatch<React.SetStateAction<string>>;
   setOrder: React.Dispatch<React.SetStateAction<boolean>>;
   sort: string;
+  gameRoomRefetch: () => Promise<void>;
 }
 
-const Search = ({ setSort, sort, setOrder }: ISearch) => {
+const Search = ({ setSort, sort, setOrder, gameRoomRefetch }: ISearch) => {
   const [sortType, setSortType] = useState('시간순');
   const changeSortType = () => {
     if (sort === 'id') {
@@ -29,6 +30,10 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
     }
   };
 
+  const refetchRoomList = () => {
+    gameRoomRefetch();
+  };
+
   return (
     <SearchGameList>
       <OrderBtn
@@ -38,17 +43,17 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
           e.target.checked ? setOrder(true) : setOrder(false);
         }}
       />
-      <label htmlFor="order">올림차순</label>
+      <Label htmlFor="order">올림차순</Label>
 
       <RangeBtn onClick={changeSortType}>
         <RangeImg src="../assets/range.png" alt="none" />
-        <Typography color="black" size="16">
+        <Typography color="black" size="16" fontWeight="900">
           {sortType}
         </Typography>
       </RangeBtn>
-      <RefreshBtn onClick={() => window.location.reload()}>
+      <RefreshBtn onClick={refetchRoomList}>
         <RefreshImg src="../assets/refresh.png" alt="none" />
-        <Typography color="black" size="16">
+        <Typography color="black" size="16" fontWeight="900">
           새로고침
         </Typography>
       </RefreshBtn>
@@ -57,6 +62,10 @@ const Search = ({ setSort, sort, setOrder }: ISearch) => {
 };
 
 export default Search;
+
+const Label = styled.label`
+  font-weight: 900;
+`;
 
 const OrderBtn = styled.input``;
 
@@ -72,6 +81,26 @@ const RangeBtn = styled.div`
     cursor: pointer;
   }
   width: 86px;
+  &:active {
+    transform: scale(0.95);
+    font-weight: 900;
+  }
+`;
+
+const RefreshImg = styled.img`
+  margin-right: 4px;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease-in-out;
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+  }
 `;
 
 const RefreshBtn = styled.div`
@@ -80,12 +109,14 @@ const RefreshBtn = styled.div`
   margin-left: 16px;
   &:hover {
     cursor: pointer;
+    ${RefreshImg} {
+      animation: rotate 2s linear infinite;
+    }
   }
-`;
-const RefreshImg = styled.img`
-  margin-right: 4px;
-  width: 16px;
-  height: 16px;
+  &:active {
+    transform: scale(0.95);
+    font-weight: 900;
+  }
 `;
 
 const RangeImg = styled.img`

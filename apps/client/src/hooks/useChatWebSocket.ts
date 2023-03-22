@@ -2,6 +2,7 @@ import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useState, useEffect, useRef } from 'react';
 import { IChat } from '../components/ChatRoom';
+import { useNavigate } from 'react-router-dom';
 
 interface IUser {
   nickname: string;
@@ -14,9 +15,11 @@ interface IMessage {
 
 const useChatWebSocket = (state: string, roomId: string) => {
   const [lobbyChat, setLobbyChat] = useState<IChat[]>([]);
+  const navigate = useNavigate();
   const client = useRef<CompatClient>();
 
   useEffect(() => {
+    // 로비 채팅 또는 게임룸 채팅 구독
     const url = state === 'lobby' ? `/sub/lobby` : `/sub/room/${roomId}`;
     if (!client.current) {
       const socket = new SockJS(

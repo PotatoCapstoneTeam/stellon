@@ -1,5 +1,6 @@
 import { CompatClient, Stomp } from '@stomp/stompjs';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import { IInfo } from '../containers/LobbyPage/components/Info';
 import { axiosPrivate } from '../util/axios';
@@ -46,6 +47,7 @@ export interface IWebSocketData {
 const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
   const client = useRef<CompatClient>();
   const [readyToggle, setReadyToggle] = useState(false);
+  const navigate = useNavigate();
   const [webSocketData, setWebSocketData] = useState<IWebSocketData[]>([]);
   useEffect(() => {
     if (!client.current && myInfo) {
@@ -65,6 +67,7 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
           nickname: myInfo.nickname,
         });
 
+        // JOIN, START, READY, CHANGE 등등 유저가 하는 행동에 대해서 구독
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
             setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
@@ -73,9 +76,14 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
           }
         });
 
+        // 메인서버에서 시작할때 토큰 반환 받는 구독
         client.current?.subscribe(`/user/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            if (JSON.parse(res.body).errorCode === 'BAD_REQUEST') {
+              navigate('/lobby');
+            } else {
+              setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            }
           } else {
             console.log('none');
           }
