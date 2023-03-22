@@ -8,6 +8,26 @@ export const SERVER_FPS = 30;
 
 export type Team = 'RED_TEAM' | 'BLUE_TEAM';
 
+export type User = {
+  id: number;
+  nickname: string;
+  team: Team;
+};
+
+export type UserRecord = {
+  userId: number;
+  kill: number;
+  death: number;
+};
+
+export type Score = {
+  id: number;
+  nickname: string;
+  team: Team;
+  kill: number;
+  death: number;
+}[];
+
 // Client Event
 
 export type JoinEvent = {
@@ -30,6 +50,7 @@ export type ClientEventMap = {
 export type WelcomeEvent = {
   playerId: string;
   entities: { type: EntityType; data: EntityData }[];
+  users: User[];
 };
 
 export type CreateEvent = {
@@ -39,6 +60,15 @@ export type CreateEvent = {
 
 export type UpdateEvent = {
   snapshot: Snapshot;
+};
+
+export type KillEvent = {
+  killed: string;
+  killedId: string;
+  killer: string;
+  killerId: string;
+  killerType: EntityType;
+  score: Score;
 };
 
 export type DestroyEvent = {
@@ -54,6 +84,7 @@ export type ServerEventMap = {
   welcome: WelcomeEvent;
   create: CreateEvent;
   update: UpdateEvent;
+  kill: KillEvent;
   destroy: DestroyEvent;
   end: EndEvent;
 };

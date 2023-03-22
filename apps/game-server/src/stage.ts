@@ -1,7 +1,6 @@
-import { SERVER_FPS, Team } from '@stellon/game-core';
+import { SERVER_FPS, Team, User, UserRecord } from '@stellon/game-core';
 import cuid from 'cuid';
 import { Game } from 'phaser';
-import { User, UserRecord } from './api';
 import { ServerScene } from './scenes/server-scene';
 import { ServerSocket } from './server-socket';
 

@@ -1,21 +1,8 @@
-import { Team } from '@stellon/game-core';
-import axios from 'axios';
+import { User } from '@stellon/game-core';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { ServerSocket } from './server-socket';
 import { Stage } from './stage';
-
-export type User = {
-  id: number;
-  nickname: string;
-  team: Team;
-};
-
-export type UserRecord = {
-  userId: number;
-  kill: number;
-  death: number;
-};
 
 type ApiPostRequestBody = {
   secret: string;

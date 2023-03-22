@@ -1,3 +1,4 @@
+import { ServerTurret } from './../entities/server-turret';
 import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation';
 import { State } from '@geckos.io/snapshot-interpolation/lib/types';
 import {
@@ -6,9 +7,10 @@ import {
   EntityType,
   Scene,
   Team,
+  User,
+  UserRecord,
 } from '@stellon/game-core';
 import cuid from 'cuid';
-import { User, UserRecord } from '../api';
 import { ServerBullet } from '../entities/server-bullet';
 import { ServerPlayer } from '../entities/server-player';
 import { ClientManager } from '../managers/client-manager';
@@ -83,7 +85,9 @@ export class ServerScene extends Scene {
     });
 
     const redNexus = new ServerNexus(this, 100, 320, 'RED_TEAM');
+    const redTurret = new ServerTurret(this, 100, 320, 'RED_TEAM');
     const blueNexus = new ServerNexus(this, 1100, 320, 'BLUE_TEAM');
+    const blueTurret = new ServerTurret(this, 1100, 320, 'BLUE_TEAM');
 
     redNexus.onDeath = this.onNexusDistory.bind(this);
     blueNexus.onDeath = this.onNexusDistory.bind(this);
@@ -174,6 +178,7 @@ export class ServerScene extends Scene {
       channel.emit('welcome', {
         playerId,
         entities,
+        users: this.users,
       });
     });
 
