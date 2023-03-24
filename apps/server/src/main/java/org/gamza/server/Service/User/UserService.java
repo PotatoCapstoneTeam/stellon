@@ -129,7 +129,7 @@ public class UserService {
     int win = recordResult.stream().map(r -> r.getWin()).mapToInt(Integer::intValue).sum();
     int lose = recordResult.stream().map(r -> r.getLose()).mapToInt(Integer::intValue).sum();
 
-    List<RecordResult> recentRecord = resultRepository.findTop5ByUserOrderByIdDesc(findUser);
+    List<RecordResult> recentRecord = resultRepository.findTop8ByUserOrderByIdDesc(findUser);
     List<RecentRecordDto> recentRecordDtos = recentRecord.stream().map(RecentRecordDto::new)
       .collect(Collectors.toList());
 
