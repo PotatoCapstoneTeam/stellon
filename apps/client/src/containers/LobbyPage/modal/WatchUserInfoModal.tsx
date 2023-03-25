@@ -122,7 +122,8 @@ const VS = styled.span<{ win: boolean }>`
   font-weight: 900;
 `;
 const RecordBox = styled.div`
-  padding-top: 6px;
+  display: flex;
+  align-items: center;
   padding-left: 12px;
   width: 50%;
   height: 25%;
