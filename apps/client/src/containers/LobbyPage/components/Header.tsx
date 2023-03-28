@@ -4,11 +4,16 @@ import MakeRoom from './MakeRoom';
 import GameStart from './GameStart';
 import { IRoom } from './GameList';
 
-const Header = ({ list }: { list: IRoom[] }) => {
+interface IHeader {
+  list: IRoom[];
+  handleMusic: () => void;
+  isPlaying: boolean;
+}
 
+const Header = ({ list, ...props }: IHeader) => {
   return (
     <Container>
-      <Tool />
+      <Tool {...props} />
       <Menu>
         <MakeRoom />
         <GameStart list={list} />
