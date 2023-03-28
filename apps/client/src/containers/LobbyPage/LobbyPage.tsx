@@ -7,26 +7,26 @@ import UserList from './components/UserList';
 import Header from './components/Header';
 import AudioPlayer from 'react-audio-player';
 import { useLobbyData } from '../../hooks/useLobbyData';
+import { useState } from 'react';
 export interface IUser {
   nickname: string;
 }
 
 const LobbyPage = () => {
+  const [isPlaying, setIsPlaying] = useState(true);
   const { list, userList, myInfo, sort, setSort, setOrder, gameRoomRefetch } =
     useLobbyData();
-
+  const handleMusic = () => {
+    setIsPlaying((prev) => !prev);
+  };
   return (
     <div>
-      <AudioPlayer
-        src="../assets/audio/music.mp3"
-        autoPlay={true}
-        onPlay={() => console.log('onPlay')}
-        onPause={() => console.log('onPause')}
-        onError={(err) => console.log('onError', err)}
-      />
+      {isPlaying && (
+        <AudioPlayer src="../assets/audio/music.mp3" autoPlay={true} />
+      )}
       <Space />
       <Container>
-        <Header list={list} />
+        <Header list={list} handleMusic={handleMusic} isPlaying={isPlaying} />
         <ContentBox>
           <BackgroundBox />
           <Info {...myInfo} />
