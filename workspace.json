@@ -3,10 +3,11 @@
   "version": 2,
   "projects": {
     "client": "apps/client",
-    "client-e2e": "apps/client-e2e",
     "game-core": "libs/game-core",
     "game-server": "apps/game-server",
     "game-view": "libs/game-view",
-    "server": "apps/server"
+    "server": "apps/server",
+    "simple-client": "apps/simple-client",
+    "simple-server": "apps/simple-server"
   }
 }
