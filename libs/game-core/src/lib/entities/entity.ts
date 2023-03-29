@@ -60,7 +60,10 @@ export abstract class DamageableEntity extends Entity {
       const realDamage = damage - this.hp;
 
       this.hp = 0;
-      this.onDeath?.(this, hitter);
+
+      (async () => {
+        this.onDeath?.(this, hitter);
+      })();
 
       return realDamage;
     } else {
