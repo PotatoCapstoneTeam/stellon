@@ -101,7 +101,7 @@ const WatchUserInfoModal = ({
             {recordList?.map((e, i) => (
               <RecordBox key={i}>
                 <VS win={e.win}>
-                  {e.gameMember / 2} : {e.gameMember / 2}
+                  {e.gameMember / 2} vs {e.gameMember / 2}
                 </VS>
                 {e.kill} 킬 {e.death} 데스 {e.nexusDamage} 넥서스{' '}
                 {e.playerDamage} 딜량

@@ -106,9 +106,8 @@ export const GameView = (props: GameViewProps) => {
     return () => {
       if (isConnected) {
         socket.close();
+        game.destroy(true);
       }
-
-      game.destroy(true);
     };
   }, [props, props.token, props.url]);
 
