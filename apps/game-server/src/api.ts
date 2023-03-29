@@ -1,6 +1,7 @@
 import { User } from '@stellon/game-core';
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import fetch from 'node-fetch';
 import { ServerSocket } from './server-socket';
 import { Stage } from './stage';
 
