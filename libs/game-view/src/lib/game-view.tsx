@@ -51,10 +51,13 @@ export const GameView = (props: GameViewProps) => {
     }
 
     const socket = new ClientSocket(props.url, props.token);
+    let isConnected = false;
 
     let game: Phaser.Game;
 
     socket.connect().then(() => {
+      isConnected = true;
+
       game = new Phaser.Game({
         width: 1200,
         height: 640,
@@ -101,7 +104,10 @@ export const GameView = (props: GameViewProps) => {
     });
 
     return () => {
-      socket.close();
+      if (isConnected) {
+        socket.close();
+      }
+
       game.destroy(true);
     };
   }, [props, props.token, props.url]);
