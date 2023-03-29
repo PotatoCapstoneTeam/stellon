@@ -3,7 +3,7 @@ import { useModal } from '../../../hooks/useModal';
 import HelperModal from '../modal/HelperModal';
 
 const HelperBtn = () => {
-  const { isOpen, handleOpenModal, handleCloseModal, handleModal } = useModal();
+  const { isOpen, handleOpenModal, handleCloseModal } = useModal();
   return (
     <>
       <Button src="../assets/help.png" alt="none" onClick={handleOpenModal} />
@@ -21,4 +21,5 @@ const Button = styled.img`
   &:active {
     transform: scale(0.95);
   }
+  margin-right: 15px;
 `;

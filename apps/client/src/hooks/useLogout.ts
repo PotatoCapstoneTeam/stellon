@@ -21,7 +21,7 @@ const useLogout = () => {
       onError: (err) => console.log(err),
     }
   );
-  return { logOut };
+  return { logOut, deleteUserList };
 };
 
 export default useLogout;

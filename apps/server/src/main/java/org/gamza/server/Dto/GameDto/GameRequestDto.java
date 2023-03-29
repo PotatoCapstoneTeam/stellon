@@ -1,15 +1,12 @@
 package org.gamza.server.Dto.GameDto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.gamza.server.Dto.RecordResultDto.ResultRequestDto;
+import lombok.*;
+import org.gamza.server.Dto.RecordDto.ResultRequestDto;
 import org.gamza.server.Enum.TeamStatus;
 
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
