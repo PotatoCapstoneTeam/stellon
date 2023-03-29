@@ -116,19 +116,6 @@ const CreateRoom = styled.input`
   transform: translate(-50%, -28%);
   &:hover {
     cursor: pointer;
-    animation: moveRightLeft 2s infinite;
-  }
-
-  @keyframes moveRightLeft {
-    0% {
-      transform: translate(-50%, -28%);
-    }
-    50% {
-      transform: translate(50%, -28%);
-    }
-    100% {
-      transform: translate(-50%, -28%);
-    }
   }
 `;
 
