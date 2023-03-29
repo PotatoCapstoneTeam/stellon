@@ -14,6 +14,21 @@ export type User = {
   team: Team;
 };
 
+export type ApiPostRequestBody = {
+  secret: string;
+  callback: string;
+  roomId: number;
+  users: User[];
+};
+
+export type ApiPostResponseBody = {
+  id: string;
+  users: {
+    id: number;
+    token: string;
+  }[];
+};
+
 export type UserRecord = {
   userId: number;
   kill: number;
