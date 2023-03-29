@@ -25,7 +25,7 @@ const ChatBox = styled.div`
   width: 78%;
   border-radius: 0 0 0 10px;
   height: 40%;
-  z-index: 1;
+  position: relative;
 `;
 const LiveChat = styled(Typography)`
   margin-right: 40px;

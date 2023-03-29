@@ -25,6 +25,7 @@ axios.interceptors.response.use(
     return response;
   },
   async (err) => {
+    console.log(err);
     // 무한 루프 방지 코드
     if (err.response.data.status === 500) {
       return console.log('500 Error 이미 등록된 유저입니다.');
@@ -46,6 +47,9 @@ axios.interceptors.response.use(
         window.location.replace('/lobby');
         alert('존재하지 않는 방입니다.');
       };
+    } else if (err.response.data.error === 'Not Found') {
+      console.log(err);
+      return alert('방 비밀번호가 틀렸습니다.');
     } else {
       console.log(err);
 

@@ -1,5 +1,7 @@
+import { useModal } from '../../../hooks/useModal';
 import styled from 'styled-components';
 import { Typography } from '../../../components/Typography';
+import HelperModal from '../../LobbyPage/modal/HelperModal';
 
 interface IInfo {
   entire?: number;
@@ -7,6 +9,8 @@ interface IInfo {
 }
 
 export const Info = ({ entire, now }: IInfo) => {
+  const { isOpen, handleOpenModal, handleCloseModal } = useModal();
+
   return (
     <InfoRoom>
       <People>
@@ -16,8 +20,11 @@ export const Info = ({ entire, now }: IInfo) => {
         </NumberOfPeople>
       </People>
       <Tools>
-        <SettingImg src="../assets/GameRoomSetting.png"></SettingImg>
-        <HelpImg src="../assets/GameRoomHelper.png"></HelpImg>
+        <HelpImg
+          src="../assets/GameRoomHelper.png"
+          onClick={handleOpenModal}
+        />
+        {isOpen && <HelperModal setHelperModalOpen={handleCloseModal} />}
       </Tools>
     </InfoRoom>
   );
@@ -30,14 +37,7 @@ const PeopleImg = styled.img`
   width: 20px;
   height: 20px;
 `;
-const SettingImg = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
+
 const HelpImg = styled.img`
   margin-right: 8px;
   width: 24px;
