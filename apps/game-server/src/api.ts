@@ -1,24 +1,11 @@
-import { User } from '@stellon/game-core';
+import { ApiPostRequestBody, ApiPostResponseBody } from '@stellon/game-core';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import fetch from 'node-fetch';
 import { ServerSocket } from './server-socket';
 import { Stage } from './stage';
 
-type ApiPostRequestBody = {
-  secret: string;
-  callback: string;
-  roomId: number;
-  users: User[];
-};
-
-type ApiPostResponseBody = {
-  id: string;
-  users: {
-    id: number;
-    token: string;
-  }[];
-};
+const enabledStages = new Set<string>();
 
 export const apiRouter = (socket: ServerSocket) => {
   const router = express.Router();
@@ -61,12 +48,16 @@ export const apiRouter = (socket: ServerSocket) => {
               }),
             });
 
+            enabledStages.delete(stage.id);
+
             socket.room(stage.id).emit('end', { victoryTeam: team });
           } catch (error) {
             console.log(error);
           }
         }
       );
+
+      enabledStages.add(stage.id);
 
       const userTokens = req.body.users.map((user) => {
         return {
@@ -89,6 +80,12 @@ export const apiRouter = (socket: ServerSocket) => {
       });
     }
   );
+
+  router.get('/check/:id', (req, res) => {
+    res.json({
+      isEnabled: enabledStages.has(req.params.id),
+    });
+  });
 
   return router;
 };
