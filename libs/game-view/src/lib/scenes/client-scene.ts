@@ -1,3 +1,4 @@
+import { PlayerManager } from './../managers/user-manager';
 import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation';
 import {
   Bullet,
@@ -31,7 +32,8 @@ export class ClientScene extends Scene {
     this.load.image('blueNexus', 'assets/blue-nexus.png');
     this.load.image('redPlayer', 'assets/red-player.png');
     this.load.image('bluePlayer', 'assets/blue-player.png');
-    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('redBullet', 'assets/red-bullet.png');
+    this.load.image('blueBullet', 'assets/blue-bullet.png');
   }
 
   createEntity(type: EntityType, data: EntityData) {
@@ -46,7 +48,7 @@ export class ClientScene extends Scene {
             this,
             +(data['x'] ?? 0),
             +(data['y'] ?? 0),
-            this.playerGroup.find((data['source'] as string) ?? '')!,
+            this.playerGroup.find((data['sourceId'] as string) ?? '')!,
             +(data['damage'] ?? 0),
             +(data['speed'] ?? 0),
             +(data['angle'] ?? 0)

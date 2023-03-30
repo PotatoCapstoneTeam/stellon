@@ -3,11 +3,19 @@ import styled from 'styled-components';
 import { customColor } from '../../../constants/customColor';
 import { useQuery } from 'react-query';
 import { axiosPrivate } from '../../../util/axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ICreateRoomModal {
   handleCloseModal: () => void;
   nickname: string;
+}
+interface IRecordDtos {
+  death: number;
+  gameMember: number;
+  kill: number;
+  nexusDamage: number;
+  playerDamage: number;
+  win: boolean;
 }
 interface IInfoData {
   death: number;
@@ -15,6 +23,7 @@ interface IInfoData {
   nickname: string;
   lose: number;
   win: number;
+  recordDtos: IRecordDtos[];
 }
 const WatchUserInfoModal = ({
   handleCloseModal,
@@ -25,13 +34,22 @@ const WatchUserInfoModal = ({
   const [infoData, setInfoData] = useState<IInfoData>();
   const win = infoData ? infoData.win : 0;
   const lose = infoData ? infoData.lose : 0;
-  const percentage = (win * 100) / (lose + win) || 0;
+  const percentage = Math.floor((win * 100) / (lose + win)) || 0;
+  const recordList = infoData?.recordDtos;
+
+  useEffect(() => {
+    console.log(recordList);
+  }, [recordList]);
 
   useQuery(
     'infoModalData',
     () => axiosPrivate.get(`/user/data?nickname=${nickname}`),
     {
-      onSuccess: (res) => setInfoData(res.data),
+      onSuccess: (res) => {
+        console.log(res.data);
+        console.log(res.data.recordDtos);
+        setInfoData(res.data);
+      },
       onError: (err) => console.log(err),
     }
   );
@@ -80,7 +98,15 @@ const WatchUserInfoModal = ({
             최근 전적
           </Typography>
           <RecentRecordBox>
-            업데이트 중 입니다...
+            {recordList?.map((e, i) => (
+              <RecordBox key={i}>
+                <VS win={e.win}>
+                  {e.gameMember / 2} vs {e.gameMember / 2}
+                </VS>
+                {e.kill} 킬 {e.death} 데스 {e.nexusDamage} 넥서스{' '}
+                {e.playerDamage} 딜량
+              </RecordBox>
+            ))}
           </RecentRecordBox>
         </ModalContent>
       </ModalBox>
@@ -89,6 +115,20 @@ const WatchUserInfoModal = ({
 };
 
 export default WatchUserInfoModal;
+const VS = styled.span<{ win: boolean }>`
+  font-size: 10px;
+  margin-right: 4px;
+  color: ${({ win }) => (win ? 'green' : 'red')};
+  font-weight: 900;
+`;
+const RecordBox = styled.div`
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  width: 50%;
+  height: 25%;
+  font-size: 12px;
+`;
 const ImgBox = styled.div`
   margin-bottom: 8px;
   background-color: ${customColor.black};
@@ -107,11 +147,11 @@ const WinBox = styled.div<{ width: number }>`
   text-align: center;
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
-  border-radius: 25px;
+  border-radius: 6px;
   margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
 `;
 const PercentageBox = styled.div`
-  border-radius: 25px;
+  border-radius: 6px;
   background-color: rgba(127, 127, 127, 1);
   width: 200px;
   margin: 12px 0;
@@ -122,6 +162,20 @@ const RecentRecordBox = styled.div`
   width: 500px;
   height: 100px;
   border-radius: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    border-left: 2px dashed #006da3;
+    transform: translateX(-50%);
+  }
 `;
 
 const Theme = styled(Typography)`
@@ -140,7 +194,7 @@ const CloseModal = styled.div`
     cursor: pointer;
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 `;
 const ModalTheme = styled.div`

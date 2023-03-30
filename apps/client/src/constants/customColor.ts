@@ -1,5 +1,6 @@
 export type customColorType = {
   white: string;
+  darkWhite: string;
   black: string;
   blue: string;
   lightBlue: string;
@@ -12,6 +13,7 @@ export type customColorType = {
 
 export const customColor: customColorType = {
   white: '#FFFFFF',
+  darkWhite: '#ccc',
   black: '#000000',
   blue: '#07689F',
   lightBlue: '#A2D5F2',

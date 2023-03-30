@@ -67,23 +67,23 @@ const useRoomWebSocket = (roomId: string, myInfo?: IInfo) => {
           nickname: myInfo.nickname,
         });
 
+        // JOIN, START, READY, CHANGE 등등 유저가 하는 행동에 대해서 구독
         client.current?.subscribe(`/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            console.log(JSON.parse(res.body).errorCode);
-            if (
-              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
-            ) {
-              navigate('/lobby');
-            }
             setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
           } else {
             console.log('none');
           }
         });
 
+        // 메인서버에서 시작할때 토큰 반환 받는 구독
         client.current?.subscribe(`/user/sub/room/${roomId}`, (res) => {
           if (res != null) {
-            setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            if (JSON.parse(res.body).errorCode === 'BAD_REQUEST') {
+              navigate('/lobby');
+            } else {
+              setWebSocketData((prev) => [...prev, JSON.parse(res.body)]);
+            }
           } else {
             console.log('none');
           }

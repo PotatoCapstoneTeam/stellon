@@ -6,6 +6,9 @@ export class ClientState {
   kill = 0;
   death = 0;
 
+  damageDealtToPlayer = 0;
+  damageDealtToNexus = 0;
+
   constructor(public id: number) {}
 }
 

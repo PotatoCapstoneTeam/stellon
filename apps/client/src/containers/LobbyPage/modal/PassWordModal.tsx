@@ -19,7 +19,7 @@ const PassWordModal = ({ handleCloseModal, id }: ICreateRoomModal) => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const confirm = useMutation(
-    (info: IInfo) => axiosPrivate.post('/room/validate', info),
+    (info: IInfo) => axiosPrivate.post('/room/validate/password', info),
     {
       onSuccess: (res) => {
         if (res?.status === 200) {
@@ -124,7 +124,7 @@ const CloseModal = styled.div`
     cursor: pointer;
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 `;
 const ModalTheme = styled.div`

@@ -118,6 +118,7 @@ const CreateRoom = styled.input`
     cursor: pointer;
   }
 `;
+
 const ModalBackGround = styled.div`
   position: fixed;
   top: 0;
@@ -187,7 +188,7 @@ const CloseModal = styled.div`
     cursor: pointer;
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 `;
 const ModalTheme = styled.div`

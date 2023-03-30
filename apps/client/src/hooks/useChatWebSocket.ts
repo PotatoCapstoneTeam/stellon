@@ -19,6 +19,7 @@ const useChatWebSocket = (state: string, roomId: string) => {
   const client = useRef<CompatClient>();
 
   useEffect(() => {
+    // 로비 채팅 또는 게임룸 채팅 구독
     const url = state === 'lobby' ? `/sub/lobby` : `/sub/room/${roomId}`;
     if (!client.current) {
       const socket = new SockJS(
@@ -34,11 +35,6 @@ const useChatWebSocket = (state: string, roomId: string) => {
         client.current?.subscribe(url, (res) => {
           if (res != null) {
             console.log(JSON.parse(res.body));
-            if (
-              JSON.parse(res.body).errorCode === ('NOT_FOUND' || 'BAD_REQUEST')
-            ) {
-              navigate('/lobby');
-            }
             setLobbyChat((prev: IChat[]) => {
               const chat = [...prev, JSON.parse(res.body)];
               console.log(chat);

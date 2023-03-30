@@ -1,4 +1,4 @@
-import { Player, Scene, Team } from '@stellon/game-core';
+import { EntityType, Player, Scene, Score, Team } from '@stellon/game-core';
 import { ClientState } from '../managers/client-manager';
 import { ServerBullet } from './server-bullet';
 import { ServerScene } from '../scenes/server-scene';
@@ -6,7 +6,7 @@ import { ServerScene } from '../scenes/server-scene';
 export class ServerPlayer extends Player {
   constructor(
     id: string,
-    scene: Scene,
+    scene: ServerScene,
     x: number,
     y: number,
     nickname: string,
@@ -25,6 +25,29 @@ export class ServerPlayer extends Player {
       if (killer instanceof ServerPlayer) {
         killer.client.kill++;
       }
+
+      const score: Score = [];
+
+      scene.playerGroup.forEach((player) => {
+        const client = (player as ServerPlayer).client;
+
+        score.push({
+          id: client.id,
+          nickname: player.nickname,
+          team: player.team,
+          kill: client.kill,
+          death: client.death,
+        });
+      });
+
+      scene.room.emit('kill', {
+        killed: player.nickname,
+        killedId: player.id,
+        killer: (killer as ServerPlayer).nickname,
+        killerId: killer.id,
+        killerType: EntityType.PLAYER,
+        score,
+      });
 
       setTimeout(() => {
         player.status = 'LIVE';

@@ -2,6 +2,7 @@ package org.gamza.server.Service.User;
 
 import lombok.RequiredArgsConstructor;
 import org.gamza.server.Config.JWT.JwtTokenProvider;
+import org.gamza.server.Dto.RecordDto.RecentRecordDto;
 import org.gamza.server.Dto.UserDto.*;
 import org.gamza.server.Entity.RecordResult;
 import org.gamza.server.Entity.User;
@@ -125,17 +126,18 @@ public class UserService {
   private UserRecordDto getRecordByUser(User findUser) {
     List<RecordResult> recordResult = resultRepository.findAllByUser(findUser);
 
-    int kill = recordResult.stream().map(r -> r.getKill()).mapToInt(Integer::intValue).sum();
-    int death = recordResult.stream().map(r -> r.getDeath()).mapToInt(Integer::intValue).sum();
     int win = recordResult.stream().map(r -> r.getWin()).mapToInt(Integer::intValue).sum();
     int lose = recordResult.stream().map(r -> r.getLose()).mapToInt(Integer::intValue).sum();
 
+    List<RecordResult> recentRecord = resultRepository.findTop8ByUserOrderByIdDesc(findUser);
+    List<RecentRecordDto> recentRecordDtos = recentRecord.stream().map(RecentRecordDto::new)
+      .collect(Collectors.toList());
+
     return UserRecordDto.builder()
       .nickname(findUser.getNickname())
-      .kill(kill)
-      .death(death)
       .win(win)
       .lose(lose)
+      .recordDtos(recentRecordDtos)
       .build();
   }
 }

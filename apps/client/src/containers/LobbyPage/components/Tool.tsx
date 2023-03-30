@@ -1,35 +1,27 @@
-import { axiosPrivate } from '../../../util/axios';
-import { deleteCookie } from '../../../util/cookies';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { RiLogoutBoxLine } from 'react-icons/ri';
-import { useMutation } from 'react-query';
+import useLogout from '../../../hooks/useLogout';
+import HelperBtn from './HelperBtn';
+import { AiFillSound } from 'react-icons/ai';
+import { AiOutlineSound } from 'react-icons/ai';
 
-const Tool = () => {
-  const navigate = useNavigate();
+interface ITool {
+  handleMusic: () => void;
+  isPlaying: boolean;
+}
 
-  // 로그아웃 api , delete , 토큰 삭제
-  const logOut = useMutation(() => axiosPrivate.post('/auth/logout'), {
-    onSuccess: () => deleteUserList.mutate(),
-    onError: () => alert('로그아웃에 실패하였습니다.'),
-  });
-  const deleteUserList = useMutation(
-    () => axiosPrivate.delete('/room/lobby/users'),
-    {
-      onSuccess: () => {
-        deleteCookie('user_access_token');
-        deleteCookie('user_refresh_token');
-        navigate('/');
-      },
-      onError: (err) => console.log(err),
-    }
-  );
+const Tool = ({ handleMusic, isPlaying }: ITool) => {
+  const { logOut } = useLogout();
 
   return (
     <Tools>
       <LogOutBtn onClick={() => logOut.mutate()} />
-      {/* <SettingBtn src="../assets/setting.png" alt="none"></SettingBtn>
-      <HelperBtn src="../assets/help.png" alt="none"></HelperBtn> */}
+      <HelperBtn />
+      {isPlaying ? (
+        <SoundOnBtn onClick={handleMusic} />
+      ) : (
+        <SoundOffBtn onClick={handleMusic} />
+      )}
     </Tools>
   );
 };
@@ -43,19 +35,33 @@ const LogOutBtn = styled(RiLogoutBoxLine)`
   &:hover {
     cursor: pointer;
   }
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
-const HelperBtn = styled.img`
+const SoundOffBtn = styled(AiOutlineSound)`
+  font-size: 39px;
+  color: white;
   &:hover {
     cursor: pointer;
   }
+  &:active {
+    transform: scale(0.95);
+  }
 `;
-const SettingBtn = styled.img`
-  margin-right: 15px;
+
+const SoundOnBtn = styled(AiFillSound)`
+  font-size: 39px;
+  color: white;
   &:hover {
     cursor: pointer;
   }
+  &:active {
+    transform: scale(0.95);
+  }
 `;
+
 const Tools = styled.div`
   height: 100%;
 `;

@@ -11,6 +11,7 @@ import { GameView } from '@stellon/game-view';
 import Space from '../../canvas/Space';
 import { IInfo } from '../LobbyPage/components/Info';
 import { axiosPrivate } from '../../util/axios';
+import useLogout from '../../hooks/useLogout';
 
 const GameRoomPage = () => {
   const { id } = useParams();
@@ -25,6 +26,14 @@ const GameRoomPage = () => {
   const [nowPlayer, setNowPlayer] = useState(0);
   const [gameRoom, setGameRoom] = useState<IWebSocketData['gameRoom']>();
   const [gameServerToken, setGameServerToken] = useState<string>(); // 게임 서버에서 발급한 토큰
+  const { logOut } = useLogout();
+
+  const exitScreen = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    // 로그아웃
+    logOut.mutate();
+    e.returnValue = '';
+  };
 
   useEffect(() => {
     if (webSocketData.length === 0) return;
@@ -46,6 +55,16 @@ const GameRoomPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      window.addEventListener('unload', exitScreen);
+
+      return () => {
+        window.removeEventListener('unload', exitScreen);
+      };
+    })();
+  }, []);
+  
   const onEnd = () => {
     console.log('게임이 끝남');
     ready();

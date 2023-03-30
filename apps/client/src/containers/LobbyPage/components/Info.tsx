@@ -11,7 +11,7 @@ export interface IInfo {
 }
 
 const Info = ({ nickname, kill, death, win, lose }: IInfo) => {
-  const percentage = (win * 100) / (lose + win) || 0;
+  const percentage = Math.floor((win * 100) / (lose + win)) || 0;
 
   return (
     <InfoBox>
@@ -61,10 +61,10 @@ const WinBox = styled.div<{ width: number }>`
   background-color: rgba(0, 109, 163, 1);
   width: ${({ width }) => `${width}%`};
   margin-left: ${({ width }) => (width === 0 ? `4px` : `0px`)};
-  border-radius: 25px;
+  border-radius: 6px;
 `;
 const PercentageBox = styled.div`
-  border-radius: 25px;
+  border-radius: 6px;
   background-color: rgba(127, 127, 127, 1);
   margin: 12px auto 0;
   width: 200px;
