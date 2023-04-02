@@ -196,3 +196,15 @@ export class Player extends Entity {
 
 ## 🍀 아쉬운점
 - 웹 소켓 설계
+
+![image](https://user-images.githubusercontent.com/94947782/229351962-c2981c5f-7ffc-4d73-8e11-5df2591e2fbb.png)
+> chat과 message를 분리해서 MessageHandler를 사용한건 좋았는데 로비같은 경우는 chat 부분만 stomp 통신을 사용하다 보니
+> 게임방과 로비 사이의 괴리감이 생겨 게임적으로 유연하지 못한 점이 많았음.
+> 예를 들면 로비 입장 시에는 채팅을 제외한 다른 데이터를 REST 통신으로 가져와서
+> 방목록이나 대기실 유저 목록 같은 경우 새로고침을 해줘야 최신화가 됐고,
+> disconnect 이벤트가 발생할 때도 로비는 chat 부분만 사용하므로 chat인지 message인지 확인해서 처리해야 되는 기이한 구조를
+> 갖게 됐음.
+### 세 줄 요약
+- 로비에서 웹소켓이 필요한 부분을 REST 통신으로 진행해 게임방과의 괴리감 발생
+- /sub에도 prefix를 추가해 chat과 message에 대한 구독을 분리시켜 관리하거나
+- 로비도 게임방처럼 chat과 message prefix를 통한 전반적인 stomp 통신 기반으로 설계 했어야 함.
