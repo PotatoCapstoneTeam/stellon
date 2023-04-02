@@ -195,7 +195,7 @@ export class Player extends Entity {
 모든 Entity는 위 함수 두개를 구현하고 있음. Scene를 동기화 할 때 활용 함.
 
 ## 🍀 아쉬운점
-- 웹 소켓 설계
+### 웹 소켓 설계
 
 ![image](https://user-images.githubusercontent.com/94947782/229351962-c2981c5f-7ffc-4d73-8e11-5df2591e2fbb.png)
 > chat과 message를 분리해서 MessageHandler를 사용한건 좋았는데 로비같은 경우는 chat 부분만 stomp 통신을 사용하다 보니
