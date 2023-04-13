@@ -11,7 +11,7 @@ axios.interceptors.request.use(
       'Content-Type': `application/json`,
       Authorization: getSessionStorageItem(`user_access_token`),
       RefreshToken: getSessionStorageItem('user_refresh_token'),
-    };
+    } as any;
 
     return config;
   },

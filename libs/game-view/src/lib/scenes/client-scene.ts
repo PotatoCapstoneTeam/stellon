@@ -119,8 +119,6 @@ export class ClientScene extends Scene {
       });
     }
 
-    super.update(time, delta);
-
     const snapshot = this.si.calcInterpolation(
       'x, y, angle, speed, angularSpeed',
       'players'
@@ -139,5 +137,13 @@ export class ClientScene extends Scene {
 
       nexus?.deserialize(nexusData);
     });
+
+    const player = this.playerGroup.find(this.playerId ?? '');
+
+    if (player) {
+      this.cameras.main.centerOn(player.x, player.y);
+    }
+
+    super.update(time, delta);
   }
 }

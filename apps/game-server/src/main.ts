@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-const port = process.env['port'] || 3333;
+const port = process.env['port'] || 80;
 const server = http.createServer(app);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

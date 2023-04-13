@@ -10,7 +10,7 @@ export class ClientSocket {
     return new Promise<void>((resolve, reject) => {
       this.channel = geckos({
         url: this.url,
-        port: 443,
+        port: 80,
         authorization: this.token,
       });
 
