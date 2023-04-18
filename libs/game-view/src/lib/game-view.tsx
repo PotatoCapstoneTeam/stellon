@@ -59,6 +59,13 @@ export const GameView = (props: GameViewProps) => {
       isConnected = true;
 
       game = new Phaser.Game({
+        scale: {
+          parent: 'game-view',
+          mode: Phaser.Scale.RESIZE,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: 800,
+          height: 600,
+        },
         width: 1200,
         height: 640,
         antialias: false,
@@ -112,7 +119,7 @@ export const GameView = (props: GameViewProps) => {
   }, [props, props.token, props.url]);
 
   return (
-    <div ref={parentRef}>
+    <div ref={parentRef} className="game-view">
       <Panel visible={isShowScore}>
         <div style={{ display: 'flex', fontWeight: 'bold' }}>
           <p style={{ width: 100, color: 'red' }}>RED</p>
