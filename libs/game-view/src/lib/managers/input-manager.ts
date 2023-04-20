@@ -19,7 +19,7 @@ export class InputManager {
   fire = false;
 
   constructor(public scene: Scene) {
-    this.keys = scene.input.keyboard.addKeys({
+    this.keys = scene.input.keyboard?.addKeys({
       left: KeyCodes.LEFT,
       right: KeyCodes.RIGHT,
       up: KeyCodes.UP,

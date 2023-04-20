@@ -17,7 +17,7 @@ export class Bullet extends Entity {
   ) {
     super(id, scene, x, y, texture);
 
-    this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity);
+    this.scene.physics.velocityFromAngle(angle, speed, this.body?.velocity);
     this.angle = angle;
   }
 

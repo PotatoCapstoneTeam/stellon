@@ -1,25 +1,31 @@
 import { Team } from '..';
 import { Scene } from '../scenes/scene';
-import { DamageableEntity, EntityData } from './entity';
+import { DamageableEntity, EntityData, EntityProps } from './entity';
 
 export type PlayerStatus = 'LIVE' | 'DEATH';
 
+export interface PlayerProps extends EntityProps {
+  nickname: string;
+  team: Team;
+  status: PlayerStatus;
+}
+
 export class Player extends DamageableEntity {
+  nickname: string;
+  team: Team;
+  status: PlayerStatus;
+
   speed = 10;
   angularSpeed = 10;
-  fireDelay = 1000;
+  fireDelay = 500;
+  damage = 50;
 
-  constructor(
-    id: string,
-    scene: Scene,
-    x: number,
-    y: number,
-    public nickname: string,
-    public team: Team,
-    public status: PlayerStatus,
-    texture = ''
-  ) {
-    super(id, scene, x, y, texture);
+  constructor(id: string, scene: Scene, props: PlayerProps) {
+    super(id, scene, props);
+
+    this.nickname = props.nickname;
+    this.team = props.team;
+    this.status = props.status;
 
     this.hp = 200;
   }

@@ -1,5 +1,5 @@
 import { Value } from '@geckos.io/snapshot-interpolation/lib/types';
-import { Textures, Physics } from 'phaser';
+import { Math, Physics, Textures } from 'phaser';
 import { Scene } from '../scenes/scene';
 
 export enum EntityType {
@@ -13,15 +13,15 @@ export type EntityData = {
   [key: string]: Value;
 };
 
+export interface EntityProps {
+  x: number;
+  y: number;
+  texture?: string | Textures.Texture;
+}
+
 export abstract class Entity extends Physics.Arcade.Sprite {
-  constructor(
-    public id: string,
-    scene: Scene,
-    x: number,
-    y: number,
-    texture: string | Textures.Texture = ''
-  ) {
-    super(scene, x, y, texture);
+  constructor(public id: string, scene: Scene, props: EntityProps) {
+    super(scene, props.x, props.y, props.texture ?? '');
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -51,8 +51,8 @@ export abstract class DamageableEntity extends Entity {
 
   onDeath?: (entity: DamageableEntity, killer: Entity) => void;
 
-  constructor(id: string, scene: Scene, x: number, y: number, texture = '') {
-    super(id, scene, x, y, texture);
+  constructor(id: string, scene: Scene, props: EntityProps) {
+    super(id, scene, props);
   }
 
   hit(damage: number, hitter: Entity): number {
