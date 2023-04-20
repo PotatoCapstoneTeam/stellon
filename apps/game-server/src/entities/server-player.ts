@@ -4,6 +4,8 @@ import { ServerBullet } from './server-bullet';
 import { ServerScene } from '../scenes/server-scene';
 
 export class ServerPlayer extends Player {
+  private prevFireTime = 0;
+
   constructor(
     id: string,
     scene: ServerScene,
@@ -83,10 +85,12 @@ export class ServerPlayer extends Player {
     this.scene.physics.velocityFromAngle(
       this.angle,
       this.client.verticalAxis * this.speed * delta,
-      this.body.velocity
+      this.body?.velocity
     );
 
-    if (this.client.fire) {
+    if (this.client.fire && time - this.prevFireTime >= this.fireDelay) {
+      this.prevFireTime = time;
+
       const scene = this.scene as ServerScene;
 
       const bullet = new ServerBullet(
@@ -94,7 +98,7 @@ export class ServerPlayer extends Player {
         this.x,
         this.y,
         this,
-        10,
+        this.damage,
         1000,
         this.angle
       );
@@ -104,7 +108,7 @@ export class ServerPlayer extends Player {
       this.scene.physics.velocityFromAngle(
         this.angle,
         1000,
-        bullet.body.velocity
+        bullet.body?.velocity
       );
       bullet.angle = this.angle;
     }
