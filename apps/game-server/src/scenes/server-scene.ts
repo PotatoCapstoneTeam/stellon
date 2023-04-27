@@ -139,6 +139,16 @@ export class ServerScene extends Scene {
   }
 
   setupPhysics() {
+    this.physics.world.setBounds(
+      0,
+      0,
+      this.map.width,
+      this.map.height,
+      true,
+      true,
+      true,
+      true
+    );
 
     const bulletPhysics: ArcadePhysicsCallback = (target, bullet) => {
       const targetEntity = target as DamageableEntity;
