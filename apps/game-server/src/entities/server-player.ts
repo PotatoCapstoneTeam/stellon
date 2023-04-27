@@ -60,6 +60,8 @@ export class ServerPlayer extends Player {
       | 'status'
       | 'speed'
       | 'angularSpeed'
+      | 'bulletSpeed'
+      | 'bulletLifeTime'
       | 'fireDelay'
       | 'damage'
     >
@@ -71,6 +73,8 @@ export class ServerPlayer extends Player {
       status: 'LIVE',
       speed: 10,
       angularSpeed: 10,
+      bulletSpeed: 1000,
+      bulletLifeTime: 400,
       fireDelay: 500,
       damage: 50,
     });
@@ -102,12 +106,12 @@ export class ServerPlayer extends Player {
       new ServerBullet(this.scene as ServerScene, {
         x: this.x,
         y: this.y,
+        angle: this.angle,
         team: this.team,
         sourceId: this.id,
         damage: this.damage,
-        speed: 1000,
-        angle: this.angle,
-        lifeTime: 400,
+        speed: this.bulletSpeed,
+        lifeTime: this.bulletLifeTime,
       });
     }
   }

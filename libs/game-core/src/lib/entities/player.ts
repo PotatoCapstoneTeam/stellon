@@ -7,6 +7,8 @@ export interface PlayerData extends DamageableEntityData {
   status: PlayerStatus;
   speed: number;
   angularSpeed: number;
+  bulletSpeed: number;
+  bulletLifeTime: number;
   fireDelay: number;
   damage: number;
 }
@@ -15,6 +17,8 @@ export class Player extends DamageableEntity {
   status: PlayerStatus;
   speed: number;
   angularSpeed: number;
+  bulletSpeed: number;
+  bulletLifeTime: number;
   fireDelay: number;
   damage: number;
 
@@ -26,6 +30,8 @@ export class Player extends DamageableEntity {
     this.status = data.status;
     this.speed = data.speed;
     this.angularSpeed = data.angularSpeed;
+    this.bulletSpeed = data.bulletSpeed;
+    this.bulletLifeTime = data.bulletLifeTime;
     this.fireDelay = data.fireDelay;
     this.damage = data.damage;
   }
@@ -36,6 +42,8 @@ export class Player extends DamageableEntity {
     data.status = this.status;
     data.speed = this.speed;
     data.angularSpeed = this.angularSpeed;
+    data.bulletSpeed = this.bulletSpeed;
+    data.bulletLifeTime = this.bulletLifeTime;
     data.fireDelay = this.fireDelay;
     data.damage = this.damage;
 
