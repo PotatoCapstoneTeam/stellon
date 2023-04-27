@@ -18,13 +18,9 @@ export class Group<T extends Entity> extends Physics.Arcade.Group {
     return this;
   }
 
-  override remove(
-    child: T,
-    removeFromScene?: boolean,
-    destroyChild?: boolean
-  ): this {
+  override remove(child: T): this {
     this.map.delete(child.id);
-    super.remove(child, removeFromScene, destroyChild);
+    super.remove(child, true, true);
 
     return this;
   }

@@ -1,59 +1,44 @@
-import { Team } from '..';
 import { Scene } from '../scenes/scene';
-import { DamageableEntity, EntityData, EntityProps } from './entity';
+import { DamageableEntity, DamageableEntityData } from './entity';
 
 export type PlayerStatus = 'LIVE' | 'DEATH';
 
-export interface PlayerProps extends EntityProps {
-  nickname: string;
-  team: Team;
+export interface PlayerData extends DamageableEntityData {
   status: PlayerStatus;
+  speed: number;
+  angularSpeed: number;
+  fireDelay: number;
+  damage: number;
 }
 
 export class Player extends DamageableEntity {
-  nickname: string;
-  team: Team;
   status: PlayerStatus;
+  speed: number;
+  angularSpeed: number;
+  fireDelay: number;
+  damage: number;
 
-  speed = 10;
-  angularSpeed = 10;
-  fireDelay = 500;
-  damage = 50;
+  constructor(id: string, scene: Scene, data: PlayerData) {
+    super(id, scene, data);
 
-  constructor(id: string, scene: Scene, props: PlayerProps) {
-    super(id, scene, props);
+    scene.playerGroup.add(this);
 
-    this.nickname = props.nickname;
-    this.team = props.team;
-    this.status = props.status;
-
-    this.hp = 200;
+    this.status = data.status;
+    this.speed = data.speed;
+    this.angularSpeed = data.angularSpeed;
+    this.fireDelay = data.fireDelay;
+    this.damage = data.damage;
   }
 
-  serialize(): EntityData {
-    return {
-      id: this.id,
-      x: this.x,
-      y: this.y,
-      angle: this.angle,
-      nickname: this.nickname,
-      team: this.team,
-      status: this.status,
-      speed: this.speed,
-      angularSpeed: this.angularSpeed,
-      hp: this.hp,
-    };
-  }
+  override serialize(): PlayerData {
+    const data = super.serialize() as PlayerData;
 
-  deserialize(data: EntityData) {
-    this.x = +(data['x'] ?? this.x);
-    this.y = +(data['y'] ?? this.y);
-    this.angle = +(data['angle'] ?? this.angle);
-    this.nickname = data['nickname'] + '';
-    this.team = data['team'] === 'RED_TEAM' ? 'RED_TEAM' : 'BLUE_TEAM';
-    this.status = data['status'] as any;
-    this.speed = +(data['speed'] ?? this.speed);
-    this.angularSpeed = +(data['angularSpeed'] ?? this.angularSpeed);
-    this.hp = +(data['hp'] ?? this.hp);
+    data.status = this.status;
+    data.speed = this.speed;
+    data.angularSpeed = this.angularSpeed;
+    data.fireDelay = this.fireDelay;
+    data.damage = this.damage;
+
+    return data;
   }
 }

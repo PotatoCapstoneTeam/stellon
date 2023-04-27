@@ -1,4 +1,4 @@
-import { Score, User } from '@stellon/game-core';
+import { Score } from '@stellon/game-core';
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import styled from 'styled-components';

@@ -1,25 +1,26 @@
-import { PlayerManager } from './../managers/user-manager';
 import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation';
 import {
-  Bullet,
+  BulletData,
   EntityData,
   EntityType,
+  NexusData,
+  PlayerData,
   Scene,
   SERVER_FPS,
 } from '@stellon/game-core';
 import { GameObjects } from 'phaser';
+
+import { ClientSocket } from '../client-socket';
+import { ClientBullet } from '../entities/client-bullet';
+import { ClientNexus } from '../entities/client-nexus';
 import { ClientPlayer } from '../entities/client-player';
 import { InputManager } from '../managers/input-manager';
-import { ClientBullet } from '../entities/client-bullet';
-import { ClientSocket } from '../client-socket';
-import { ClientNexus } from '../entities/client-nexus';
 
 export class ClientScene extends Scene {
   si: SnapshotInterpolation;
   inputManager?: InputManager;
   text?: GameObjects.Text;
-  playerId?: string;
-  bullets: Bullet[] = [];
+  playerId!: string;
 
   constructor(public socket: ClientSocket) {
     super({ key: 'mainScene' });
@@ -36,27 +37,16 @@ export class ClientScene extends Scene {
     this.load.image('blueBullet', 'assets/blue-bullet.png');
   }
 
-  createEntity(type: EntityType, data: EntityData) {
+  createEntity(id: string, type: EntityType, data: EntityData) {
     switch (type) {
       case EntityType.PLAYER:
-        this.playerGroup.add(new ClientPlayer(this, data));
+        new ClientPlayer(id, this, data as PlayerData);
         break;
       case EntityType.BULLET:
-        this.bullets.push(
-          new ClientBullet(
-            data.id,
-            this,
-            +(data['x'] ?? 0),
-            +(data['y'] ?? 0),
-            this.playerGroup.find((data['sourceId'] as string) ?? '')!,
-            +(data['damage'] ?? 0),
-            +(data['speed'] ?? 0),
-            +(data['angle'] ?? 0)
-          )
-        );
+        new ClientBullet(id, this, data as BulletData);
         break;
       case EntityType.NEXUS:
-        this.nexusGroup.add(new ClientNexus(this, data));
+        new ClientNexus(id, this, data as NexusData);
     }
   }
 
@@ -69,12 +59,12 @@ export class ClientScene extends Scene {
       this.playerId = event.playerId;
 
       event.entities.forEach((entitiy) => {
-        this.createEntity(entitiy.type, entitiy.data);
+        this.createEntity(entitiy.id, entitiy.type, entitiy.data);
       });
     });
 
     this.socket.on('create', (event) => {
-      this.createEntity(event.type, event.data);
+      this.createEntity(event.id, event.type, event.data);
     });
 
     this.socket.on('update', (event) => {
@@ -84,17 +74,11 @@ export class ClientScene extends Scene {
     this.socket.on('destroy', (event) => {
       switch (event.type) {
         case EntityType.BULLET: {
-          const idx = this.bullets.findIndex(
-            (bullet) => bullet.id === event.id
-          );
+          const bullet = this.bulletGroup.find(event.id);
 
-          if (idx === -1) {
-            break;
+          if (bullet) {
+            this.bulletGroup.remove(bullet);
           }
-
-          const bullet = this.bullets.splice(idx, 1);
-
-          bullet[0].destroy();
 
           break;
         }
@@ -119,26 +103,26 @@ export class ClientScene extends Scene {
       });
     }
 
-    const snapshot = this.si.calcInterpolation(
+    const playersSnapshot = this.si.calcInterpolation(
       'x, y, angle, speed, angularSpeed',
       'players'
     );
 
-    const snapshot2 = this.si.calcInterpolation('', 'nexuses');
-
-    snapshot?.state.forEach((playerData) => {
+    playersSnapshot?.state.forEach((playerData) => {
       const player = this.playerGroup.find(playerData.id);
 
       player?.deserialize(playerData);
     });
 
-    snapshot2?.state.forEach((nexusData) => {
+    const nexusesSnapshot = this.si.calcInterpolation('', 'nexuses');
+
+    nexusesSnapshot?.state.forEach((nexusData) => {
       const nexus = this.nexusGroup.find(nexusData.id);
 
       nexus?.deserialize(nexusData);
     });
 
-    const player = this.playerGroup.find(this.playerId ?? '');
+    const player = this.playerGroup.find(this.playerId);
 
     if (player) {
       this.cameras.main.centerOn(player.x, player.y);

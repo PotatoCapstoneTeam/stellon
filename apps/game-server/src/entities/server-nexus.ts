@@ -1,8 +1,8 @@
-import { Nexus, Scene, Team } from '@stellon/game-core';
+import { Nexus, NexusData, Scene } from '@stellon/game-core';
 import cuid from 'cuid';
 
 export class ServerNexus extends Nexus {
-  constructor(scene: Scene, x: number, y: number, team: Team) {
-    super(cuid(), scene, x, y, team);
+  constructor(scene: Scene, data: NexusData) {
+    super(cuid(), scene, data);
   }
 }

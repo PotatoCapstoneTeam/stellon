@@ -1,59 +1,42 @@
-import { EntityType, Player, Scene, Score, Team } from '@stellon/game-core';
+import { Player, PlayerData } from '@stellon/game-core';
+import cuid from 'cuid';
+
 import { ClientState } from '../managers/client-manager';
-import { ServerBullet } from './server-bullet';
 import { ServerScene } from '../scenes/server-scene';
+import { ServerBullet } from './server-bullet';
+
+export interface ServerPlayerData extends PlayerData {
+  userId: number;
+  client: ClientState;
+}
 
 export class ServerPlayer extends Player {
+  userId: number;
+  client: ClientState;
+
   private prevFireTime = 0;
 
-  constructor(
-    id: string,
-    scene: ServerScene,
-    x: number,
-    y: number,
-    nickname: string,
-    team: Team,
-    public client: ClientState,
-    public userId: number
-  ) {
-    super(id, scene, x, y, nickname, team, 'LIVE');
+  private constructor(scene: ServerScene, data: ServerPlayerData) {
+    super(cuid(), scene, data);
+
+    this.userId = data.userId;
+    this.client = data.client;
 
     this.onDeath = (entity, killer) => {
       const player = entity as ServerPlayer;
 
       player.status = 'DEATH';
-      client.death++;
+      this.client.death++;
 
       if (killer instanceof ServerPlayer) {
         killer.client.kill++;
       }
 
-      const score: Score = [];
-
-      scene.playerGroup.forEach((player) => {
-        const client = (player as ServerPlayer).client;
-
-        score.push({
-          id: client.id,
-          nickname: player.nickname,
-          team: player.team,
-          kill: client.kill,
-          death: client.death,
-        });
-      });
-
-      scene.room.emit('kill', {
-        killed: player.nickname,
-        killedId: player.id,
-        killer: (killer as ServerPlayer).nickname,
-        killerId: killer.id,
-        killerType: EntityType.PLAYER,
-        score,
-      });
+      scene.emitKill(entity, killer);
 
       setTimeout(() => {
         player.status = 'LIVE';
-        player.hp = 200;
+        player.hp = player.maxHp;
 
         if (player.team === 'RED_TEAM') {
           player.setX(150);
@@ -66,6 +49,31 @@ export class ServerPlayer extends Player {
         }
       }, 3000);
     };
+  }
+
+  static create(
+    scene: ServerScene,
+    data: Omit<
+      ServerPlayerData,
+      | 'hp'
+      | 'maxHp'
+      | 'status'
+      | 'speed'
+      | 'angularSpeed'
+      | 'fireDelay'
+      | 'damage'
+    >
+  ) {
+    return new ServerPlayer(scene, {
+      ...data,
+      hp: 200,
+      maxHp: 200,
+      status: 'LIVE',
+      speed: 10,
+      angularSpeed: 10,
+      fireDelay: 500,
+      damage: 50,
+    });
   }
 
   override update(time: number, delta: number): void {
@@ -91,26 +99,16 @@ export class ServerPlayer extends Player {
     if (this.client.fire && time - this.prevFireTime >= this.fireDelay) {
       this.prevFireTime = time;
 
-      const scene = this.scene as ServerScene;
-
-      const bullet = new ServerBullet(
-        this.scene as ServerScene,
-        this.x,
-        this.y,
-        this,
-        this.damage,
-        1000,
-        this.angle
-      );
-
-      scene.bulletGroup.add(bullet);
-
-      this.scene.physics.velocityFromAngle(
-        this.angle,
-        1000,
-        bullet.body?.velocity
-      );
-      bullet.angle = this.angle;
+      new ServerBullet(this.scene as ServerScene, {
+        x: this.x,
+        y: this.y,
+        team: this.team,
+        sourceId: this.id,
+        damage: this.damage,
+        speed: 1000,
+        angle: this.angle,
+        lifeTime: 400,
+      });
     }
   }
 }
