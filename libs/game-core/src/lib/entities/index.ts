@@ -3,3 +3,4 @@ export * from './entity';
 export * from './group';
 export * from './nexus';
 export * from './player';
+export * from './turret';

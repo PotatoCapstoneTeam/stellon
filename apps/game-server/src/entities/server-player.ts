@@ -14,10 +14,12 @@ export class ServerPlayer extends Player {
   userId: number;
   client: ClientState;
 
-  private prevFireTime = 0;
+  prevFireTime = 0;
 
   private constructor(scene: ServerScene, data: ServerPlayerData) {
     super(cuid(), scene, data);
+
+    this.setCollideWorldBounds(true);
 
     this.userId = data.userId;
     this.client = data.client;
@@ -25,7 +27,7 @@ export class ServerPlayer extends Player {
     this.onDeath = (entity, killer) => {
       const player = entity as ServerPlayer;
 
-      player.status = 'DEATH';
+      player.state = 'Death';
       this.client.death++;
 
       if (killer instanceof ServerPlayer) {
@@ -35,19 +37,15 @@ export class ServerPlayer extends Player {
       scene.emitKill(entity, killer);
 
       setTimeout(() => {
-        player.status = 'LIVE';
+        player.state = 'Live';
         player.hp = player.maxHp;
 
-        if (player.team === 'RED_TEAM') {
-          player.setX(150);
-          player.setY(320);
-          player.setAngle(0);
-        } else {
-          player.setX(1050);
-          player.setY(320);
-          player.setAngle(180);
-        }
-      }, 3000);
+        const spawn = scene.getSpawn(this.team);
+
+        player.setX(spawn.x);
+        player.setY(spawn.y);
+        player.setAngle(spawn.angle);
+      }, scene.map.respawnTime);
     };
   }
 
@@ -57,11 +55,11 @@ export class ServerPlayer extends Player {
       ServerPlayerData,
       | 'hp'
       | 'maxHp'
-      | 'status'
+      | 'state'
       | 'speed'
       | 'angularSpeed'
-      | 'bulletSpeed'
-      | 'bulletLifeTime'
+      | 'shotSpeed'
+      | 'range'
       | 'fireDelay'
       | 'damage'
     >
@@ -70,11 +68,11 @@ export class ServerPlayer extends Player {
       ...data,
       hp: 200,
       maxHp: 200,
-      status: 'LIVE',
+      state: 'Live',
       speed: 10,
       angularSpeed: 10,
-      bulletSpeed: 1000,
-      bulletLifeTime: 400,
+      shotSpeed: 1000,
+      range: 300,
       fireDelay: 500,
       damage: 50,
     });
@@ -86,7 +84,7 @@ export class ServerPlayer extends Player {
     this.setVelocity(0, 0);
     this.setAngularVelocity(0);
 
-    if (this.status === 'DEATH') {
+    if (this.state === 'Death') {
       return;
     }
 
@@ -110,8 +108,8 @@ export class ServerPlayer extends Player {
         team: this.team,
         sourceId: this.id,
         damage: this.damage,
-        speed: this.bulletSpeed,
-        lifeTime: this.bulletLifeTime,
+        speed: this.shotSpeed,
+        range: this.range,
       });
     }
   }

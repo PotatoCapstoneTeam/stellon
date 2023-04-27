@@ -8,6 +8,7 @@ export class ClientState {
 
   damageDealtToPlayer = 0;
   damageDealtToNexus = 0;
+  damageDealtToTurret = 0;
 
   constructor(public id: number) {}
 }

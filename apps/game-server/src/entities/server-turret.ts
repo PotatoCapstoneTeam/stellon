@@ -1,62 +1,73 @@
-// import { ServerScene } from './../scenes/server-scene';
-// import { ServerBullet } from './server-bullet';
-// import { Entity, EntityData, Group, Player, Team } from '@stellon/game-core';
-// import cuid from 'cuid';
+import { Group, Player, Turret, TurretData } from '@stellon/game-core';
+import cuid from 'cuid';
 
-// export class ServerTurret extends Entity {
-//   playerGroup: Group<Player>;
-//   preFireTime = 0;
+import { ServerScene } from './../scenes/server-scene';
+import { ServerBullet } from './server-bullet';
 
-//   constructor(scene: ServerScene, x: number, y: number, public team: Team) {
-//     super(cuid(), scene, x, y);
+export class ServerTurret extends Turret {
+  playerGroup: Group<Player>;
 
-//     this.playerGroup = scene.playerGroup;
-//   }
+  prevFireTime = 0;
 
-//   override update(time: number, delta: number): void {
-//     if (time - this.preFireTime < 1000) {
-//       return;
-//     }
+  constructor(scene: ServerScene, data: TurretData) {
+    super(cuid(), scene, data);
 
-//     this.preFireTime = time;
+    this.playerGroup = scene.playerGroup;
+  }
 
-//     let b: number | null;
+  override update(time: number, delta: number): void {
+    if (time - this.prevFireTime < 1000 || this.hp <= 0) {
+      return;
+    }
 
-//     this.playerGroup.forEach((player) => {
-//       if (player.team === this.team) {
-//         return;
-//       }
+    this.prevFireTime = time;
 
-//       const a = Math.sqrt(
-//         Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)
-//       );
+    let target:
+      | {
+          player: Player;
+          distance: number;
+        }
+      | undefined;
 
-//       if (b === null || b > a) {
-//         b = a;
-//       }
+    this.playerGroup.forEach((player) => {
+      if (player.team === this.team) {
+        return;
+      }
 
-//       if (a > 100) {
-//         return;
-//       }
+      const distance = Math.sqrt(
+        Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2)
+      );
 
-//       const scene = this.scene as ServerScene;
+      if (distance > this.detectionRange) {
+        return;
+      }
 
-//       const bullet = new ServerBullet(
-//         scene,
-//         this.x,
-//         this.y,
-//         this,
-//         10,
-//         500,
-//         -(Math.atan2(this.x - player.x, this.y - player.y) * 180) / Math.PI - 90
-//       );
-//     });
-//   }
+      if (!target || target.distance > distance) {
+        target = {
+          player,
+          distance,
+        };
+      }
+    });
 
-//   serialize(): EntityData {
-//     throw new Error('Method not implemented.');
-//   }
-//   deserialize(data: EntityData): void {
-//     throw new Error('Method not implemented.');
-//   }
-// }
+    if (!target) {
+      return;
+    }
+
+    const bulletAngle =
+      -(Math.atan2(this.x - target.player.x, this.y - target.player.y) * 180) /
+        Math.PI -
+      90;
+
+    new ServerBullet(this.scene as ServerScene, {
+      x: this.x,
+      y: this.y,
+      angle: bulletAngle,
+      team: this.team,
+      sourceId: this.id,
+      damage: this.damage,
+      speed: this.shotSpeed,
+      range: this.range,
+    });
+  }
+}

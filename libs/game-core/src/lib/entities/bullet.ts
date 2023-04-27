@@ -1,30 +1,30 @@
 import { Team } from '..';
 import { Scene } from '../scenes/scene';
-import { Entity, EntityData } from './entity';
+import { Entity, EntityData, EntityType } from './entity';
 
 export interface BulletData extends EntityData {
   team: Team;
   sourceId?: string;
   damage: number;
   speed: number;
-  lifeTime: number;
+  range: number;
 }
 
 export class Bullet extends Entity {
   sourceId?: string;
   damage: number;
   speed: number;
-  lifeTime: number;
+  range: number;
 
   constructor(id: string, scene: Scene, data: BulletData) {
-    super(id, scene, data);
+    super(id, EntityType.Bullet, scene, data);
 
     scene.bulletGroup.add(this);
 
     this.sourceId = data.sourceId;
     this.damage = data.damage;
     this.speed = data.speed;
-    this.lifeTime = data.lifeTime;
+    this.range = data.range;
 
     this.scene.physics.velocityFromAngle(
       this.angle,
@@ -42,9 +42,9 @@ export class Bullet extends Entity {
   }
 
   override update(time: number, delta: number): void {
-    this.lifeTime -= delta;
+    this.range -= delta;
 
-    if (this.lifeTime <= 0) {
+    if (this.range <= 0) {
       (this.scene as Scene).bulletGroup.remove(this);
     }
   }
@@ -55,7 +55,7 @@ export class Bullet extends Entity {
     data.sourceId = this.sourceId;
     data.damage = this.damage;
     data.speed = this.speed;
-    data.lifeTime = this.lifeTime;
+    data.range = this.range;
 
     return data;
   }

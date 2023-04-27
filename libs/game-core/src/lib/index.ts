@@ -3,6 +3,7 @@ import { Snapshot } from '@geckos.io/snapshot-interpolation/lib/types';
 import { EntityData, EntityType } from './entities';
 
 export * from './entities';
+export * from './maps';
 export * from './scenes';
 
 export const SERVER_FPS = 30;
@@ -84,9 +85,9 @@ export type UpdateEvent = {
 export type KillEvent = {
   killed: string;
   killedId: string;
-  killer: string;
-  killerId: string;
-  killerType: EntityType;
+  killer?: string;
+  killerId?: string;
+  killerType?: EntityType;
   score: Score;
 };
 

@@ -1,4 +1,4 @@
-import { Score } from '@stellon/game-core';
+import { EntityType, Score } from '@stellon/game-core';
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import styled from 'styled-components';
@@ -67,19 +67,16 @@ export const GameView = (props: GameViewProps) => {
           parent: 'game-view',
           mode: Phaser.Scale.RESIZE,
           autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: 800,
-          height: 600,
         },
-        width: 1200,
-        height: 640,
         antialias: false,
         parent: parent,
         backgroundColor: '#212123',
         physics: {
           default: 'arcade',
           arcade: {
-            debug: false,
+            debug: true,
             gravity: { y: 0 },
+            debugShowVelocity: true,
           },
         },
         scene: [new ClientScene(socket)],
@@ -102,7 +99,11 @@ export const GameView = (props: GameViewProps) => {
       socket.on('kill', (event) => {
         setScore(event.score);
 
-        toast(`${event.killer}님이 ${event.killed}님을 죽였습니다!`);
+        toast(
+          `${event.killer}${
+            event.killerType === EntityType.Player ? '님' : ''
+          }이 ${event.killed}님을 죽였습니다!`
+        );
       });
 
       socket.on('end', (event) => {

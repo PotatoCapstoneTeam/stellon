@@ -42,7 +42,7 @@ export class ClientPlayer extends Player {
     this.hpLabel.text = this.hp + '';
     this.hpLabel.setPosition(this.x, this.y);
 
-    if (this.status === 'LIVE') {
+    if (this.state === 'Live') {
       this.alpha = 1;
     } else {
       this.alpha = 0.5;

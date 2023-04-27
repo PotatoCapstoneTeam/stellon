@@ -19,7 +19,7 @@ export class ServerBullet extends Bullet {
 
     this.room.emit('create', {
       id: this.id,
-      type: EntityType.BULLET,
+      type: EntityType.Bullet,
       data,
     } as CreateEvent);
   }
@@ -29,7 +29,7 @@ export class ServerBullet extends Bullet {
 
     this.room.emit('destroy', {
       id: this.id,
-      type: EntityType.BULLET,
+      type: EntityType.Bullet,
     } as DestroyEvent);
   }
 }

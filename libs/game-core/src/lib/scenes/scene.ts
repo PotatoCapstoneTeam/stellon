@@ -1,10 +1,11 @@
-import { Bullet, Entity, Group, Nexus, Player } from '../entities';
+import { Bullet, Entity, Group, Nexus, Player, Turret } from '../entities';
 
 export class Scene extends Phaser.Scene {
   private entities: Entity[] = [];
 
   nexusGroup!: Group<Nexus>;
   playerGroup!: Group<Player>;
+  turretGroup!: Group<Turret>;
   bulletGroup!: Group<Bullet>;
 
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
@@ -14,6 +15,7 @@ export class Scene extends Phaser.Scene {
   create() {
     this.nexusGroup = new Group(this);
     this.playerGroup = new Group(this);
+    this.turretGroup = new Group(this);
     this.bulletGroup = new Group(this);
   }
 
@@ -33,11 +35,11 @@ export class Scene extends Phaser.Scene {
     return this.entities.find((value) => value.id === id);
   }
 
-  addEntity(entity: Entity) {
+  addEntity(entity: Entity, isStatic?: boolean) {
     this.entities.push(entity);
 
     this.add.existing(entity);
-    this.physics.add.existing(entity);
+    this.physics.add.existing(entity, isStatic);
   }
 
   removeEntity(entity: Entity) {

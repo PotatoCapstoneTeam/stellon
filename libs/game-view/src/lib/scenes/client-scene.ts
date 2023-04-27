@@ -7,6 +7,7 @@ import {
   PlayerData,
   Scene,
   SERVER_FPS,
+  TurretData,
 } from '@stellon/game-core';
 import { GameObjects } from 'phaser';
 
@@ -14,6 +15,7 @@ import { ClientSocket } from '../client-socket';
 import { ClientBullet } from '../entities/client-bullet';
 import { ClientNexus } from '../entities/client-nexus';
 import { ClientPlayer } from '../entities/client-player';
+import { ClientTurret } from '../entities/client-turret';
 import { InputManager } from '../managers/input-manager';
 
 export class ClientScene extends Scene {
@@ -35,18 +37,24 @@ export class ClientScene extends Scene {
     this.load.image('bluePlayer', 'assets/blue-player.png');
     this.load.image('redBullet', 'assets/red-bullet.png');
     this.load.image('blueBullet', 'assets/blue-bullet.png');
+    this.load.image('redTurret', 'assets/red-turret.png');
+    this.load.image('blueTurret', 'assets/blue-turret.png');
   }
 
   createEntity(id: string, type: EntityType, data: EntityData) {
     switch (type) {
-      case EntityType.PLAYER:
+      case EntityType.Player:
         new ClientPlayer(id, this, data as PlayerData);
         break;
-      case EntityType.BULLET:
+      case EntityType.Bullet:
         new ClientBullet(id, this, data as BulletData);
         break;
-      case EntityType.NEXUS:
+      case EntityType.Nexus:
         new ClientNexus(id, this, data as NexusData);
+        break;
+      case EntityType.Turret:
+        new ClientTurret(id, this, data as TurretData);
+        break;
     }
   }
 
@@ -73,7 +81,7 @@ export class ClientScene extends Scene {
 
     this.socket.on('destroy', (event) => {
       switch (event.type) {
-        case EntityType.BULLET: {
+        case EntityType.Bullet: {
           const bullet = this.bulletGroup.find(event.id);
 
           if (bullet) {
@@ -103,23 +111,31 @@ export class ClientScene extends Scene {
       });
     }
 
-    const playersSnapshot = this.si.calcInterpolation(
+    const playerSnapshot = this.si.calcInterpolation(
       'x, y, angle, speed, angularSpeed',
-      'players'
+      'player'
     );
 
-    playersSnapshot?.state.forEach((playerData) => {
+    playerSnapshot?.state.forEach((playerData) => {
       const player = this.playerGroup.find(playerData.id);
 
       player?.deserialize(playerData);
     });
 
-    const nexusesSnapshot = this.si.calcInterpolation('', 'nexuses');
+    const nexusSnapshot = this.si.calcInterpolation('', 'nexus');
 
-    nexusesSnapshot?.state.forEach((nexusData) => {
+    nexusSnapshot?.state.forEach((nexusData) => {
       const nexus = this.nexusGroup.find(nexusData.id);
 
       nexus?.deserialize(nexusData);
+    });
+
+    const turretSnapshot = this.si.calcInterpolation('', 'turret');
+
+    turretSnapshot?.state.forEach((turretData) => {
+      const turret = this.turretGroup.find(turretData.id);
+
+      turret?.deserialize(turretData);
     });
 
     const player = this.playerGroup.find(this.playerId);

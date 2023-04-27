@@ -1,37 +1,37 @@
 import { Scene } from '../scenes/scene';
-import { DamageableEntity, DamageableEntityData } from './entity';
+import { DamageableEntity, DamageableEntityData, EntityType } from './entity';
 
-export type PlayerStatus = 'LIVE' | 'DEATH';
+export type PlayerState = 'Live' | 'Death';
 
 export interface PlayerData extends DamageableEntityData {
-  status: PlayerStatus;
+  state: PlayerState;
   speed: number;
   angularSpeed: number;
-  bulletSpeed: number;
-  bulletLifeTime: number;
+  shotSpeed: number;
+  range: number;
   fireDelay: number;
   damage: number;
 }
 
 export class Player extends DamageableEntity {
-  status: PlayerStatus;
+  override state: PlayerState;
   speed: number;
   angularSpeed: number;
-  bulletSpeed: number;
-  bulletLifeTime: number;
+  shotSpeed: number;
+  range: number;
   fireDelay: number;
   damage: number;
 
   constructor(id: string, scene: Scene, data: PlayerData) {
-    super(id, scene, data);
+    super(id, EntityType.Player, scene, data);
 
     scene.playerGroup.add(this);
 
-    this.status = data.status;
+    this.state = data.state;
     this.speed = data.speed;
     this.angularSpeed = data.angularSpeed;
-    this.bulletSpeed = data.bulletSpeed;
-    this.bulletLifeTime = data.bulletLifeTime;
+    this.shotSpeed = data.shotSpeed;
+    this.range = data.range;
     this.fireDelay = data.fireDelay;
     this.damage = data.damage;
   }
@@ -39,11 +39,11 @@ export class Player extends DamageableEntity {
   override serialize(): PlayerData {
     const data = super.serialize() as PlayerData;
 
-    data.status = this.status;
+    data.state = this.state;
     data.speed = this.speed;
     data.angularSpeed = this.angularSpeed;
-    data.bulletSpeed = this.bulletSpeed;
-    data.bulletLifeTime = this.bulletLifeTime;
+    data.shotSpeed = this.shotSpeed;
+    data.range = this.range;
     data.fireDelay = this.fireDelay;
     data.damage = this.damage;
 

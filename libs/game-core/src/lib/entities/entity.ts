@@ -5,9 +5,10 @@ import { Team } from '..';
 import { Scene } from '../scenes/scene';
 
 export enum EntityType {
-  PLAYER,
-  BULLET,
-  NEXUS,
+  Nexus = 'nexus',
+  Player = 'player',
+  Turret = 'turret',
+  Bullet = 'bullet',
 }
 
 export interface EntityData {
@@ -22,7 +23,12 @@ export interface EntityData {
 export abstract class Entity extends Physics.Arcade.Sprite {
   team: Team;
 
-  constructor(public id: string, scene: Scene, data: EntityData) {
+  constructor(
+    public id: string,
+    public entityType: EntityType,
+    scene: Scene,
+    data: EntityData
+  ) {
     let texture = data.texture;
 
     if (typeof texture === 'string') {
@@ -76,7 +82,7 @@ export abstract class Entity extends Physics.Arcade.Sprite {
   }
 }
 
-export type DeathCallback = (entity: DamageableEntity, killer: Entity) => void;
+export type DeathCallback = (entity: DamageableEntity, killer?: Entity) => void;
 
 export interface DamageableEntityData extends EntityData {
   team: Team;
@@ -89,8 +95,13 @@ export abstract class DamageableEntity extends Entity {
   maxHp: number;
   onDeath?: DeathCallback;
 
-  constructor(id: string, scene: Scene, data: DamageableEntityData) {
-    super(id, scene, data);
+  constructor(
+    id: string,
+    entityType: EntityType,
+    scene: Scene,
+    data: DamageableEntityData
+  ) {
+    super(id, entityType, scene, data);
 
     this.hp = data.hp;
     this.maxHp = data.maxHp;
@@ -106,15 +117,16 @@ export abstract class DamageableEntity extends Entity {
     return data;
   }
 
-  hit(damage: number, hitter: Entity): number {
+  hit(damage: number, hitter?: Entity): number {
     if (this.hp - damage <= 0) {
-      const realDamage = damage - this.hp;
+      const realDamage = this.hp;
 
       this.hp = 0;
 
-      (async () => {
+      // hit를 호출한 함수가 완료된 뒤 실행되도록 지연
+      setTimeout(() => {
         this.onDeath?.(this, hitter);
-      })();
+      }, 10);
 
       return realDamage;
     } else {
