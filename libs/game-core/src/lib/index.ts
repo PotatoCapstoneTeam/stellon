@@ -1,4 +1,5 @@
 import { Snapshot } from '@geckos.io/snapshot-interpolation/lib/types';
+
 import { EntityData, EntityType } from './entities';
 
 export * from './entities';
@@ -6,7 +7,7 @@ export * from './scenes';
 
 export const SERVER_FPS = 30;
 
-export type Team = 'RED_TEAM' | 'BLUE_TEAM';
+export type Team = 'NONE' | 'RED_TEAM' | 'BLUE_TEAM';
 
 export type User = {
   id: number;
@@ -66,12 +67,13 @@ export type ClientEventMap = {
 
 export type WelcomeEvent = {
   playerId: string;
-  entities: { type: EntityType; data: EntityData }[];
+  entities: { id: string; type: EntityType; data: EntityData }[];
   users: User[];
 };
 
 export type CreateEvent = {
   type: EntityType;
+  id: string;
   data: EntityData;
 };
 

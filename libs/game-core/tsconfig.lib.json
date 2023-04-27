@@ -7,9 +7,5 @@
     "types": ["node"]
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": [
-    "**/*.ts",
-    "../../apps/game-server/src/app/server-socket.ts",
-    "../game-view/src/lib/client-socket.ts"
-  ]
+  "include": ["**/*.ts"]
 }

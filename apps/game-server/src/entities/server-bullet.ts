@@ -1,8 +1,8 @@
 import {
   Bullet,
+  BulletData,
   CreateEvent,
   DestroyEvent,
-  Entity,
   EntityType,
 } from '@stellon/game-core';
 import cuid from 'cuid';
@@ -12,22 +12,15 @@ import { ServerRoom } from '../server-socket';
 export class ServerBullet extends Bullet {
   room: ServerRoom;
 
-  constructor(
-    scene: ServerScene,
-    x: number,
-    y: number,
-    source: Entity,
-    damage: number,
-    speed: number,
-    angle: number
-  ) {
-    super(cuid(), scene, x, y, source, damage, speed, angle);
+  constructor(scene: ServerScene, data: BulletData) {
+    super(cuid(), scene, data);
 
     this.room = scene.room;
 
     this.room.emit('create', {
+      id: this.id,
       type: EntityType.BULLET,
-      data: this.serialize(),
+      data,
     } as CreateEvent);
   }
 

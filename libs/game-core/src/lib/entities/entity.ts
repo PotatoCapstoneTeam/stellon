@@ -1,5 +1,7 @@
 import { Value } from '@geckos.io/snapshot-interpolation/lib/types';
-import { Math, Physics, Textures } from 'phaser';
+import { Physics } from 'phaser';
+
+import { Team } from '..';
 import { Scene } from '../scenes/scene';
 
 export enum EntityType {
@@ -8,29 +10,37 @@ export enum EntityType {
   NEXUS,
 }
 
-export type EntityData = {
-  id: string;
-  [key: string]: Value;
-};
-
-export interface EntityProps {
+export interface EntityData {
   x: number;
   y: number;
-  texture?: string | Textures.Texture;
+  name?: string;
+  team?: Team;
+  texture?: string;
+  angle?: number;
 }
 
 export abstract class Entity extends Physics.Arcade.Sprite {
-  constructor(public id: string, scene: Scene, props: EntityProps) {
-    super(scene, props.x, props.y, props.texture ?? '');
+  team: Team;
 
-    scene.add.existing(this);
-    scene.physics.add.existing(this);
-    scene.addUpdate(this);
+  constructor(public id: string, scene: Scene, data: EntityData) {
+    let texture = data.texture;
+
+    if (typeof texture === 'string') {
+      texture = texture.replace('%', data.team === 'RED_TEAM' ? 'red' : 'blue');
+    }
+
+    super(scene, data.x, data.y, texture ?? '');
+
+    this.name = data.name ?? '';
+    this.team = data.team ?? 'NONE';
+    this.angle = data.angle ?? 0;
+
+    scene.addEntity(this);
   }
 
   override destroy(fromScene?: boolean | undefined): void {
     if (this.scene instanceof Scene) {
-      this.scene.removeUpdate(this);
+      this.scene.removeEntity(this);
     }
 
     super.destroy(fromScene);
@@ -40,19 +50,60 @@ export abstract class Entity extends Physics.Arcade.Sprite {
     super.update(time, delta);
   }
 
-  abstract serialize(): EntityData;
+  makeData(): EntityData {
+    return { ...this.serialize() };
+  }
 
-  abstract deserialize(data: EntityData): void;
+  serialize(): EntityData {
+    return {
+      x: this.x,
+      y: this.y,
+      name: this.name,
+      team: this.team,
+      angle: this.angle,
+    };
+  }
+
+  deserialize(data: { [key: string]: Value }) {
+    for (const key in data) {
+      if (key === 'id') {
+        continue;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this as any)[key] = data[key];
+    }
+  }
+}
+
+export type DeathCallback = (entity: DamageableEntity, killer: Entity) => void;
+
+export interface DamageableEntityData extends EntityData {
+  team: Team;
+  hp: number;
+  maxHp: number;
 }
 
 export abstract class DamageableEntity extends Entity {
-  hp = 2000;
-  maxHp = 2000;
+  hp: number;
+  maxHp: number;
+  onDeath?: DeathCallback;
 
-  onDeath?: (entity: DamageableEntity, killer: Entity) => void;
+  constructor(id: string, scene: Scene, data: DamageableEntityData) {
+    super(id, scene, data);
 
-  constructor(id: string, scene: Scene, props: EntityProps) {
-    super(id, scene, props);
+    this.hp = data.hp;
+    this.maxHp = data.maxHp;
+  }
+
+  override serialize(): DamageableEntityData {
+    const data = super.serialize() as DamageableEntityData;
+
+    data.team = this.team;
+    data.hp = this.hp;
+    data.maxHp = this.maxHp;
+
+    return data;
   }
 
   hit(damage: number, hitter: Entity): number {

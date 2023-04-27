@@ -1,8 +1,7 @@
-import { GameObjects } from 'phaser';
-import { Bullet, Group, Nexus, Player } from '../entities';
+import { Bullet, Entity, Group, Nexus, Player } from '../entities';
 
 export class Scene extends Phaser.Scene {
-  private updateList: GameObjects.GameObject[] = [];
+  private entities: Entity[] = [];
 
   nexusGroup!: Group<Nexus>;
   playerGroup!: Group<Player>;
@@ -21,16 +20,29 @@ export class Scene extends Phaser.Scene {
   override update(time: number, delta: number): void {
     super.update(time, delta);
 
-    this.updateList.forEach((object) => object.update(time, delta));
+    this.entities.forEach((object) => {
+      if (!object.active) {
+        return;
+      }
+
+      object.update(time, delta);
+    });
   }
 
-  addUpdate(object: GameObjects.GameObject) {
-    this.updateList.push(object);
+  findEntity(id: string): Entity | undefined {
+    return this.entities.find((value) => value.id === id);
   }
 
-  removeUpdate(object: GameObjects.GameObject) {
-    const index = this.updateList.findIndex((value) => value === object);
+  addEntity(entity: Entity) {
+    this.entities.push(entity);
 
-    this.updateList.splice(index, 1);
+    this.add.existing(entity);
+    this.physics.add.existing(entity);
+  }
+
+  removeEntity(entity: Entity) {
+    const index = this.entities.findIndex((value) => value === entity);
+
+    this.entities.splice(index, 1);
   }
 }

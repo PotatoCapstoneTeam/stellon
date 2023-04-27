@@ -1,55 +1,62 @@
+import { Team } from '..';
 import { Scene } from '../scenes/scene';
 import { Entity, EntityData } from './entity';
 
+export interface BulletData extends EntityData {
+  team: Team;
+  sourceId?: string;
+  damage: number;
+  speed: number;
+  lifeTime: number;
+}
+
 export class Bullet extends Entity {
-  lifeTime = 400;
+  sourceId?: string;
+  damage: number;
+  speed: number;
+  lifeTime: number;
 
-  constructor(
-    id: string,
-    scene: Scene,
-    x: number,
-    y: number,
-    public source: Entity,
-    public damage: number,
-    public speed: number,
-    angle: number,
-    texture = ''
-  ) {
-    super(id, scene, x, y, texture);
+  constructor(id: string, scene: Scene, data: BulletData) {
+    super(id, scene, data);
 
-    this.scene.physics.velocityFromAngle(angle, speed, this.body?.velocity);
-    this.angle = angle;
+    scene.bulletGroup.add(this);
+
+    this.sourceId = data.sourceId;
+    this.damage = data.damage;
+    this.speed = data.speed;
+    this.lifeTime = data.lifeTime;
+
+    this.scene.physics.velocityFromAngle(
+      this.angle,
+      this.speed,
+      this.body?.velocity
+    );
+  }
+
+  get source() {
+    if (!this.sourceId) {
+      return;
+    }
+
+    return (this.scene as Scene).findEntity(this.sourceId);
   }
 
   override update(time: number, delta: number): void {
     this.lifeTime -= delta;
 
     if (this.lifeTime <= 0) {
-      this.destroy();
+      (this.scene as Scene).bulletGroup.remove(this);
     }
   }
 
-  serialize(): EntityData {
-    return {
-      id: this.id,
-      x: this.x,
-      y: this.y,
-      sourceId: this.source.id,
-      damage: this.damage,
-      speed: this.speed,
-      angle: this.angle,
-    };
-  }
+  override serialize(): BulletData {
+    const data = super.serialize() as BulletData;
 
-  deserialize(data: EntityData) {
-    const scene = this.scene as Scene;
+    data.sourceId = this.sourceId;
+    data.damage = this.damage;
+    data.speed = this.speed;
+    data.lifeTime = this.lifeTime;
 
-    this.x = +(data['x'] ?? this.x);
-    this.y = +(data['y'] ?? this.y);
-    this.source =
-      scene.playerGroup.find((data['sourceId'] as string) ?? '') ?? this.source;
-    this.damage = +(data['damage'] ?? this.damage);
-    this.speed = +(data['speed'] ?? this.speed);
-    this.angle = +(data['angle'] ?? this.angle);
+    return data;
   }
 }

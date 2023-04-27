@@ -1,4 +1,4 @@
-import { Score, User } from '@stellon/game-core';
+import { Score } from '@stellon/game-core';
 import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import styled from 'styled-components';
@@ -23,6 +23,8 @@ export const GameView = (props: GameViewProps) => {
         return;
       }
 
+      event.preventDefault();
+
       setIsShowScore(true);
     }
 
@@ -30,6 +32,8 @@ export const GameView = (props: GameViewProps) => {
       if (event.key !== 'Tab') {
         return;
       }
+
+      event.preventDefault();
 
       setIsShowScore(false);
     }
@@ -126,11 +130,10 @@ export const GameView = (props: GameViewProps) => {
           <div style={{ width: 40, textAlign: 'center' }}>킬</div>{' '}
           <div style={{ width: 40, textAlign: 'center' }}>데스</div>
         </div>
-
         {score
           ?.filter((value) => value.team === 'RED_TEAM')
           .map((value) => (
-            <div style={{ display: 'flex' }}>
+            <div key={value.id} style={{ display: 'flex' }}>
               <div style={{ width: 100 }}>{value.nickname}</div>
               <div style={{ width: 40, textAlign: 'center' }}>
                 {value.kill}
@@ -140,11 +143,11 @@ export const GameView = (props: GameViewProps) => {
               </div>
             </div>
           ))}
-        <p style={{ color: 'blue', fontWeight: 'bold' }}>blue</p>
+        <p style={{ color: 'blue', fontWeight: 'bold' }}>BLUE</p>
         {score
           ?.filter((value) => value.team === 'BLUE_TEAM')
           .map((value) => (
-            <div style={{ display: 'flex' }}>
+            <div key={value.id} style={{ display: 'flex' }}>
               <div style={{ width: 100 }}>{value.nickname}</div>
               <div style={{ width: 40, textAlign: 'center' }}>
                 {value.kill}
