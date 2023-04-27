@@ -63,21 +63,21 @@ export class ClientScene extends Scene {
 
     this.inputManager = new InputManager(this);
 
-    const background = this.add.grid(
-      1200 / 2,
-      640 / 2,
-      1200,
-      640,
-      32,
-      32,
-      0,
-      0,
-      0xffffff,
-      0.1
-    );
-
     this.socket.on('welcome', (event) => {
       this.playerId = event.playerId;
+
+      const background = this.add.grid(
+        event.width / 2,
+        event.height / 2,
+        event.width,
+        event.height,
+        64,
+        64,
+        0,
+        0,
+        0xffffff,
+        0.05
+      );
 
       event.entities.forEach((entitiy) => {
         this.createEntity(entitiy.id, entitiy.type, entitiy.data);

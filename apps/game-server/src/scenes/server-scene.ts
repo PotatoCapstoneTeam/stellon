@@ -232,6 +232,8 @@ export class ServerScene extends Scene {
     channel.emit('welcome', {
       playerId,
       entities,
+      width: this.map.width,
+      height: this.map.height,
       users: this.users,
     });
   }

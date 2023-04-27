@@ -68,6 +68,8 @@ export type ClientEventMap = {
 
 export type WelcomeEvent = {
   playerId: string;
+  width: number;
+  height: number;
   entities: { id: string; type: EntityType; data: EntityData }[];
   users: User[];
 };
