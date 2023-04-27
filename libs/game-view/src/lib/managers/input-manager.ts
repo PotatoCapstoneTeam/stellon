@@ -1,6 +1,5 @@
 import { Input } from 'phaser';
-import { InputEvent, Scene } from '@stellon/game-core';
-import { ClientChannel } from '@geckos.io/client';
+import { Scene } from '@stellon/game-core';
 
 const KeyCodes = Input.Keyboard.KeyCodes;
 
