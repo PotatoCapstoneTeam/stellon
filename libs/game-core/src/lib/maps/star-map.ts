@@ -12,6 +12,14 @@ export const StarMap: MapInfo = {
       maxHp: 2000,
     },
     spawns: [{ x: 150, y: 320, angle: 0 }],
+    turrets: [
+      {
+        x: 700,
+        y: 320,
+        maxHp: 1000,
+        damage: 100,
+      },
+    ],
   },
   blue: {
     nexus: {
